@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - InvoicePilot Cyber</title>
+    <!-- CSS Chung dự án -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <!-- Boxicons CDN -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --cyber-bg: #060913;
+            --cyber-card: #0f172a;
+            --cyber-border: rgba(255, 255, 255, 0.12);
+            --neon-blue: #2563eb;
+            --neon-cyan: #06b6d4;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--cyber-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Form Bên Trái */
+        .login-section {
+            background: var(--cyber-bg);
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 560px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .logo-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+            text-decoration: none;
+            margin-bottom: 32px;
+        }
+
+        .logo-box {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .login-sub {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group i.icon-left {
+            position: absolute;
+            left: 14px;
+            color: var(--text-sub);
+            font-size: 1.2rem;
+        }
+
+        .cyber-input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--cyber-border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .cyber-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+        }
+
+        .toggle-pwd {
+            position: absolute;
+            right: 14px;
+            cursor: pointer;
+            color: var(--text-sub);
+            font-size: 1.2rem;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-sub);
+        }
+
+        .forgot-pass {
+            color: var(--neon-cyan);
+            text-decoration: none;
+        }
+
+        .btn-cyber-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+            transition: all 0.25s ease;
+        }
+
+        .btn-cyber-submit:hover {
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--cyber-border);
+        }
+
+        .divider span {
+            background: var(--cyber-bg);
+            padding: 0 12px;
+            position: relative;
+            color: var(--text-sub);
+            font-size: 0.8rem;
+        }
+
+        .btn-secondary-cyber {
+            width: 100%;
+            padding: 11px;
+            background: transparent;
+            color: #fff;
+            border: 1px solid var(--cyber-border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary-cyber:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        /* Banner bên phải */
+        .banner-section {
+            background: var(--cyber-card);
+            border-left: 1px solid var(--cyber-border);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner-section::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+        }
+
+        /* Toast Popup Cyber */
+        #toastBox {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+        }
+
+        .cyber-toast {
+            background: #0b1120;
+            border: 1px solid var(--cyber-border);
+            border-left: 4px solid var(--neon-cyan);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            margin-bottom: 10px;
+        }
+
+        .cyber-toast.error { border-left-color: #ef4444; }
+
+        @media (max-width: 900px) {
+            .split-layout { grid-template-columns: 1fr; }
+            .banner-section { display: none; }
+            .login-section { padding: 40px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toastBox"></div>
+
+    <div class="split-layout">
+        <!-- Bên Trái: Form Đăng Nhập -->
+        <div class="login-section">
+            <a href="Trangchu.html" class="logo-brand">
+                <div class="logo-box"><i class='bx bxs-paper-plane'></i></div>
+                <span>InvoicePilot</span>
+            </a>
+
+            <h2 class="login-title">Đăng nhập</h2>
+            <p class="login-sub">Chào mừng bạn quay trở lại với InvoicePilot!</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Email hoặc tên đăng nhập</label>
+                    <div class="input-group">
+                        <i class='bx bx-user icon-left'></i>
+                        <input type="text" id="username" class="cyber-input" placeholder="admin@company.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu</label>
+                    <div class="input-group">
+                        <i class='bx bx-lock-alt icon-left'></i>
+                        <input type="password" id="password" class="cyber-input" placeholder="••••••••" required>
+                        <i class='bx bx-hide toggle-pwd' id="togglePassword"></i>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe"> Nhớ tài khoản
+                    </label>
+                    <a href="forgot-password.html" class="forgot-pass">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" class="btn-cyber-submit">Đăng nhập</button>
+
+                <div class="divider">
+                    <span>hoặc</span>
+                </div>
+
+                <a href="Trangchu.html" class="btn-secondary-cyber">Quay lại Trang Chủ</a>
+            </form>
+        </div>
+
+        <!-- Bên Phải: Banner Minh Họa Cyber -->
+        <div class="banner-section">
+            <div style="font-size: 5rem; color: var(--neon-cyan); margin-bottom: 20px;">
+                <i class='bx bx-bot'></i>
+            </div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 12px; color: #fff;">Quản lý hóa đơn & công nợ thông minh</h3>
+            <p style="color: var(--text-sub); max-width: 380px; line-height: 1.6; font-size: 0.9rem;">
+                Hệ thống liên thông dữ liệu Realtime giữa các bộ phận Kế toán (KT), Kinh doanh (KD), Quản lý dòng tiền (QL) và Quản trị hệ thống (QTV).
+            </p>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic Đăng nhập Tối Ưu -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
+
+            // Ẩn / Hiện mật khẩu
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', () => {
+                    const isPassword = passwordInput.getAttribute('type') === 'password';
+                    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                    togglePassword.classList.toggle('bx-hide', !isPassword);
+                    togglePassword.classList.toggle('bx-show', isPassword);
+                });
+            }
+
+            // Hàm hiển thị Thông báo Cyber Toast
+            function showCyberToast(message, type = 'error') {
+                const box = document.getElementById('toastBox');
+                if (!box) return;
+                const toast = document.createElement('div');
+                toast.className = `cyber-toast ${type}`;
+                toast.innerHTML = `
+                    <i class='bx ${type === 'error' ? 'bx-error-circle' : 'bx-check-circle'}' style="font-size:1.2rem; color:${type === 'error' ? '#ef4444' : '#10b981'}"></i>
+                    <span>${message}</span>
+                `;
+                box.appendChild(toast);
+                setTimeout(() => toast.remove(), 3500);
+            }
+
+            // Danh sách tài khoản giả lập chuẩn bộ dữ liệu dự án
+            const accounts = [
+                { 
+                    username: 'admin@company.com', 
+                    password: '123456', 
+                    name: 'Đàm Minh Quân', 
+                    role: 'admin',
+                    roleName: 'Quản trị viên (QTV)', 
+                    targetPage: 'QTV-admin-customer-management.html' 
+                },
+                { 
+                    username: 'kt@company.com', 
+                    password: '123456', 
+                    name: 'Đỗ Duy Nhân', 
+                    role: 'accountant',
+                    roleName: 'Kế toán (KT)', 
+                    targetPage: 'KT-accountant-invoice-list.html' 
+                },
+                { 
+                    username: 'sale@company.com', 
+                    password: '123456', 
+                    name: 'Trần Khôi Nguyên', 
+                    role: 'sales',
+                    roleName: 'Kinh doanh (KD)', 
+                    targetPage: 'KD-sales-customer-balance.html' 
+                },
+                { 
+                    username: 'manager@company.com', 
+                    password: '123456', 
+                    name: 'Đàm Minh Quân', 
+                    role: 'manager',
+                    roleName: 'Quản lý Dòng tiền (QL)', 
+                    targetPage: 'QL-manager-receivable-dashboard.html' 
+                }
+            ];
+
+            // Xử lý Sự kiện Submit Form
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const userVal = usernameInput.value.trim();
+                const passVal = passwordInput.value.trim();
+
+                if (!userVal || !passVal) {
+                    showCyberToast('Vui lòng nhập đầy đủ tài khoản và mật khẩu!', 'error');
+                    return;
+                }
+
+                const matchedUser = accounts.find(a => a.username.toLowerCase() === userVal.toLowerCase() && a.password === passVal);
+
+                if (matchedUser) {
+                    // Cấu trúc phiên đăng nhập đầy đủ cho cả Trangchu.html và các phân hệ
+                    const sessionData = {
+                        username: matchedUser.username,
+                        name: matchedUser.name,
+                        role: matchedUser.role,
+                        roleName: matchedUser.roleName,
+                        targetPage: matchedUser.targetPage,
+                        loginTime: new Date().toISOString()
+                    };
+
+                    // Đồng bộ lưu vào cả 2 key LocalStorage để đảm bảo tương thích
+                    localStorage.setItem('currentUser', JSON.stringify(sessionData));
+                    localStorage.setItem('invoicepilot_current_user', JSON.stringify(sessionData));
+
+                    showCyberToast(`Đăng nhập thành công! Chào mừng ${matchedUser.name}...`, 'success');
+
+                    // Điều hướng sang trang phân hệ tương ứng
+                    setTimeout(() => {
+                        window.location.href = matchedUser.targetPage;
+                    }, 800);
+                } else {
+                    showCyberToast('Tài khoản hoặc mật khẩu không chính xác!', 'error');
+                }
+            });
+        });
+    </script>
+    <!-- Script dùng chung cho mọi file trong thư mục pages/ -->
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+</html>

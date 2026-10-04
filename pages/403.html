@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Truy Cập Bị Cấm | InvoicePilot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #060913; color: #fff;">
+
+    <div style="text-align: center; max-width: 480px; padding: 20px;">
+        <i class='bx bx-shield-x' style="font-size: 5rem; color: #f87171;"></i>
+        <h1 style="font-size: 3.5rem; margin: 10px 0; color: #f87171;">403</h1>
+        <h2 style="font-size: 1.5rem; margin-bottom: 12px;">Truy Cập Bị Cấm</h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 28px; line-height: 1.5;">
+            Bạn không đủ quyền hạn để truy cập vào tài nguyên hoặc phân hệ này. Vui lòng liên hệ Quản trị viên (Admin) nếu đây là sự cố.
+        </p>
+
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <a href="Dangnhap.html" class="btn btn-outline" style="padding: 10px 20px; border: 1px solid #334155; border-radius: 8px; color: #fff; text-decoration: none;">
+                Đăng Nhập Khác
+            </a>
+            <button onclick="goBackOrDashboard()" class="btn btn-primary" style="padding: 10px 20px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 600;">
+                Quay Lại Trang Trước
+            </button>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        function goBackOrDashboard() {
+            if (document.referrer && !document.referrer.includes('403.html')) {
+                window.history.back();
+            } else {
+                window.location.href = 'Dangnhap.html';
+            }
+        }
+    </script>
+</body>
+</html>

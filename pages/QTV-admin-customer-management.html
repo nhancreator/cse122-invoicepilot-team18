@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Khách Hàng | InvoicePilot Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar QTV -->
+        <aside class="sidebar">
+            <div class="sidebar-header"><i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;"></i> InvoicePilot</div>
+            <div class="nav-group-title">Admin Workspace</div>
+            <nav class="sidebar-nav">
+                <a href="QTV-admin-customer-management.html" class="nav-link active"><i class='bx bx-group'></i> Quản lý Khách hàng</a>
+                <a href="QTV-admin-invoice-settings.html" class="nav-link"><i class='bx bx-slider-alt'></i> Cấu hình Hóa đơn</a>
+                <a href="QTV-admin-user-management.html" class="nav-link"><i class='bx bx-user-pin'></i> Quản lý Người dùng</a>
+            </nav>
+            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">AD</div>
+                <div>
+                    <div style="font-size: 0.85rem; font-weight: 600;">System Admin</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Quản trị hệ thống</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div>
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px;">Phân hệ Quản trị / Khách hàng</div>
+                    <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Quản Lý Danh Sách Khách Hàng</h1>
+                </div>
+                <button class="btn btn-primary" id="btnOpenAddModal"><i class='bx bx-plus'></i> Thêm Khách Hàng Mới</button>
+            </div>
+
+            <div class="browser-header-bar">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url">app.invoicepilot.vn/admin/customers</div>
+                <div style="font-size: 0.75rem; color: var(--success-color); letter-spacing: 1px; font-weight: 600;">SECURE</div>
+            </div>
+
+            <!-- Bảng danh sách khách hàng -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="data-table" id="customerTable">
+                        <thead>
+                            <tr>
+                                <th>Mã KH</th>
+                                <th>Tên Khách Hàng / Doanh Nghiệp</th>
+                                <th>Mã Số Thuế</th>
+                                <th>Email Liên Hệ</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody">
+                            <!-- Dữ liệu được nạp tự động qua JS từ LocalStorage -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm/Sửa Khách Hàng -->
+    <div id="customerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="card" style="width: 450px; margin: 0; background: #0b0f19; border: 1px solid var(--border-color);">
+            <h3 id="modalTitle" style="margin-top: 0; color: var(--primary-color); margin-bottom: 16px;">Thêm Khách Hàng Mới</h3>
+            <form id="customerForm">
+                <input type="hidden" id="custIndex">
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Mã Khách Hàng</label>
+                    <input type="text" id="custCode" class="btn-outline" style="width: 100%; padding: 8px 12px; border-radius: 8px; color: #fff;" required placeholder="VD: KH-001">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Tên Doanh Nghiệp / Khách Hàng</label>
+                    <input type="text" id="custName" class="btn-outline" style="width: 100%; padding: 8px 12px; border-radius: 8px; color: #fff;" required placeholder="VD: Công ty Cổ phần Techcom">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Mã Số Thuế</label>
+                    <input type="text" id="custTax" class="btn-outline" style="width: 100%; padding: 8px 12px; border-radius: 8px; color: #fff;" required placeholder="VD: 0101234567">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Email Liên Hệ</label>
+                    <input type="email" id="custEmail" class="btn-outline" style="width: 100%; padding: 8px 12px; border-radius: 8px; color: #fff;" required placeholder="contact@techcom.vn">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-outline" id="btnCloseModal" style="padding: 8px 16px;">Hủy</button>
+                    <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">Lưu Dữ Liệu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const STORAGE_KEY = 'invoicepilot_customers';
+            
+            // Dữ liệu mẫu khởi tạo nếu LocalStorage trống
+            const defaultCustomers = [
+                { code: 'KH-001', name: 'Tập đoàn X', tax: '0100123456', email: 'contact@tapdoanx.vn', status: 'Hoạt động' },
+                { code: 'KH-002', name: 'Công ty Cổ phần A', tax: '0309876543', email: 'info@cpa.vn', status: 'Hoạt động' }
+            ];
+
+            function getCustomers() {
+                const data = localStorage.getItem(STORAGE_KEY);
+                return data ? JSON.parse(data) : defaultCustomers;
+            }
+
+            function saveCustomers(customers) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
+            }
+
+            function renderTable() {
+                const customers = getCustomers();
+                const tbody = document.getElementById('customerTableBody');
+                tbody.innerHTML = '';
+
+                customers.forEach((cust, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${cust.code}</strong></td>
+                        <td>${cust.name}</td>
+                        <td>${cust.tax}</td>
+                        <td>${cust.email}</td>
+                        <td><span class="badge badge-success">${cust.status}</span></td>
+                        <td>
+                            <button class="btn btn-outline btn-edit" data-index="${index}" style="padding: 4px 10px; font-size: 0.75rem; margin-right: 6px;">Sửa</button>
+                            <button class="btn btn-outline btn-delete" data-index="${index}" style="padding: 4px 10px; font-size: 0.75rem; color: #f87171; border-color: rgba(239,68,68,0.3);">Xóa</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                attachEventListeners();
+            }
+
+            const modal = document.getElementById('customerModal');
+            document.getElementById('btnOpenAddModal').addEventListener('click', () => {
+                document.getElementById('modalTitle').innerText = 'Thêm Khách Hàng Mới';
+                document.getElementById('custIndex').value = '';
+                document.getElementById('custCode').value = '';
+                document.getElementById('custName').value = '';
+                document.getElementById('custTax').value = '';
+                document.getElementById('custEmail').value = '';
+                modal.style.display = 'flex';
+            });
+
+            document.getElementById('btnCloseModal').addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            document.getElementById('customerForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const index = document.getElementById('custIndex').value;
+                const newCust = {
+                    code: document.getElementById('custCode').value,
+                    name: document.getElementById('custName').value,
+                    tax: document.getElementById('custTax').value,
+                    email: document.getElementById('custEmail').value,
+                    status: 'Hoạt động'
+                };
+
+                let customers = getCustomers();
+                if (index === '') {
+                    customers.push(newCust);
+                } else {
+                    customers[index] = newCust;
+                }
+
+                saveCustomers(customers);
+                modal.style.display = 'none';
+                renderTable();
+            });
+
+            function attachEventListeners() {
+                document.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        const customers = getCustomers();
+                        const cust = customers[index];
+
+                        document.getElementById('modalTitle').innerText = 'Chỉnh Sửa Khách Hàng';
+                        document.getElementById('custIndex').value = index;
+                        document.getElementById('custCode').value = cust.code;
+                        document.getElementById('custName').value = cust.name;
+                        document.getElementById('custTax').value = cust.tax;
+                        document.getElementById('custEmail').value = cust.email;
+                        modal.style.display = 'flex';
+                    });
+                });
+
+                document.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        if (confirm('Bạn có chắc chắn muốn xóa khách hàng này?')) {
+                            let customers = getCustomers();
+                            customers.splice(index, 1);
+                            saveCustomers(customers);
+                            renderTable();
+                        }
+                    });
+                });
+            }
+
+            // Khởi tạo lần đầu
+            if (!localStorage.getItem(STORAGE_KEY)) {
+                saveCustomers(defaultCustomers);
+            }
+            renderTable();
+        });
+    </script>
+    <!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
+    <script src="../js/api.js"></script>
+    <!-- Sau đó mới đến script riêng của từng trang -->
+    <script src="../js/modules/accountant.js"></script>
+</body>
+</html>

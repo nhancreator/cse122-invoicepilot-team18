@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Báo | InvoicePilot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body style="margin: 0; padding: 0; background-color: #060913; color: #fff; font-family: 'Inter', sans-serif;">
+
+    <!-- Cấu trúc Layout flex 2 cột giống profile.html -->
+    <div class="app-layout" style="display: flex; min-height: 100vh;">
+        
+        <!-- SIDEBAR TRÁI -->
+        <aside class="sidebar" style="width: 260px; background: #0b0f19; border-right: 1px solid rgba(255,255,255,0.08); padding: 28px 20px; display: flex; flex-direction: column; flex-shrink: 0;">
+            
+            <!-- Logo -->
+            <div class="logo-brand" style="font-size: 1.3rem; font-weight: 700; color: #6366f1; margin-bottom: 36px; display: flex; align-items: center; gap: 10px;">
+                <i class='bx bx-hexagon' style="font-size: 1.8rem;"></i>
+                <span>InvoicePilot</span>
+            </div>
+
+            <!-- Header Menu -->
+            <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; letter-spacing: 0.08em; margin-bottom: 12px; padding-left: 12px; text-transform: uppercase;">
+                CÁ NHÂN
+            </div>
+
+            <!-- Menu Điều Hướng -->
+            <nav style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+                <!-- Mục Hồ Sơ Cá Nhân -->
+                <a href="profile.html" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; color: #94a3b8; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s;">
+                    <i class='bx bx-user' style="font-size: 1.25rem;"></i>
+                    <span>Hồ sơ cá nhân</span>
+                </a>
+
+                <!-- Mục Thông Báo (Highlight Active) -->
+                <a href="notifications.html" class="nav-item active" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; color: #fff; background: rgba(99, 102, 241, 0.18); border: 1px solid rgba(99, 102, 241, 0.4); text-decoration: none; font-size: 0.9rem; font-weight: 600;">
+                    <i class='bx bx-bell' style="font-size: 1.25rem; color: #818cf8;"></i>
+                    <span>Thông báo</span>
+                </a>
+
+                <!-- Nút Đăng xuất (Đẩy xuống dưới cùng nhờ margin-top: auto) -->
+                <a href="Dangnhap.html" class="nav-item logout" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; color: #ef4444; text-decoration: none; font-size: 0.9rem; font-weight: 500; margin-top: auto;">
+                    <i class='bx bx-log-out' style="font-size: 1.25rem;"></i>
+                    <span>Đăng xuất</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- NỘI DUNG CHÍNH (Phải) -->
+        <main class="main-content" style="flex: 1; padding: 36px 40px; overflow-y: auto;">
+            
+            <div style="font-size: 0.75rem; font-weight: 600; color: #64748b; letter-spacing: 0.08em; margin-bottom: 6px; text-transform: uppercase;">
+                HỆ THỐNG
+            </div>
+            <h1 style="font-size: 1.85rem; font-weight: 700; margin: 0 0 28px 0; color: #fff;">Thông Báo Mới</h1>
+
+            <!-- Khu vực chứa thông báo động gửi từ OTP -->
+            <div id="notificationList" style="margin-bottom: 24px;"></div>
+
+            <!-- Danh sách thông báo mặc định -->
+            <div class="card" style="background: #0b0f19; padding: 24px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                    
+                    <div style="padding: 16px; background: rgba(15, 23, 42, 0.8); border-radius: 8px; border-left: 4px solid #6366f1; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0 0 4px 0; font-size: 0.95rem; color: #fff;">Hóa đơn HD-2026-0099 đã được thanh toán</h4>
+                            <p style="margin: 0; font-size: 0.82rem; color: #94a3b8;">Khách hàng Công ty A đã chuyển khoản thành công 15,000,000 VNĐ</p>
+                        </div>
+                        <span style="font-size: 0.75rem; color: #64748b;">10 phút trước</span>
+                    </div>
+
+                    <div style="padding: 16px; background: rgba(15, 23, 42, 0.8); border-radius: 8px; border-left: 4px solid #f59e0b; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0 0 4px 0; font-size: 0.95rem; color: #fff;">Cảnh báo quá hạn công nợ</h4>
+                            <p style="margin: 0; font-size: 0.82rem; color: #94a3b8;">Hóa đơn HD-2026-0082 đã quá hạn 5 ngày. Vui lòng gửi email nhắc nợ.</p>
+                        </div>
+                        <span style="font-size: 0.75rem; color: #64748b;">2 giờ trước</span>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script xử lý hiển thị OTP -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('notificationList');
+
+        function renderNotifications() {
+            const notifications = JSON.parse(localStorage.getItem('invoicepilot_notifications') || '[]');
+            if (!container) return;
+
+            if (notifications.length === 0) return;
+
+            container.innerHTML = notifications.map(item => {
+                let otpAction = '';
+                if (item.type === 'otp' && item.code) {
+                    otpAction = `
+                        <div style="margin-top: 10px;">
+                            <a href="forgot-password.html?step=verify&code=${item.code}" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; font-size: 0.82rem; font-weight: 600; text-decoration: none; border-radius: 6px; box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);">
+                                <i class='bx bx-key'></i> Sử dụng mã OTP này để đổi mật khẩu
+                            </a>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div style="background: rgba(15,23,42,0.9); border: 1px solid rgba(99, 102, 241, 0.3); border-left: 4px solid #06b6d4; padding: 16px; border-radius: 8px; margin-bottom: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <strong style="color: #fff; font-size: 0.95rem;">${item.title}</strong>
+                            <span style="color: #64748b; font-size: 0.78rem;">${item.time}</span>
+                        </div>
+                        <p style="color: #94a3b8; font-size: 0.88rem; margin: 0; line-height: 1.5;">${item.message}</p>
+                        ${otpAction}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        renderNotifications();
+    });
+    </script>
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+</html>

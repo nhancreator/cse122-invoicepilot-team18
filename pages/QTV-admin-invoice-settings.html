@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cấu Hình Hóa Đơn | InvoicePilot Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header"><i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;"></i> InvoicePilot</div>
+            <div class="nav-group-title">Admin Workspace</div>
+            <nav class="sidebar-nav">
+                <a href="QTV-admin-customer-management.html" class="nav-link"><i class='bx bx-group'></i> Quản lý Khách hàng</a>
+                <a href="QTV-admin-invoice-settings.html" class="nav-link active"><i class='bx bx-slider-alt'></i> Cấu hình Hóa đơn</a>
+                <a href="QTV-admin-user-management.html" class="nav-link"><i class='bx bx-user-pin'></i> Quản lý Người dùng</a>
+            </nav>
+            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">AD</div>
+                <div>
+                    <div style="font-size: 0.85rem; font-weight: 600;">System Admin</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Quản trị hệ thống</div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div>
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px;">Phân hệ Quản trị / Cấu hình</div>
+                    <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Cấu Hình Hệ Thống Hóa Đơn Điện Tử</h1>
+                </div>
+            </div>
+
+            <div class="browser-header-bar">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url">app.invoicepilot.vn/admin/invoice-settings</div>
+                <div style="font-size: 0.75rem; color: var(--success-color); letter-spacing: 1px; font-weight: 600;">SECURE</div>
+            </div>
+
+            <div class="card" style="max-width: 800px;">
+                <form id="settingsForm">
+                    <h3 style="margin-top: 0; color: var(--primary-color); margin-bottom: 16px;">Tham số Hóa đơn & Ngưỡng AI</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 6px;">Ký hiệu mẫu hóa đơn (Prefix)</label>
+                            <input type="text" id="invPrefix" class="btn-outline" style="width: 100%; padding: 10px; border-radius: 8px; color: #fff;" value="1C26TPT">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 6px;">Thuế suất GTGT mặc định (%)</label>
+                            <input type="number" id="taxRate" class="btn-outline" style="width: 100%; padding: 10px; border-radius: 8px; color: #fff;" value="10">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 6px;">Ngưỡng giá trị cảnh báo rủi ro AI (VNĐ)</label>
+                        <input type="number" id="anomalyThreshold" class="btn-outline" style="width: 100%; padding: 10px; border-radius: 8px; color: #fff;" value="100000000">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Các hóa đơn vượt mức này sẽ được module AI-Anomaly tự động đánh dấu kiểm tra đặc biệt.</div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 6px;">Cổng tích hợp Hóa đơn điện tử (E-Invoice Provider)</label>
+                        <select id="providerSelect" class="btn-outline" style="width: 100%; padding: 10px; border-radius: 8px; background: #060913; color: #fff;">
+                            <option value="Viettel S-Invoice">Viettel S-Invoice</option>
+                            <option value="VNPT Invoice">VNPT Invoice</option>
+                            <option value="MISA meInvoice">MISA meInvoice</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button type="submit" class="btn btn-primary" style="padding: 10px 24px;"><i class='bx bx-save'></i> Lưu Cấu Hình</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const SETTINGS_KEY = 'invoicepilot_settings';
+
+            const defaultSettings = {
+                prefix: '1C26TPT',
+                taxRate: 10,
+                threshold: 100000000,
+                provider: 'Viettel S-Invoice'
+            };
+
+            function loadSettings() {
+                const data = localStorage.getItem(SETTINGS_KEY);
+                const settings = data ? JSON.parse(data) : defaultSettings;
+
+                document.getElementById('invPrefix').value = settings.prefix;
+                document.getElementById('taxRate').value = settings.taxRate;
+                document.getElementById('anomalyThreshold').value = settings.threshold;
+                document.getElementById('providerSelect').value = settings.provider;
+            }
+
+            document.getElementById('settingsForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const settings = {
+                    prefix: document.getElementById('invPrefix').value,
+                    taxRate: document.getElementById('taxRate').value,
+                    threshold: document.getElementById('anomalyThreshold').value,
+                    provider: document.getElementById('providerSelect').value
+                };
+
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+                alert('Đã lưu cấu hình hóa đơn thành công vào LocalStorage!');
+            });
+
+            loadSettings();
+        });
+    </script>
+    <!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
+    <script src="../js/api.js"></script>
+    <!-- Sau đó mới đến script riêng của từng trang -->
+    <script src="../js/modules/accountant.js"></script>
+</body>
+</html>

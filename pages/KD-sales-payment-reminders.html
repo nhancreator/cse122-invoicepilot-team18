@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhắc Nợ Thông Minh AI | InvoicePilot Cyber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header"><i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;"></i> InvoicePilot</div>
+            <div class="nav-group-title">Sales Workspace</div>
+            <nav class="sidebar-nav">
+                <a href="KD-sales-customer-balance.html" class="nav-link"><i class='bx bx-wallet'></i> Công nợ Khách hàng</a>
+                <a href="KD-sales-invoice-detail.html" class="nav-link"><i class='bx bx-file-blank'></i> Chi tiết Hóa đơn</a>
+                <a href="KD-sales-payment-reminders.html" class="nav-link active"><i class='bx bx-mail-send'></i> Nhắc nợ thông minh AI</a>
+            </nav>
+            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">KD</div>
+                <div>
+                    <div style="font-size: 0.85rem; font-weight: 600;">InvoicePilot</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Kinh doanh</div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div>
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px;">Phân hệ Kinh doanh / AI-2 Dashboard</div>
+                    <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Soạn Thảo Nhắc Nợ Tự Động Bằng AI</h1>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); text-align: right;">
+                    Hệ thống AI phân tích lịch sử giao dịch và tự động tạo email nhắc nợ phù hợp.
+                </div>
+            </div>
+
+            <div class="browser-header-bar">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url">app.invoicepilot.vn/sales/ai-payment-reminders</div>
+                <div style="font-size: 0.75rem; color: var(--success-color); letter-spacing: 1px; font-weight: 600;">SECURE</div>
+            </div>
+
+            <!-- Mini Dashboard Thống kê AI-2 Hiệu suất nhắc nợ -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                <div style="background: rgba(14, 21, 38, 0.7); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Đã gửi qua AI-2</div>
+                    <div style="font-size: 1.4rem; font-weight: bold; color: #fff; margin-top: 4px;">42 email</div>
+                    <div style="font-size: 0.75rem; color: var(--success-color); margin-top: 4px;">Tỷ lệ phản hồi 85%</div>
+                </div>
+                <div style="background: rgba(14, 21, 38, 0.7); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Thu hồi thành công</div>
+                    <div style="font-size: 1.4rem; font-weight: bold; color: var(--primary-color); margin-top: 4px;">185.000.000 ₫</div>
+                    <div style="font-size: 0.75rem; color: var(--success-color); margin-top: 4px;">+12% so với tháng trước</div>
+                </div>
+                <div style="background: rgba(14, 21, 38, 0.7); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Độ tin cậy trung bình</div>
+                    <div style="font-size: 1.4rem; font-weight: bold; color: var(--success-color); margin-top: 4px;">97.4%</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Mô hình NLP v2.4</div>
+                </div>
+            </div>
+
+            <div class="card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <!-- Cột nhập liệu -->
+                <div>
+                    <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 1.1rem; color: var(--primary-color);">1. Cấu hình nhắc nợ</h3>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Chọn Hóa đơn / Khách hàng <span style="color: var(--primary-color);">*</span></label>
+                        <select id="reminderTarget" class="btn-outline" style="width: 100%; padding: 12px; border-radius: 8px; background: #060913; color: #fff;">
+                            <option value="INV-001">INV-001 - Công ty Cổ phần A (15.000.000 VNĐ)</option>
+                            <option value="INV-008">INV-008 - Tập đoàn X (30.000.000 VNĐ - Quá hạn)</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Mức độ giọng văn (Tone of Voice)</label>
+                        <select id="reminderTone" class="btn-outline" style="width: 100%; padding: 12px; border-radius: 8px; background: #060913; color: #fff;">
+                            <option value="friendly">Nhã nhặn, nhắc nhở nhẹ nhàng (Khách VIP/Thân thiết)</option>
+                            <option value="formal">Trang trọng, tiêu chuẩn kế toán</option>
+                            <option value="urgent">Khẩn cấp, cảnh báo quá hạn nghiêm ngặt</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Ghi chú bổ sung cho AI (Tùy chọn)</label>
+                        <textarea id="reminderNote" class="btn-outline" placeholder="Ví dụ: Đã gọi điện nhắc nhở ngày hôm qua nhưng chưa phản hồi..." style="width: 100%; height: 90px; padding: 12px; border-radius: 8px; background: #060913; color: #fff; box-sizing: border-box; resize: none;"></textarea>
+                    </div>
+
+                    <button id="btnGenerateAI" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class='bx bx-bot'></i> Tạo Email Nhắc Nợ Bằng AI-2</button>
+                </div>
+
+                <!-- Cột kết quả AI / Trạng thái xử lý -->
+                <div style="background: rgba(6, 9, 19, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--primary-color); text-transform: uppercase;">AI-2 Engine Output</div>
+                                <h3 style="margin: 2px 0 0 0; font-size: 1.1rem;">Kết quả soạn thảo tự động</h3>
+                            </div>
+                            <span id="aiStatusBadge" class="badge badge-warning">Đang chờ lệnh</span>
+                        </div>
+
+                        <!-- Vùng nội dung trạng thái -->
+                        <div id="aiContentArea">
+                            <div style="text-align: center; color: var(--text-secondary); padding: 60px 20px;">
+                                <i class='bx bx-bot' style="font-size: 3rem; margin-bottom: 12px; color: var(--primary-color); opacity: 0.6;"></i>
+                                <p style="font-size: 0.9rem; margin: 0;">Vui lòng cấu hình và nhấn nút <strong>"Tạo Email Nhắc Nợ Bằng AI-2"</strong> để hệ thống phân tích.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Khu vực thao tác kết quả -->
+                    <div id="aiActionFooter" style="display: none; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                            <button id="btnReject" class="btn btn-outline" style="font-size: 0.85rem; color: #f87171; border-color: rgba(239,68,68,0.4);"><i class='bx bx-x'></i> Từ chối</button>
+                            <button id="btnEdit" class="btn btn-outline" style="font-size: 0.85rem;"><i class='bx bx-edit'></i> Sửa thủ công</button>
+                            <button id="btnAccept" class="btn btn-primary" style="font-size: 0.85rem;"><i class='bx bx-check'></i> Chấp nhận & Gửi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nhúng tệp JavaScript xử lý AI-2 -->
+    <script src="../js/modules/ai-reminder.js"></script>
+    <!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
+    <script src="../js/api.js"></script>
+    <!-- Sau đó mới đến script riêng của từng trang -->
+    <script src="../js/modules/accountant.js"></script>
+</body>
+</html>

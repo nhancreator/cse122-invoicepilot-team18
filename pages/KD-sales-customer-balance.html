@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theo Dõi Công Nợ Khách Hàng | InvoicePilot Cyber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Kinh Doanh -->
+        <aside class="sidebar">
+            <div class="sidebar-header"><i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;"></i> InvoicePilot</div>
+            <div class="nav-group-title">Sales Workspace</div>
+            <nav class="sidebar-nav">
+                <a href="KD-sales-customer-balance.html" class="nav-link active"><i class='bx bx-wallet'></i> Công nợ Khách hàng</a>
+                <a href="KD-sales-invoice-detail.html" class="nav-link"><i class='bx bx-file-blank'></i> Chi tiết Hóa đơn</a>
+                <a href="KD-sales-payment-reminders.html" class="nav-link"><i class='bx bx-mail-send'></i> Nhắc nợ thông minh AI</a>
+            </nav>
+            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">KD</div>
+                <div>
+                    <div style="font-size: 0.85rem; font-weight: 600;">InvoicePilot</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Kinh doanh</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div>
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px;">Phân hệ Kinh doanh / Sales Dashboard</div>
+                    <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Theo Dõi Công Nợ Khách Hàng</h1>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); text-align: right;">
+                    Quản lý số dư công nợ, hạn mức tín dụng và lịch sử thanh toán.
+                </div>
+            </div>
+
+            <!-- Khung trình duyệt giả lập -->
+            <div class="browser-header-bar">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url">app.invoicepilot.vn/sales/customer-balance</div>
+                <div style="font-size: 0.75rem; color: var(--success-color); letter-spacing: 1px; font-weight: 600;">SECURE</div>
+            </div>
+
+            <div class="card">
+                <!-- Khu vực Biểu đồ Tổng quan Cơ cấu Công nợ (Dashboard Widget) -->
+                <div style="background: rgba(6, 9, 19, 0.5); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Biểu đồ phân bổ cơ cấu công nợ theo danh mục</span>
+                        <span style="font-size: 0.75rem; color: var(--primary-color);">Tổng dư nợ: 45.000.000 VNĐ</span>
+                    </div>
+                    <div style="display: flex; height: 10px; width: 100%; background: #1e293b; border-radius: 99px; overflow: hidden; gap: 2px; margin-bottom: 12px;">
+                        <div style="width: 35%; background: var(--warning-color);" title="Công ty CP A: 15tr"></div>
+                        <div style="width: 50%; background: var(--danger-color);" title="Tập đoàn X: 30tr"></div>
+                        <div style="width: 15%; background: var(--success-color);" title="Khác: 0tr"></div>
+                    </div>
+                    <div style="display: flex; gap: 20px; font-size: 0.75rem; color: var(--text-secondary);">
+                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--warning-color); border-radius: 50%;"></span> Đang hạn (35%)</span>
+                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--danger-color); border-radius: 50%;"></span> Quá hạn (50%)</span>
+                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--success-color); border-radius: 50%;"></span> Đã thu (15%)</span>
+                    </div>
+                </div>
+
+                <!-- Bộ lọc -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem;">Tất cả</button>
+                        <button class="btn btn-outline" style="padding: 8px 16px; font-size: 0.85rem;">Còn nợ quá hạn</button>
+                        <button class="btn btn-outline" style="padding: 8px 16px; font-size: 0.85rem;">Đã thanh toán đủ</button>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="filterCustomer" class="btn-outline" placeholder="Tìm tên khách hàng..." style="padding: 8px 14px; border-radius: 8px; color: #fff;">
+                        <button class="btn btn-primary" id="btnFilter" style="padding: 8px 16px; font-size: 0.85rem;"><i class='bx bx-filter-alt'></i> Lọc dữ liệu</button>
+                    </div>
+                </div>
+
+                <!-- Bảng công nợ -->
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mã KH</th>
+                                <th>Tên Khách Hàng</th>
+                                <th>Tổng Mua (VNĐ)</th>
+                                <th>Đã Thanh Toán (VNĐ)</th>
+                                <th>Dư Nợ Còn Lại</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>KH-101</strong></td>
+                                <td>Công ty Cổ phần A</td>
+                                <td>150.000.000</td>
+                                <td>135.000.000</td>
+                                <td style="color: var(--warning-color); font-weight: 600;">15.000.000 VNĐ</td>
+                                <td><span class="badge badge-warning">Đang nợ đến hạn</span></td>
+                                <td><a href="KD-sales-invoice-detail.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Xem chi tiết</a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>KH-102</strong></td>
+                                <td>Công ty TNHH B</td>
+                                <td>200.000.000</td>
+                                <td>200.000.000</td>
+                                <td style="color: var(--success-color); font-weight: 600;">0 VNĐ</td>
+                                <td><span class="badge badge-success">Hoàn thành</span></td>
+                                <td><a href="KD-sales-invoice-detail.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Xem chi tiết</a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>KH-105</strong></td>
+                                <td>Tập đoàn X</td>
+                                <td>80.000.000</td>
+                                <td>50.000.000</td>
+                                <td style="color: var(--danger-color); font-weight: 600;">30.000.000 VNĐ</td>
+                                <td><span class="badge" style="background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3);">Quá hạn 15 ngày</span></td>
+                                <td><a href="KD-sales-payment-reminders.html" style="color: var(--accent-cyan); text-decoration: none; font-weight: 500;">Nhắc nợ AI</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('filterCustomer');
+        const btnFilter = document.getElementById('btnFilter');
+        const tableRows = document.querySelectorAll('.data-table tbody tr');
+        
+        // Lấy danh sách 3 nút lọc nhanh phía trên bảng
+        const filterActionButtons = document.querySelectorAll('.card div[style*="display: flex"] .btn');
+        let activeStatus = 'all';
+
+        // 1. Xử lý sự kiện click chọn nhóm trạng thái (Tất cả / Quá hạn / Đã thanh toán)
+        filterActionButtons.forEach((btn, index) => {
+            // Chỉ áp dụng cho 3 nút lọc trạng thái đầu tiên
+            if (index < 3) {
+                btn.addEventListener('click', () => {
+                    // Cập nhật giao diện active cho nút
+                    filterActionButtons.forEach((b, i) => {
+                        if (i < 3) {
+                            b.className = 'btn btn-outline';
+                        }
+                    });
+                    btn.className = 'btn btn-primary';
+
+                    if (index === 0) activeStatus = 'all';
+                    else if (index === 1) activeStatus = 'overdue';
+                    else if (index === 2) activeStatus = 'completed';
+
+                    executeFiltering();
+                });
+            }
+        });
+
+        // 2. Xử lý sự kiện khi bấm nút "Lọc dữ liệu" hoặc gõ phím Enter ở ô tìm kiếm
+        if (btnFilter) {
+            btnFilter.addEventListener('click', () => executeFiltering());
+        }
+        if (searchInput) {
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') executeFiltering();
+            });
+        }
+
+        // 3. Hàm lọc dữ liệu thực tế trên bảng
+        function executeFiltering() {
+            const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+            tableRows.forEach(row => {
+                const customerName = row.cells[1].textContent.toLowerCase();
+                const statusBadgeText = row.cells[5].textContent.toLowerCase();
+
+                let matchesStatus = true;
+                if (activeStatus === 'overdue') {
+                    matchesStatus = statusBadgeText.includes('quá hạn');
+                } else if (activeStatus === 'completed') {
+                    matchesStatus = statusBadgeText.includes('hoàn thành');
+                }
+
+                const matchesKeyword = customerName.includes(keyword);
+
+                // Hiển thị hoặc ẩn dòng dữ liệu phù hợp
+                if (matchesStatus && matchesKeyword) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+<!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
+<script src="../js/api.js"></script>
+<!-- Sau đó mới đến script riêng của từng trang -->
+<script src="../js/modules/accountant.js"></script>
+</body>
+</html>

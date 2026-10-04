@@ -1,0 +1,45 @@
+{
+  "customers": [
+    { "id": "CUST-001", "name": "Công ty TNHH Alpha", "email": "contact@alpha.vn", "phone": "0901111222", "address": "Quận 1, TP. HCM", "createdAt": "2026-09-01T10:00:00Z" },
+    { "id": "CUST-002", "name": "Cửa hàng Tiện lợi Beta", "email": "info@beta.vn", "phone": "0902222333", "address": "Quận Đống Đa, Hà Nội", "createdAt": "2026-09-05T14:30:00Z" },
+    { "id": "CUST-003", "name": "Doanh nghiệp Tư nhân Gamma", "email": "admin@gamma.com", "phone": "0903333444", "address": "Hải Châu, Đà Nẵng", "createdAt": "2026-09-10T09:15:00Z" },
+    { "id": "CUST-004", "name": "Chuỗi siêu thị Delta", "email": "purchasing@delta.vn", "phone": "0904444555", "address": "Ninh Kiều, Cần Thơ", "createdAt": "2026-09-15T16:45:00Z" },
+    { "id": "CUST-005", "name": "Công ty Cổ phần Epsilon", "email": "hello@epsilon.com", "phone": "0905555666", "address": "Thành phố Bắc Ninh, Bắc Ninh", "createdAt": "2026-09-20T08:20:00Z" }
+  ],
+  "invoices": [
+    { "id": "INV-1001", "customerId": "CUST-001", "date": "2026-09-01", "dueDate": "2026-09-15", "status": "overdue", "totalAmount": 15000000, "notes": "Hóa đơn thiết bị văn phòng" },
+    { "id": "INV-1002", "customerId": "CUST-002", "date": "2026-09-20", "dueDate": "2026-10-05", "status": "pending", "totalAmount": 8500000, "notes": "Phí dịch vụ bảo trì tháng 9" },
+    { "id": "INV-1003", "customerId": "CUST-003", "date": "2026-08-15", "dueDate": "2026-08-30", "status": "paid", "totalAmount": 24000000, "notes": "Cung cấp phần mềm quản lý" },
+    { "id": "INV-1004", "customerId": "CUST-004", "date": "2026-09-25", "dueDate": "2026-10-10", "status": "pending", "totalAmount": 5000000, "notes": "Vật tư tiêu hao" },
+    { "id": "INV-1005", "customerId": "CUST-005", "date": "2026-07-10", "dueDate": "2026-07-25", "status": "overdue", "totalAmount": 32000000, "notes": "Lắp đặt hệ thống mạng" }
+  ],
+  "invoiceItems": [
+    { "id": "ITEM-001", "invoiceId": "INV-1001", "description": "Máy in Laser", "quantity": 2, "unitPrice": 5000000, "total": 10000000 },
+    { "id": "ITEM-002", "invoiceId": "INV-1001", "description": "Mực in", "quantity": 5, "unitPrice": 1000000, "total": 5000000 },
+    { "id": "ITEM-003", "invoiceId": "INV-1002", "description": "Dịch vụ IT Support", "quantity": 1, "unitPrice": 8500000, "total": 8500000 },
+    { "id": "ITEM-004", "invoiceId": "INV-1003", "description": "Bản quyền phần mềm 1 năm", "quantity": 1, "unitPrice": 24000000, "total": 24000000 },
+    { "id": "ITEM-005", "invoiceId": "INV-1004", "description": "Giấy in A4", "quantity": 50, "unitPrice": 100000, "total": 5000000 },
+    { "id": "ITEM-006", "invoiceId": "INV-1005", "description": "Switch mạng 24 port", "quantity": 2, "unitPrice": 16000000, "total": 32000000 }
+  ],
+  "payments": [
+    { "id": "PAY-001", "invoiceId": "INV-1003", "customerId": "CUST-003", "amount": 24000000, "date": "2026-08-28", "method": "Bank Transfer" },
+    { "id": "PAY-002", "invoiceId": "INV-1001", "customerId": "CUST-001", "amount": 5000000, "date": "2026-09-10", "method": "Cash" },
+    { "id": "PAY-003", "invoiceId": "INV-1005", "customerId": "CUST-005", "amount": 10000000, "date": "2026-07-20", "method": "Bank Transfer" },
+    { "id": "PAY-004", "invoiceId": "INV-1002", "customerId": "CUST-002", "amount": 0, "date": "", "method": "" },
+    { "id": "PAY-005", "invoiceId": "INV-1004", "customerId": "CUST-004", "amount": 0, "date": "", "method": "" }
+  ],
+  "reminders": [
+    { "id": "REM-001", "invoiceId": "INV-1001", "customerId": "CUST-001", "dateSent": "2026-09-16T08:00:00Z", "status": "sent", "message": "Kính gửi quý khách, hóa đơn INV-1001 đã quá hạn thanh toán." },
+    { "id": "REM-002", "invoiceId": "INV-1005", "customerId": "CUST-005", "dateSent": "2026-08-01T08:00:00Z", "status": "sent", "message": "Kính gửi quý khách, hóa đơn INV-1005 đã quá hạn thanh toán. Vui lòng xử lý sớm." },
+    { "id": "REM-003", "invoiceId": "INV-1002", "customerId": "CUST-002", "dateSent": "2026-10-01T08:00:00Z", "status": "draft", "message": "Nhắc nhở nhẹ: Hóa đơn INV-1002 sắp đến hạn." },
+    { "id": "REM-004", "invoiceId": "INV-1004", "customerId": "CUST-004", "dateSent": "2026-10-08T08:00:00Z", "status": "draft", "message": "Nhắc nhở nhẹ: Hóa đơn INV-1004 sắp đến hạn." },
+    { "id": "REM-005", "invoiceId": "INV-1005", "customerId": "CUST-005", "dateSent": "2026-08-15T08:00:00Z", "status": "failed", "message": "Cảnh báo nợ đọng: INV-1005." }
+  ],
+  "settings": [
+    { "id": "SET-001", "key": "companyName", "value": "InvoicePilot JSC", "category": "General" },
+    { "id": "SET-002", "key": "currency", "value": "VND", "category": "General" },
+    { "id": "SET-003", "key": "taxRate", "value": "10", "category": "Billing" },
+    { "id": "SET-004", "key": "reminderDays", "value": "3,7,14", "category": "Notifications" },
+    { "id": "SET-005", "key": "theme", "value": "light", "category": "Appearance" }
+  ]
+}

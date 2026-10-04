@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Người Dùng | InvoicePilot Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;"></i> InvoicePilot
+            </div>
+            <div class="nav-group-title">Admin Workspace</div>
+            <nav class="sidebar-nav">
+                <a href="QTV-admin-customer-management.html" class="nav-link">
+                    <i class='bx bx-group'></i> Quản lý Khách hàng
+                </a>
+                <a href="QTV-admin-invoice-settings.html" class="nav-link">
+                    <i class='bx bx-slider-alt'></i> Cấu hình Hóa đơn
+                </a>
+                <a href="QTV-admin-user-management.html" class="nav-link active">
+                    <i class='bx bx-user-pin'></i> Quản lý Người dùng
+                </a>
+            </nav>
+            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;">AD</div>
+                <div>
+                    <div style="font-size: 0.85rem; font-weight: 600;" id="headerUserName">System Admin</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);" id="headerUserRole">Quản trị hệ thống</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div>
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px;">Phân hệ Quản trị / Phân quyền</div>
+                    <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Quản Lý Người Dùng & Phân Quyền</h1>
+                </div>
+                <button class="btn btn-primary" id="btnOpenUserModal"><i class='bx bx-user-plus'></i> Thêm Tài Khoản</button>
+            </div>
+
+            <!-- Browser URL Bar Simulation -->
+            <div class="browser-header-bar">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url">app.invoicepilot.vn/admin/users</div>
+                <div style="font-size: 0.75rem; color: var(--success-color); letter-spacing: 1px; font-weight: 600;">SECURE</div>
+            </div>
+
+            <!-- User Data Table -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Họ Tên</th>
+                                <th>Tên Đăng Nhập</th>
+                                <th>Vai Trò (Role)</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                            <!-- Nạp tự động từ LocalStorage -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm/Sửa Người dùng -->
+    <div id="userModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="card" style="width: 420px; margin: 0; background: #0b0f19; border: 1px solid var(--border-color);">
+            <h3 id="userModalTitle" style="margin-top: 0; color: var(--primary-color); margin-bottom: 16px;">Thêm Tài Khoản Mới</h3>
+            <form id="userForm">
+                <input type="hidden" id="userIndex">
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Họ và Tên</label>
+                    <input type="text" id="fullName" class="btn-outline" style="width: 100%; padding: 8px 12px; border-radius: 8px; color: #fff;" required placeholder="VD: Nguyễn Văn B">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Tên Đăng Nhập (Email/Username)</label>
+                    <input type="text" id="username" class="btn-outline" style="width: 100%; padding: 8px 12px; border-radius: 8px; color: #fff;" required placeholder="nhanvienB">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Vai Trò Hệ Thống</label>
+                    <select id="userRole" class="btn-outline" style="width: 100%; padding: 8px 12px; border-radius: 8px; background: #060913; color: #fff;">
+                        <option value="Quản trị viên (Admin)">Quản trị viên (Admin)</option>
+                        <option value="Quản lý (Manager)">Quản lý (Manager)</option>
+                        <option value="Kế toán (Accountant)">Kế toán (Accountant)</option>
+                        <option value="Kinh doanh(Sale)">Kinh doanh(Sale)</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-outline" id="btnCloseUserModal" style="padding: 8px 16px;">Hủy</button>
+                    <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">Lưu Tài Khoản</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Xử Lý Nghiệp Vụ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const USERS_KEY = 'invoicepilot_users';
+            
+            // Dữ liệu mặc định được đồng bộ chuẩn theo ảnh chụp thực tế
+            const defaultUsers = [
+                { name: 'Đỗ Duy Nhân', username: 'duynhan', role: 'Kế toán (Accountant)', status: 'Hoạt động' },
+                { name: 'Đàm Minh Quân', username: 'admin', role: 'Quản trị viên (Admin)', status: 'Hoạt động' },
+                { name: 'Đàm Minh Quân', username: 'minhquan', role: 'Kinh doanh(Sale)', status: 'Hoạt động' },
+                { name: 'Trần Khôi Nguyên', username: 'khoinguyen', role: 'Quản lý (Manager)', status: 'Hoạt động' }
+            ];
+
+            function getUsers() {
+                const data = localStorage.getItem(USERS_KEY);
+                return data ? JSON.parse(data) : defaultUsers;
+            }
+
+            function saveUsers(users) {
+                localStorage.setItem(USERS_KEY, JSON.stringify(users));
+            }
+
+            function renderUserTable() {
+                const users = getUsers();
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = '';
+
+                users.forEach((u, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${u.name}</strong></td>
+                        <td>${u.username}</td>
+                        <td><span class="badge" style="background: rgba(139,92,246,0.15); color: #a78bfa;">${u.role}</span></td>
+                        <td><span class="badge badge-success">${u.status}</span></td>
+                        <td>
+                            <button class="btn btn-outline btn-edit-user" data-index="${index}" style="padding: 4px 10px; font-size: 0.75rem; margin-right: 6px;">Sửa</button>
+                            <button class="btn btn-outline btn-delete-user" data-index="${index}" style="padding: 4px 10px; font-size: 0.75rem; color: #f87171; border-color: rgba(239,68,68,0.3);">Xóa</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                attachUserEvents();
+            }
+
+            const modal = document.getElementById('userModal');
+            document.getElementById('btnOpenUserModal').addEventListener('click', () => {
+                document.getElementById('userModalTitle').innerText = 'Thêm Tài Khoản Mới';
+                document.getElementById('userIndex').value = '';
+                document.getElementById('fullName').value = '';
+                document.getElementById('username').value = '';
+                modal.style.display = 'flex';
+            });
+
+            document.getElementById('btnCloseUserModal').addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            document.getElementById('userForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const index = document.getElementById('userIndex').value;
+                const newUser = {
+                    name: document.getElementById('fullName').value,
+                    username: document.getElementById('username').value,
+                    role: document.getElementById('userRole').value,
+                    status: 'Hoạt động'
+                };
+
+                let users = getUsers();
+                if (index === '') {
+                    users.push(newUser);
+                } else {
+                    users[index] = newUser;
+                }
+
+                saveUsers(users);
+                modal.style.display = 'none';
+                renderUserTable();
+            });
+
+            function attachUserEvents() {
+                document.querySelectorAll('.btn-edit-user').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        const users = getUsers();
+                        const u = users[index];
+
+                        document.getElementById('userModalTitle').innerText = 'Chỉnh Sửa Tài Khoản';
+                        document.getElementById('userIndex').value = index;
+                        document.getElementById('fullName').value = u.name;
+                        document.getElementById('username').value = u.username;
+                        document.getElementById('userRole').value = u.role;
+                        modal.style.display = 'flex';
+                    });
+                });
+
+                document.querySelectorAll('.btn-delete-user').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        if (confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
+                            let users = getUsers();
+                            users.splice(index, 1);
+                            saveUsers(users);
+                            renderUserTable();
+                        }
+                    });
+                });
+            }
+
+            if (!localStorage.getItem(USERS_KEY)) {
+                saveUsers(defaultUsers);
+            }
+            renderUserTable();
+        });
+    </script>
+    
+    <!-- Nhúng các script toàn cục của hệ thống -->
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+</html>

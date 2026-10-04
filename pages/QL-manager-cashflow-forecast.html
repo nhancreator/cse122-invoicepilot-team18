@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dự Báo Dòng Tiền AI-3 | InvoicePilot Cyber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header"><i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;"></i> InvoicePilot</div>
+            <div class="nav-group-title">Management Workspace</div>
+            <nav class="sidebar-nav">
+                <a href="QL-manager-receivable-dashboard.html" class="nav-link"><i class='bx bx-pie-chart-alt-2'></i> Tổng quan Công nợ</a>
+                <a href="QL-manager-overdue-invoices.html" class="nav-link"><i class='bx bx-error-circle'></i> Hóa đơn Quá hạn</a>
+                <a href="QL-manager-cashflow-forecast.html" class="nav-link active"><i class='bx bx-trending-up'></i> Dự báo Dòng tiền AI-3</a>
+            </nav>
+            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; background: #8b5cf6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">QL</div>
+                <div>
+                    <div style="font-size: 0.85rem; font-weight: 600;">InvoicePilot</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Quản lý</div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div>
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px;">Phân hệ Quản lý / AI-3 Forecasting Engine</div>
+                    <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Dự Báo Dòng Tiền Thông Minh Bằng AI</h1>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <select id="forecastPeriod" class="btn-outline" style="padding: 8px 12px; border-radius: 8px; background: #060913; color: #fff; font-size: 0.85rem;">
+                        <option value="30">Dự báo 30 ngày tới</option>
+                        <option value="90">Dự báo 90 ngày tới</option>
+                        <option value="180">Dự báo 6 tháng tới</option>
+                    </select>
+                    <button class="btn btn-primary" id="btnRunForecast"><i class='bx bx-bot'></i> Chạy Mô Hình AI-3</button>
+                </div>
+            </div>
+
+            <div class="browser-header-bar">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url">app.invoicepilot.vn/manager/cashflow-forecast</div>
+                <div style="font-size: 0.75rem; color: var(--success-color); letter-spacing: 1px; font-weight: 600;">SECURE</div>
+            </div>
+
+            <div class="card" style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                <!-- Biểu đồ & Bảng dự báo dòng tiền -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary-color);">Biểu đồ mô phỏng dòng tiền vào / ra</h3>
+                        <span style="font-size: 0.75rem; color: var(--success-color);">Độ chính xác mô hình: 94.8%</span>
+                    </div>
+
+                    <!-- Thanh progress dòng tiền trực quan -->
+                    <div style="background: rgba(6, 9, 19, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px;">
+                            <span style="color: var(--text-secondary);">Dòng tiền dự kiến thu (Inflow): <strong style="color: var(--success-color);" id="inflowValue">350.000.000 ₫</strong></span>
+                            <span style="color: var(--text-secondary);">Dự kiến chi (Outflow): <strong style="color: #f87171;" id="outflowValue">120.000.000 ₫</strong></span>
+                        </div>
+                        <div style="width: 100%; height: 12px; background: #1e293b; border-radius: 99px; overflow: hidden; display: flex; gap: 2px; margin-bottom: 12px;">
+                            <div style="width: 74%; background: var(--success-color);" title="Thu nhập dự kiến"></div>
+                            <div style="width: 26%; background: #f87171;" title="Chi phí dự kiến"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
+                            <span>Thặng dư ròng dự kiến: <strong style="color: var(--primary-color);" id="netSurplus">+230.000.000 ₫</strong></span>
+                            <span>Trạng thái: An toàn tài chính</span>
+                        </div>
+                    </div>
+
+                    <h4 style="margin-bottom: 12px; font-size: 1rem;">Chi tiết dòng tiền theo kỳ</h4>
+                    <table class="data-table" id="forecastTable">
+                        <thead>
+                            <tr>
+                                <th>Kỳ Dự Báo</th>
+                                <th>Dự Kiến Thu (VNĐ)</th>
+                                <th>Dự Kiến Chi (VNĐ)</th>
+                                <th>Chênh Lệch Ròng</th>
+                                <th>Mức Độ Rủi Ro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Tháng 10/2026</strong></td>
+                                <td style="color: var(--success-color); font-weight: 600;">150.000.000</td>
+                                <td style="color: #f87171;">50.000.000</td>
+                                <td style="font-weight: 600; color: var(--primary-color);">+100.000.000</td>
+                                <td><span class="badge badge-success">Thấp</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tháng 11/2026</strong></td>
+                                <td style="color: var(--success-color); font-weight: 600;">120.000.000</td>
+                                <td style="color: #f87171;">45.000.000</td>
+                                <td style="font-weight: 600; color: var(--primary-color);">+75.000.000</td>
+                                <td><span class="badge badge-success">Thấp</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tháng 12/2026</strong></td>
+                                <td style="color: var(--success-color); font-weight: 600;">80.000.000</td>
+                                <td style="color: #f87171;">25.000.000</td>
+                                <td style="font-weight: 600; color: var(--primary-color);">+55.000.000</td>
+                                <td><span class="badge badge-warning">Trung bình</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cột Phân tích AI-3 Summary Box -->
+                <div style="background: rgba(6, 9, 19, 0.7); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <i class='bx bx-bot' style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                            <h4 style="margin: 0; font-size: 1.1rem;">AI-3 Executive Summary</h4>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--primary-color); margin-bottom: 16px; text-transform: uppercase;">Mô hình phân tích thông minh</div>
+
+                        <div id="aiSummaryContent" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
+                            Dựa trên dữ liệu thu hồi công nợ quá khứ và các hóa đơn sắp đáo hạn, dòng tiền quý này duy trì trạng thái thặng dư ổn định. Tuy nhiên, cần lưu ý khoản nợ 30 triệu từ <strong>Tập đoàn X</strong> có thể ảnh hưởng dòng tiền cuối tháng nếu không được đôn đốc thu hồi kịp thời.
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+                        <button class="btn btn-primary" id="btnExportReport" style="width: 100%; justify-content: center;"><i class='bx bx-download'></i> Xuất Báo Cáo AI (PDF)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
+    <script src="../js/api.js"></script>
+    <!-- Sau đó mới đến script riêng của từng trang -->
+    <script src="../js/modules/accountant.js"></script>
+    <script src="../js/modules/ai-cashflow.js"></script>
+</body>
+</html>
