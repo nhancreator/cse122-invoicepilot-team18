@@ -3,96 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đối Chiếu Công Nợ | InvoicePilot Cyber Accounting</title>
+    <title>Đối Chiếu Công Nợ & Khớp Nối Giao Dịch | InvoicePilot Cyber Accounting</title>
+    <!-- Preconnect & Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
+
     <div class="app-container">
-        <aside class="sidebar">
-            <div class="sidebar-header"><i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;"></i> InvoicePilot</div>
-            <div class="nav-group-title">Accounting Workspace</div>
-            <nav class="sidebar-nav">
-                <a href="KT-accountant-invoice-list.html" class="nav-link"><i class='bx bx-file'></i> Quản lý Hóa đơn</a>
-                <a href="KT-accountant-invoice-form.html" class="nav-link"><i class='bx bx-plus-circle'></i> Tạo Hóa đơn mới</a>
-                <a href="KT-accountant-reconciliation.html" class="nav-link active"><i class='bx bx-transfer-alt'></i> Đối chiếu Công nợ</a>
+        <!-- Sidebar Kế toán (Navigation & Role Indicator) -->
+        <aside class="sidebar" aria-label="Điều hướng hệ thống">
+            <div class="sidebar-header">
+                <i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;" aria-hidden="true"></i>
+                <span>InvoicePilot</span>
+            </div>
+            
+            <div class="nav-group-title" id="nav-accounting-title">ACCOUNTING WORKSPACE</div>
+            
+            <nav class="sidebar-nav" aria-labelledby="nav-accounting-title">
+                <a href="KT-accountant-invoice-list.html" class="nav-link">
+                    <i class='bx bx-file' aria-hidden="true"></i> <span>Quản lý Hóa đơn</span>
+                </a>
+                <a href="KT-accountant-invoice-form.html" class="nav-link">
+                    <i class='bx bx-plus-circle' aria-hidden="true"></i> <span>Tạo Hóa đơn mới</span>
+                </a>
+                <a href="KT-accountant-reconciliation.html" class="nav-link active" aria-current="page">
+                    <i class='bx bx-transfer-alt' aria-hidden="true"></i> <span>Đối chiếu Công nợ</span>
+                </a>
             </nav>
-            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; display: flex; align-items: center; gap: 10px;">
-                <div style="width: 32px; height: 32px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">KT</div>
-                <div>
-                    <div style="font-size: 0.85rem; font-weight: 600;">InvoicePilot</div>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Kế toán</div>
+
+            <!-- User Badge & Role -->
+             <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 32px; height: 32px; background: #10b981; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;" aria-hidden="true">KT</div>
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 600; color: #ffffff;">InvoicePilot</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Kế toán viên (KT)</div>
+                    </div>
                 </div>
+                <a href="Trangchu.html" title="Trở về Trang chủ" style="color: var(--primary-color); display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 6px; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); text-decoration: none; transition: all 0.2s;">
+                    <i class='bx bx-home-alt' style="font-size: 1.2rem;"></i>
+                </a>
             </div>
         </aside>
 
+        <!-- Main Content Area -->
         <div class="main-wrapper">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <!-- Header Page -->
+            <header class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
                 <div>
-                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px;">Giao diện 03 / Accounting</div>
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px; font-weight: 600;">GIAO DIỆN 03 / ACCOUNTING WORKSPACE</div>
                     <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Đối Chiếu & Khớp Nối Giao Dịch</h1>
                 </div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); text-align: right;">
-                    Khớp sao kê ngân hàng với hóa đơn chưa thanh toán một cách nhanh chóng.
+                <div style="font-size: 0.85rem; color: var(--text-secondary); text-align: right; max-width: 340px;">
+                    Tự động phân tích sao kê ngân hàng và gợi ý ghép nối hóa đơn bằng trợ lý AI-2.
                 </div>
-            </div>
+            </header>
 
-            <div class="browser-header-bar">
+            <!-- Khung trình duyệt giả lập (Cyber Bar) -->
+            <div class="browser-header-bar" aria-hidden="true">
                 <div class="browser-dots"><span></span><span></span><span></span></div>
                 <div class="browser-url">app.invoicepilot.vn/accounting/reconciliation</div>
-                <div style="font-size: 0.75rem; color: var(--success-color); letter-spacing: 1px; font-weight: 600;">SECURE</div>
+                <div style="font-size: 0.75rem; color: var(--success-color); letter-spacing: 1px; font-weight: 600;">SECURE WORKSPACE</div>
             </div>
 
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <!-- Main Interactive Card -->
+            <main id="main-content" class="card">
+                <!-- Top Toolbar & Action Controls -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
                     <div>
-                        <div style="font-size: 0.75rem; color: var(--primary-color); text-transform: uppercase; font-weight: 600;">ĐỐI SOÁT GIAO DỊCH</div>
-                        <h3 style="margin: 2px 0 0 0; font-size: 1.1rem;">Sao kê Ngân hàng vs Hóa đơn</h3>
+                        <div style="font-size: 0.75rem; color: var(--primary-color); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">ĐỐI SOÁT GIAO DỊCH TỰ ĐỘNG (AI-2)</div>
+                        <h2 style="margin: 2px 0 0 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Sao kê Ngân hàng vs Hóa đơn chưa thanh toán</h2>
                     </div>
-                    <button class="btn btn-outline" id="btnUploadStatement" style="font-size: 0.85rem;"><i class='bx bx-upload'></i> Tải tệp Sao kê</button>
+                    
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <!-- Hidden File Input cho Upload Sao kê -->
+                        <input type="file" id="statementFileInput" accept=".csv, .xlsx, .xls, .json" style="display: none;" aria-label="Tải lên tệp sao kê ngân hàng">
+                        
+                        <button class="btn btn-outline" id="btnUploadStatement" style="font-size: 0.85rem; padding: 10px 16px;">
+                            <i class='bx bx-upload' aria-hidden="true"></i> Tải tệp Sao kê
+                        </button>
+                        
+                        <button class="btn btn-primary" id="btnAutoMatchAI" style="font-size: 0.85rem; padding: 10px 16px;">
+                            <i class='bx bx-bot' aria-hidden="true"></i> Chạy AI Đối Soát
+                        </button>
+                    </div>
                 </div>
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px;">Khớp nối các khoản tiền chuyển vào với hóa đơn chưa thanh toán tương ứng.</p>
 
-                <!-- Bảng Đối chiếu ngân hàng đồng bộ dữ liệu -->
-                <div class="table-responsive">
-                    <table class="data-table" id="reconciliationTable">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+                    Khớp nối các khoản tiền chuyển vào thực tế từ ngân hàng với các hóa đơn đang chờ thanh toán. Khi xác nhận khớp, trạng thái hóa đơn tương ứng sẽ chuyển thành <strong style="color: var(--success-color);">"Đã thanh toán"</strong>.
+                </p>
+
+                <!-- ARIA Live Region cho thông báo trạng thái đối soát -->
+                <div id="reconciliationLiveStatus" class="sr-only" aria-live="polite"></div>
+
+                <!-- Thẻ hiển thị Trạng thái xử lý AI-2 (Loading / Progress State) -->
+                <div id="aiReconciliationProgress" style="display: none; background: rgba(6, 9, 19, 0.8); border: 1px solid var(--primary-color); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                        <i class='bx bx-loader-alt spin' style="font-size: 1.5rem; color: var(--primary-color);" aria-hidden="true"></i>
+                        <span style="font-size: 0.9rem; font-weight: 600; color: #ffffff;" id="aiProgressText">AI-2 đang phân tích cú pháp nội dung chuyển khoản và so sánh số tiền...</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: #1e293b; border-radius: 99px; overflow: hidden;">
+                        <div id="aiProgressBarFill" style="width: 25%; height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--success-color)); transition: width 0.4s ease;"></div>
+                    </div>
+                </div>
+
+                <!-- Responsive Table Wrapper -->
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table class="data-table" id="reconciliationTable" style="width: 100%; border-collapse: collapse; text-align: left;">
                         <thead>
-                            <tr>
-                                <th>MÃ GIAO DỊCH NH</th>
-                                <th>NGÀY GD</th>
-                                <th>SỐ TIỀN NHẬN</th>
-                                <th>NỘI DUNG CHUYỂN KHOẢN</th>
-                                <th>HÓA ĐƠN GỢI Ý KHỚP</th>
-                                <th>THAO TÁC</th>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02);">
+                                <th style="padding: 12px; font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary);">MÃ GIAO DỊCH NH</th>
+                                <th style="padding: 12px; font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary);">NGÀY GD</th>
+                                <th style="padding: 12px; font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary);">SỐ TIỀN NHẬN</th>
+                                <th style="padding: 12px; font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary);">NỘI DUNG CHUYỂN KHOẢN</th>
+                                <th style="padding: 12px; font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary);">HÓA ĐƠN GỢI Ý KHỚP (AI-2)</th>
+                                <th style="padding: 12px; font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); text-align: center;">THAO TÁC</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr data-txn="TXN-99823">
-                                <td><strong style="color: var(--primary-color);">TXN-99823</strong></td>
-                                <td>01/10/2026</td>
-                                <td style="font-weight: 600; color: var(--success-color);">+15.000.000 VNĐ</td>
-                                <td>CTCP A thanh toán hợp đồng HD001</td>
-                                <td><span class="badge badge-warning">INV-001 (15tr)</span></td>
-                                <td><button class="btn btn-primary btn-match" style="padding: 6px 12px; font-size: 0.8rem;">Xác nhận Khớp</button></td>
-                            </tr>
-                            <tr data-txn="TXN-99824">
-                                <td><strong style="color: var(--primary-color);">TXN-99824</strong></td>
-                                <td>01/10/2026</td>
-                                <td style="font-weight: 600; color: var(--success-color);">+50.000.000 VNĐ</td>
-                                <td>Công ty B chuyen tien hang dot 2</td>
-                                <td><span class="badge badge-success">INV-004 (50tr)</span></td>
-                                <td><button class="btn btn-primary btn-match" style="padding: 6px 12px; font-size: 0.8rem;">Xác nhận Khớp</button></td>
-                            </tr>
+                        <tbody id="reconciliationTbody">
+                            <!-- JS Render dữ liệu sao kê động từ Store/API tại đây -->
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Empty State (Hiển thị khi không có giao dịch cần đối soát) -->
+                <div id="emptyReconciliationState" style="display: none; text-align: center; padding: 40px 20px;">
+                    <i class='bx bx-check-double' style="font-size: 3.5rem; color: var(--success-color); margin-bottom: 12px;" aria-hidden="true"></i>
+                    <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; color: #ffffff;">Tất cả giao dịch đã được đối soát!</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Hiện không còn khoản thanh toán nào cần xử lý hoặc chưa khớp nối.</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Chọn thủ công Hóa đơn khớp nối (Trường hợp AI chọn sai hoặc gợi ý bất định) -->
+    <div id="manualMatchModal" class="modal-backdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; justify-content: center; align-items: center;">
+        <div class="modal-content card" style="width: 100%; max-width: 500px; padding: 24px; border: 1px solid var(--border-color); background: #0b0f19;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary-color);">Gán Khớp Hóa Đơn Thủ Công</h3>
+                <button type="button" id="btnCloseModal" style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+                Chọn hóa đơn chưa thanh toán từ danh sách hệ thống để ghép nối với giao dịch ngân hàng <strong id="modalTxnCode" style="color: #fff;">-</strong>.
+            </p>
+            
+            <div style="margin-bottom: 20px;">
+                <label for="selectInvoiceMatch" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Danh sách hóa đơn chờ thanh toán:</label>
+                <select id="selectInvoiceMatch" class="btn-outline" style="width: 100%; padding: 10px; border-radius: 8px; background: #060913; color: #fff;">
+                    <!-- JS sẽ nạp danh sách Hóa đơn Pending tại đây -->
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" id="btnCancelManualMatch" class="btn btn-outline" style="font-size: 0.85rem;">Hủy</button>
+                <button type="button" id="btnConfirmManualMatch" class="btn btn-primary" style="font-size: 0.85rem;">Xác Nhận Khớp</button>
             </div>
         </div>
     </div>
-<!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
-<script src="../js/api.js"></script>
-<!-- Sau đó mới đến script riêng của từng trang -->
-<script src="../js/modules/accountant.js"></script>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;"></div>
+
+    <!-- Scripts Module (Nhúng API và Script Kế toán) -->
+    <script src="../js/api.js"></script>
+    <script src="../js/modules/accountant.js"></script>
 </body>
 </html>

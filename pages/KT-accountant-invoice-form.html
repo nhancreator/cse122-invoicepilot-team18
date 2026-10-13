@@ -3,116 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lập Hóa Đơn Mới | InvoicePilot Cyber Accounting</title>
+    <title>Lập & Cập Nhật Hóa Đơn | InvoicePilot Cyber Accounting</title>
+    <!-- Preconnect & Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
+
     <div class="app-container">
-        <aside class="sidebar">
-            <div class="sidebar-header"><i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;"></i> InvoicePilot</div>
-            <div class="nav-group-title">Accounting Workspace</div>
-            <nav class="sidebar-nav">
-                <a href="KT-accountant-invoice-list.html" class="nav-link"><i class='bx bx-file'></i> Quản lý Hóa đơn</a>
-                <a href="KT-accountant-invoice-form.html" class="nav-link active"><i class='bx bx-plus-circle'></i> Tạo Hóa đơn mới</a>
-                <a href="KT-accountant-reconciliation.html" class="nav-link"><i class='bx bx-transfer-alt'></i> Đối chiếu Công nợ</a>
+        <!-- Sidebar Kế toán (Navigation & Role Indicator) -->
+        <aside class="sidebar" aria-label="Điều hướng hệ thống">
+            <div class="sidebar-header">
+                <i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;" aria-hidden="true"></i> 
+                <span>InvoicePilot</span>
+            </div>
+            
+            <div class="nav-group-title" id="nav-accounting-title">ACCOUNTING WORKSPACE</div>
+            
+            <nav class="sidebar-nav" aria-labelledby="nav-accounting-title">
+                <a href="KT-accountant-invoice-list.html" class="nav-link">
+                    <i class='bx bx-file' aria-hidden="true"></i> <span>Quản lý Hóa đơn</span>
+                </a>
+                <a href="KT-accountant-invoice-form.html" class="nav-link active" aria-current="page">
+                    <i class='bx bx-plus-circle' aria-hidden="true"></i> <span>Tạo Hóa đơn mới</span>
+                </a>
+                <a href="KT-accountant-reconciliation.html" class="nav-link">
+                    <i class='bx bx-transfer-alt' aria-hidden="true"></i> <span>Đối chiếu Công nợ</span>
+                </a>
             </nav>
-            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; display: flex; align-items: center; gap: 10px;">
-                <div style="width: 32px; height: 32px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">KT</div>
-                <div>
-                    <div style="font-size: 0.85rem; font-weight: 600;">InvoicePilot</div>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Kế toán</div>
+
+            <!-- User Badge & Role -->
+            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 32px; height: 32px; background: #10b981; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;" aria-hidden="true">KT</div>
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 600; color: #ffffff;">InvoicePilot</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Kế toán viên (KT)</div>
+                    </div>
                 </div>
+                <a href="Trangchu.html" title="Trở về Trang chủ" style="color: var(--primary-color); display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 6px; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); text-decoration: none; transition: all 0.2s;">
+                    <i class='bx bx-home-alt' style="font-size: 1.2rem;"></i>
+                </a>
             </div>
         </aside>
 
+        <!-- Main Content Area -->
         <div class="main-wrapper">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <!-- Header Page -->
+            <header class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
                 <div>
-                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px;">Giao diện 02 / Accounting</div>
-                    <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Lập Hóa Đơn Mới</h1>
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px; font-weight: 600;">GIAO DIỆN 02 / ACCOUNTING WORKSPACE</div>
+                    <h1 id="formPageTitle" style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Lập Hóa Đơn Mới</h1>
                 </div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); text-align: right;">
-                    Tạo hóa đơn và kiểm tra bất thường bằng mô hình phân tích AI.
+                <div style="font-size: 0.85rem; color: var(--text-secondary); text-align: right; max-width: 320px;">
+                    Tạo hóa đơn mới hoặc cập nhật chứng từ kết hợp kiểm tra bất thường AI-1.
                 </div>
-            </div>
+            </header>
 
-            <div class="browser-header-bar">
+            <!-- Khung trình duyệt giả lập (Cyber Bar) -->
+            <div class="browser-header-bar" aria-hidden="true">
                 <div class="browser-dots"><span></span><span></span><span></span></div>
-                <div class="browser-url">app.invoicepilot.vn/accounting/invoice-create</div>
-                <div style="font-size: 0.75rem; color: var(--success-color); letter-spacing: 1px; font-weight: 600;">SECURE</div>
+                <div class="browser-url" id="browserUrlDisplay">app.invoicepilot.vn/accounting/invoice-create</div>
+                <div style="font-size: 0.75rem; color: var(--success-color); letter-spacing: 1px; font-weight: 600;">SECURE WORKSPACE</div>
             </div>
 
-            <div class="card" style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px;">
-                <!-- Form nhập liệu -->
-                <div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary-color);">Thông tin chứng từ</h3>
-                        <span class="badge badge-warning">Bản nháp</span>
+            <!-- Layout chính (Grid Form & AI Widget) -->
+            <main id="main-content" class="card" style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; position: relative;">
+                
+                <!-- BÊN TRÁI: FORM NHẬP LIỆU (C / R / U) -->
+                <section aria-labelledby="formSectionHeader">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px;">
+                        <h2 id="formSectionHeader" style="margin: 0; font-size: 1.1rem; color: var(--primary-color); font-weight: 600;">Thông tin chứng từ</h2>
+                        <span id="formStatusBadge" class="badge badge-warning">Bản nháp</span>
                     </div>
 
-                    <form id="invoiceForm">
+                    <!-- ARIA Live Region cho thông báo Validation chung -->
+                    <div id="formValidationSummary" class="sr-only" aria-live="assertive"></div>
+
+                    <form id="invoiceForm" novalidate>
+                        <!-- Thẻ ẩn lưu ID khi ở mode Cập nhật (Update) -->
+                        <input type="hidden" id="formInvoiceId" value="">
+
+                        <!-- Field 1: Khách hàng -->
+                        <!-- Field 1: Khách hàng -->
                         <div style="margin-bottom: 16px;">
-                            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Khách hàng <span style="color: var(--primary-color);">*</span></label>
-                            <select id="formCustomer" class="btn-outline" style="width: 100%; padding: 12px; border-radius: 8px; background: #060913; color: #fff;">
-                                <option value="Công ty Cổ phần A">Công ty Cổ phần A (Dư nợ hiện tại: 15tr)</option>
-                                <option value="Công ty TNHH B">Công ty TNHH B (Đã hoàn thành)</option>
-                                <option value="Tập đoàn X">Tập đoàn X (Đang nợ quá hạn: 30tr)</option>
-                            </select>
+                            <label for="formCustomer" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary); font-weight: 500;">
+                                Khách hàng <span style="color: var(--primary-color);" aria-hidden="true">*</span>
+                            </label>
+                            <div style="position: relative; width: 100%;">
+                                <input type="text" id="formCustomer" list="customerSuggestions" class="btn-outline" placeholder="Gõ để tìm hoặc nhập tên khách hàng mới..." autocomplete="off" required style="width: 100%; padding: 12px 12px 12px 38px; border-radius: 8px; background: #060913; color: #fff; box-sizing: border-box; font-size: 0.9rem;">
+                                <i class='bx bx-building' style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 1.1rem;"></i>
+                            </div>
+                            <datalist id="customerSuggestions">
+                                <option value="Công ty Cổ phần A"></option>
+                                <option value="Tập đoàn X"></option>
+                                <option value="Công ty TNHH B"></option>
+                                <option value="Công ty Công nghệ Vanguard"></option>
+                                <option value="Khách hàng mới"></option>
+                                </datalist>
+                        </div>
+                        <!-- Field 2: Tổng tiền (VNĐ) -->
+                        <div style="margin-bottom: 16px;">
+                            <label for="formAmount" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary); font-weight: 500;">
+                                Tổng tiền (VNĐ) <span style="color: var(--primary-color);" aria-hidden="true">*</span>
+                            </label>
+                            <input type="text" id="formAmount" name="amount" placeholder="Nhập số tiền (VD: 15.000.000)" class="btn-outline" required aria-required="true" aria-describedby="amountError" style="width: 100%; padding: 12px; border-radius: 8px; background: #060913; color: #fff; box-sizing: border-box; font-size: 0.9rem;">
+                            <small id="amountError" class="error-message" style="color: #f87171; font-size: 0.75rem; display: none; margin-top: 4px;">Số tiền không hợp lệ hoặc phải lớn hơn 0 VNĐ.</small>
                         </div>
 
-                        <div style="margin-bottom: 16px;">
-                            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Tổng tiền (VNĐ) <span style="color: var(--primary-color);">*</span></label>
-                            <input type="text" id="formAmount" value="15.000.000" class="btn-outline" style="width: 100%; padding: 12px; border-radius: 8px; background: #060913; color: #fff; box-sizing: border-box;">
-                        </div>
-
+                        <!-- Field 3: Hạn thanh toán -->
                         <div style="margin-bottom: 24px;">
-                            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Hạn thanh toán <span style="color: var(--primary-color);">*</span></label>
-                            <input type="date" id="formDueDate" value="2026-10-16" class="btn-outline" style="width: 100%; padding: 12px; border-radius: 8px; background: #060913; color: #fff; box-sizing: border-box;">
+                            <label for="formDueDate" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary); font-weight: 500;">
+                                Hạn thanh toán <span style="color: var(--primary-color);" aria-hidden="true">*</span>
+                            </label>
+                            <input type="date" id="formDueDate" name="dueDate" class="btn-outline" required aria-required="true" aria-describedby="dueDateError" style="width: 100%; padding: 12px; border-radius: 8px; background: #060913; color: #fff; box-sizing: border-box; font-size: 0.9rem;">
+                            <small id="dueDateError" class="error-message" style="color: #f87171; font-size: 0.75rem; display: none; margin-top: 4px;">Hạn thanh toán không được để trống.</small>
                         </div>
 
-                        <div style="display: flex; gap: 12px;">
-                            <button type="button" id="btnCheckAI" class="btn btn-outline" style="flex: 1; justify-content: center;"><i class='bx bx-bot'></i> Kiểm tra bất thường AI</button>
-                            <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;"><i class='bx bx-save'></i> Lưu Hóa Đơn</button>
+                        <!-- Form Actions -->
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button type="button" id="btnCheckAI" class="btn btn-outline" style="flex: 1; justify-content: center; padding: 12px; font-size: 0.85rem;" aria-label="Kích hoạt kiểm tra bất thường bằng AI-1">
+                                <i class='bx bx-bot' aria-hidden="true"></i> Kiểm tra bất thường AI
+                            </button>
+                            <button type="submit" id="btnSaveInvoice" class="btn btn-primary" style="flex: 1; justify-content: center; padding: 12px; font-size: 0.85rem;">
+                                <i class='bx bx-save' aria-hidden="true"></i> <span id="submitBtnText">Lưu Hóa Đơn</span>
+                            </button>
                         </div>
                     </form>
-                </div>
+                </section>
 
-                <!-- AI Anomaly Check Widget -->
-                <div style="background: rgba(6, 9, 19, 0.7); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                <!-- BÊN PHẢI: AI ANOMALY CHECK WIDGET (MODULE AI-1) -->
+                <aside aria-label="Khung kiểm tra bất thường bằng AI" style="background: rgba(6, 9, 19, 0.7); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 380px;">
                     <div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                            <i class='bx bx-shield-quarter' style="font-size: 1.5rem; color: var(--primary-color);"></i>
-                            <h4 style="margin: 0; font-size: 1rem;">INVOICE ANOMALY CHECK</h4>
+                        <!-- Header Widget -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class='bx bx-shield-quarter' style="font-size: 1.5rem; color: var(--primary-color);" aria-hidden="true"></i>
+                                <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">INVOICE ANOMALY CHECK</h3>
+                            </div>
+                            <span id="aiBadgeStatus" class="badge" style="background: rgba(16,185,129,0.15); color: #10b981; font-size: 0.7rem;">AI-1 READY</span>
                         </div>
-                        <div style="font-size: 0.75rem; color: var(--primary-color); margin-bottom: 16px; text-transform: uppercase;">Kết quả phân tích AI-1</div>
+                        <div style="font-size: 0.75rem; color: var(--primary-color); margin-bottom: 16px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">KẾT QUẢ PHÂN TÍCH VÀ ĐỀ XUẤT</div>
                         
-                        <div id="aiAnalysisBox" style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">
-                            Hệ thống đã tự động kiểm tra chéo với lịch sử giao dịch của <strong>Công ty Cổ phần A</strong>. Không phát hiện sai lệch hạn mức tín dụng.
+                        <!-- Dynamic AI Content Container -->
+                        <div id="aiWidgetContent" aria-live="polite">
+                            <!-- Trạng thái mặc định ban đầu -->
+                            <div id="aiStateIdle" class="ai-state-box">
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+                                    Nhập thông tin hóa đơn và nhấn nút <strong>"Kiểm tra bất thường AI"</strong> để phân tích rủi ro hạn mức và đối soát lịch sử giao dịch.
+                                </p>
+                            </div>
+
+                            <!-- 1. Trạng thái Loading (Progress Bar / Processing) -->
+                            <div id="aiStateProcessing" class="ai-state-box" style="display: none; text-align: center; padding: 20px 0;">
+                                <i class='bx bx-loader-alt spin' style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 12px;" aria-hidden="true"></i>
+                                <p style="font-size: 0.85rem; color: #fff; margin: 0 0 10px 0; font-weight: 500;">AI-1 đang truy vấn lịch sử giao dịch...</p>
+                                <div style="width: 100%; height: 6px; background: #1e293b; border-radius: 99px; overflow: hidden;">
+                                    <div id="aiProgressBar" style="width: 15%; height: 100%; background: var(--primary-color); transition: width 0.3s ease;"></div>
+                                </div>
+                            </div>
+
+                            <!-- 2. Trạng thái Kết quả AI (Thành công / Cảnh báo / Thất bại / Bất định) -->
+                            <div id="aiStateResult" class="ai-state-box" style="display: none;">
+                                <p id="aiResultReason" style="font-size: 0.88rem; color: #e2e8f0; line-height: 1.5; margin: 0 0 16px 0;">
+                                    <!-- Nội dung giải thích nguyên nhân do JS render -->
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <div>
+                    <!-- AI Confidence Bar & Action Control Panel -->
+                    <div id="aiControlPanel" style="display: none; margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px;">
                         <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
                             <span style="color: var(--text-secondary);">Độ tin cậy mô hình</span>
-                            <span style="color: var(--success-color); font-weight: 600;">96%</span>
+                            <span id="aiConfidenceText" style="color: var(--success-color); font-weight: 600;">96%</span>
                         </div>
                         <div style="width: 100%; height: 6px; background: #1e293b; border-radius: 99px; overflow: hidden; margin-bottom: 16px;">
-                            <div style="width: 96%; height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--success-color));"></div>
+                            <div id="aiConfidenceFill" style="width: 96%; height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--success-color)); transition: width 0.5s ease;"></div>
                         </div>
-                        <div style="display: flex; gap: 8px;">
-                            <button type="button" id="btnAiAccept" class="btn btn-primary" style="flex: 1; font-size: 0.8rem; padding: 6px;">Chấp nhận</button>
-                            <button type="button" id="btnAiEdit" class="btn btn-outline" style="flex: 1; font-size: 0.8rem; padding: 6px;">Tự chỉnh sửa</button>
+
+                        <!-- Các nút điều khiển người dùng (User Control: Accept / Edit / Reject / Retry / Manual / Ignore / Report) -->
+                        <div id="aiActionButtons" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <!-- JS Render linh hoạt các nút tương ứng với từng trạng thái -->
                         </div>
                     </div>
-                </div>
-            </div>
+                </aside>
+            </main>
         </div>
     </div>
-<!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
-<script src="../js/api.js"></script>
-<!-- Sau đó mới đến script riêng của từng trang -->
-<script src="../js/modules/accountant.js"></script>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;"></div>
+
+    <!-- Scripts Module (Nhúng API và Script Kế toán) -->
+    <script src="../js/api.js"></script>
+    <script src="../js/modules/accountant.js"></script>
 </body>
 </html>
