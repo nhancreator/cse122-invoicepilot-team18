@@ -97,6 +97,40 @@ const InvoiceAPI = {
         return state.settings;
     }
 };
+// js/api.js
+window.InvoiceAPI = {
+    // Lấy danh sách hóa đơn từ kho lưu trữ chung
+    getInvoices() {
+        const stored = localStorage.getItem('invoicepilot_invoices');
+        if (!stored) {
+            const defaultInvoices = [
+                { id: 'INV-001', customerName: 'Công ty Cổ phần Alpha', issueDate: '2026-09-01', dueDate: '2026-09-30', amount: 15000000, status: 'pending' },
+                { id: 'INV-002', customerName: 'Cửa hàng Tiện lợi Beta', issueDate: '2026-09-05', dueDate: '2026-09-20', amount: 8500000, status: 'paid' },
+                { id: 'INV-003', customerName: 'Tập đoàn Công nghệ X', issueDate: '2026-09-15', dueDate: '2026-09-30', amount: 30000000, status: 'overdue' }
+            ];
+            localStorage.setItem('invoicepilot_invoices', JSON.stringify(defaultInvoices));
+            return defaultInvoices;
+        }
+        try {
+            return JSON.parse(stored);
+        } catch (e) {
+            return [];
+        }
+    },
 
+    // Thêm hoặc lưu danh sách hóa đơn mới
+    saveInvoices(invoices) {
+        localStorage.setItem('invoicepilot_invoices', JSON.stringify(invoices));
+        // Phát sự kiện thông báo dữ liệu đã thay đổi để các trang tự cập nhật
+        window.dispatchEvent(new Event('invoicepilot_data_changed'));
+    },
+
+    // Thêm 1 hóa đơn mới từ phân hệ Kế toán
+    addInvoice(newInvoice) {
+        const invoices = this.getInvoices();
+        invoices.unshift(newInvoice); // Đưa lên đầu danh sách
+        this.saveInvoices(invoices);
+    }
+};
 // Đăng ký toàn cục để các module dễ dàng sử dụng
 window.InvoiceAPI = InvoiceAPI;

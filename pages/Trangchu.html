@@ -138,6 +138,7 @@
             font-weight: 800;
             margin-bottom: 20px;
             background: linear-gradient(135deg, #ffffff 30%, var(--neon-cyan));
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -484,6 +485,70 @@
             }
         });
     </script>    
+    <!-- Script kiểm tra và phân quyền truy cập Phân hệ Liên Thông -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || localStorage.getItem('invoicepilot_current_user') || 'null');
+            const moduleCards = document.querySelectorAll('.modules-grid .module-card');
+
+            moduleCards.forEach(card => {
+                const link = card.querySelector('.module-link');
+                if (!link) return;
+                const href = link.getAttribute('href');
+
+                // Xác định loại phân hệ của card
+                let cardType = ''; // 'KT', 'KD', 'QL', 'QTV'
+                if (href.includes('KT-')) cardType = 'KT';
+                else if (href.includes('KD-')) cardType = 'KD';
+                else if (href.includes('QL-')) cardType = 'QL';
+                else if (href.includes('QTV-') || href.includes('admin')) cardType = 'QTV';
+
+                // Kiểm tra quyền truy cập dựa trên role của currentUser
+                let hasAccess = true;
+                if (!currentUser) {
+                    hasAccess = false; // Chưa đăng nhập -> Chuyển về trang đăng nhập
+                } else {
+                    const role = currentUser.role; // 'admin', 'accountant', 'sales', 'manager'
+                    if (role === 'admin') {
+                        hasAccess = true; // QTV được vào mọi phân hệ
+                    } else if (role === 'accountant') {
+                        hasAccess = (cardType === 'KT' || cardType === 'QTV');
+                    } else if (role === 'sales') {
+                        hasAccess = (cardType === 'KD' || cardType === 'QTV');
+                    } else if (role === 'manager') {
+                        hasAccess = (cardType === 'QL' || cardType === 'QTV');
+                    }
+                }
+
+                if (!hasAccess) {
+                    // Hiệu ứng trực quan: Làm mờ và khóa phân hệ không có quyền
+                    card.style.opacity = '0.45';
+                    card.style.filter = 'grayscale(0.6)';
+                    card.style.cursor = 'not-allowed';
+
+                    // Thêm nhãn khóa
+                    const desc = card.querySelector('.module-desc');
+                    if (desc && !card.querySelector('.lock-badge')) {
+                        const lockBadge = document.createElement('div');
+                        lockBadge.className = 'lock-badge';
+                        lockBadge.style.cssText = 'margin-top: 10px; font-size: 0.78rem; color: #f87171; font-weight: 600; display: flex; align-items: center; gap: 4px;';
+                        lockBadge.innerHTML = "<i class='bx bx-lock-alt'></i> Không có quyền truy cập phân hệ này";
+                        card.querySelector('div').appendChild(lockBadge);
+                    }
+
+                    // Chặn sự kiện click và thông báo
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (!currentUser) {
+                            window.location.href = 'Dangnhap.html';
+                        } else {
+                            alert('Truy cập bị từ chối! Tài khoản của bạn chỉ được phép truy cập phân hệ của mình và Quản trị hệ thống (QTV).');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
     <!-- Script dùng chung cho mọi file trong thư mục pages/ -->
     <script src="../js/api.js"></script>
     <script src="../js/main.js"></script>

@@ -123,24 +123,13 @@ function renderSidebarNav(user, currentPath) {
         <a href="notifications.html" class="nav-link ${currentPath === 'notifications.html' ? 'active' : ''}">
             <i class='bx bx-bell'></i> <span>Thông báo</span>
         </a>
-        <a href="#" id="btnLogoutAction" class="nav-link" style="color: #f87171;">
-            <i class='bx bx-log-out'></i> <span>Đăng xuất</span>
+        <a href="Trangchu.html" id="btnHomeAction" class="nav-link" style="color: #f87171;">
+            <i class='bx bx-home-alt'></i> <span>Quay lại trang chủ</span>
         </a>
     `;
 
     navContainer.innerHTML = navHtml;
 
-    // Xử lý sự kiện Đăng xuất
-    const btnLogout = document.getElementById('btnLogoutAction');
-    if (btnLogout) {
-        btnLogout.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?')) {
-                localStorage.removeItem('invoicepilot_current_user');
-                window.location.href = 'Dangnhap.html';
-            }
-        });
-    }
 }
 
 function checkAccessPermission(user, currentPath) {
