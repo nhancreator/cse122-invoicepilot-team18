@@ -75,8 +75,8 @@
                 </div>
                 <div class="card" style="margin-bottom: 0; padding: 16px;">
                     <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Chỉ Số Sức Khỏe Tín Dụng</div>
-                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-cyan); margin-top: 6px;">84.5 / 100</div>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Đánh giá: Ổn định</div>
+                    <div id="healthScoreValue" style="font-size: 1.5rem; font-weight: bold; color: var(--accent-cyan); margin-top: 6px;">84.5 / 100</div>
+                    <div id="healthScoreDesc" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Đánh giá: Ổn định</div>
                 </div>
             </div>
 
@@ -127,11 +127,9 @@
             </div>
         </div>
     </div>
-
-    <script src="../js/modules/ai-cashflow.js"></script>
-    <!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
+<!-- 1. Nhúng api.js đầu tiên để khởi tạo store và đối tượng window.InvoiceAPI -->
     <script src="../js/api.js"></script>
-    <!-- Sau đó mới đến script riêng của từng trang -->
-    <script src="../js/modules/accountant.js"></script>
+    <!-- 2. Sau đó đến các module logic xử lý giao diện -->
+    <script src="../js/modules/ai-cashflow.js"></script>
 </body>
 </html>

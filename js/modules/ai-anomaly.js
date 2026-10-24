@@ -28,68 +28,362 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
 
-    // --- HỆ THỐNG ĐỒNG BỘ REALTIME & TẢI DỮ LIỆU TẬP TRUNG ---
-    function loadData() {
-        // Lấy danh sách hóa đơn mới nhất từ kho lưu trữ chung qua InvoiceAPI
-        const invoices = window.InvoiceAPI ? window.InvoiceAPI.getCollection('invoices') : [];
-        
-        // Tự động kích hoạt AI-Anomaly Engine quét và hiển thị báo cáo lên container trên trang admin
-        if (window.AIAnomalyScanner) {
-            window.AIAnomalyScanner.renderReport('anomalyReportContainer', invoices);
-        }
-
-        // Cập nhật thống kê tổng quan trên trang quản trị nếu có
-        updateAdminStats(invoices);
+    // --- HỆ THỐNG LƯU TRỮ & ĐỒNG BỘ CHUNG ---
+    function getSharedData(key, defaultVal) {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : defaultVal;
     }
 
-    function updateAdminStats(invoices) {
-        const totalCountEl = document.getElementById('adminTotalInvoices');
-        if (totalCountEl) {
-            totalCountEl.innerText = invoices.length;
-        }
+    function saveSharedData(key, data) {
+        localStorage.setItem(key, JSON.stringify(data));
+        window.dispatchEvent(new CustomEvent('invoicepilot_data_changed', { detail: { key, data } }));
     }
 
-    // Đăng ký lắng nghe sự kiện đồng bộ từ các tab/module khác
-    window.addEventListener('storage', (event) => {
-        if (event.key === 'invoicepilot_data' || event.key === 'invoicepilot_settings') {
-            loadData();
-        }
-    });
 
-    window.addEventListener('invoicepilot_data_changed', () => {
-        loadData();
-    });
+    // --- 1. MODULE: QUẢN LÝ KHÁCH HÀNG (QTV-admin-customer-management) - ĐỒNG BỘ TỪ HÓA ĐƠN ---
+    function initCustomerManagement() {
+        const STORAGE_KEY = 'invoicepilot_customers';
+        const defaultCustomers = [
+            { code: 'KH-001', name: 'Tập đoàn X', tax: '0100123456', email: 'contact@tapdoanx.vn', status: 'Hoạt động' },
+            { code: 'KH-002', name: 'Công ty Cổ phần A', tax: '0309876543', email: 'info@cpa.vn', status: 'Hoạt động' }
+        ];
 
-    window.addEventListener('focus', () => {
-        loadData();
-    });
+        const tbody = document.getElementById('customerTableBody');
+        if (!tbody) return;
 
-
-    // --- MODULE AI-ANOMALY: QUÉT LỖI BẤT THƯỜNG HÓA ĐƠN ---
-    const AIAnomalyScanner = {
-        // Ngưỡng định mức mặc định nếu không lấy được từ cấu hình LocalStorage
-        getDefaultThreshold() {
-            try {
-                const settings = JSON.parse(localStorage.getItem('invoicepilot_settings'));
-                return settings && settings.threshold ? parseFloat(settings.threshold) : 100000000;
-            } catch (e) {
-                return 100000000;
+        function getCustomers() {
+            let customers = getSharedData(STORAGE_KEY, defaultCustomers);
+            
+            // Tự động lấy thêm danh sách khách hàng từ các hóa đơn mới do Kế toán/Kinh doanh tạo ra
+            let invoices = [];
+            if (window.InvoiceAPI) {
+                invoices = window.InvoiceAPI.getCollection('invoices');
+            } else {
+                try {
+                    const raw = localStorage.getItem('invoicepilot_data');
+                    if (raw) invoices = JSON.parse(raw).invoices || [];
+                } catch(e) {}
+                if (invoices.length === 0) {
+                    try { invoices = JSON.parse(localStorage.getItem('invoicepilot_invoices')) || []; } catch(e) {}
+                }
             }
-        },
 
-        /**
-         * Quét danh sách hóa đơn truyền vào và trả về danh sách các bất thường kèm giải thích
-         * @param {Array} invoices - Danh sách đối tượng hóa đơn cần kiểm tra
-         * @returns {Array} Danh sách kết quả quét bất thường
-         */
-        scan(invoices = []) {
-            const threshold = this.getDefaultThreshold();
+            // Đồng bộ tên khách hàng từ hóa đơn vào danh sách QTV nếu chưa có
+            invoices.forEach((inv, idx) => {
+                const custName = inv.customerName || inv.customer;
+                if (custName) {
+                    const exists = customers.some(c => c.name.toLowerCase() === custName.toLowerCase());
+                    if (!exists) {
+                        customers.push({
+                            code: `KH-SYN-${idx + 100}`,
+                            name: custName,
+                            tax: inv.taxCode || '0109998888',
+                            email: `contact@${custName.toLowerCase().replace(/[^a-z0-9]/g, '')}.vn`,
+                            status: 'Hoạt động'
+                        });
+                    }
+                }
+            });
+
+            return customers;
+        }
+
+        function saveCustomers(customers) {
+            saveSharedData(STORAGE_KEY, customers);
+            if (window.InvoiceAPI) {
+                window.InvoiceAPI.saveCollection('customers', customers);
+            }
+        }
+
+        function renderTable() {
+            const customers = getCustomers();
+            tbody.innerHTML = '';
+            customers.forEach((cust, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${cust.code}</strong></td>
+                    <td>${cust.name}</td>
+                    <td>${cust.tax}</td>
+                    <td>${cust.email}</td>
+                    <td><span class="badge badge-success">${cust.status}</span></td>
+                    <td>
+                        <button class="btn btn-outline btn-edit" data-index="${index}" style="padding: 4px 10px; font-size: 0.75rem; margin-right: 6px;">Sửa</button>
+                        <button class="btn btn-outline btn-delete" data-index="${index}" style="padding: 4px 10px; font-size: 0.75rem; color: #f87171; border-color: rgba(239,68,68,0.3);">Xóa</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            attachEvents();
+        }
+
+        const modal = document.getElementById('customerModal');
+        const btnOpen = document.getElementById('btnOpenAddModal');
+        if (btnOpen && modal) {
+            btnOpen.addEventListener('click', () => {
+                document.getElementById('modalTitle').innerText = 'Thêm Khách Hàng Mới';
+                document.getElementById('custIndex').value = '';
+                document.getElementById('custCode').value = '';
+                document.getElementById('custName').value = '';
+                document.getElementById('custTax').value = '';
+                document.getElementById('custEmail').value = '';
+                modal.style.display = 'flex';
+            });
+        }
+
+        const btnClose = document.getElementById('btnCloseModal');
+        if (btnClose && modal) {
+            btnClose.addEventListener('click', () => { modal.style.display = 'none'; });
+        }
+
+        const form = document.getElementById('customerForm');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const index = document.getElementById('custIndex').value;
+                const newCust = {
+                    code: document.getElementById('custCode').value,
+                    name: document.getElementById('custName').value,
+                    tax: document.getElementById('custTax').value,
+                    email: document.getElementById('custEmail').value,
+                    status: 'Hoạt động'
+                };
+                let customers = getCustomers();
+                if (index === '') customers.push(newCust);
+                else customers[index] = newCust;
+                saveCustomers(customers);
+                if (modal) modal.style.display = 'none';
+                renderTable();
+                showToast('Đã lưu dữ liệu khách hàng thành công!', 'success');
+            });
+        }
+
+        function attachEvents() {
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = e.target.getAttribute('data-index');
+                    const customers = getCustomers();
+                    const cust = customers[index];
+                    document.getElementById('modalTitle').innerText = 'Chỉnh Sửa Khách Hàng';
+                    document.getElementById('custIndex').value = index;
+                    document.getElementById('custCode').value = cust.code;
+                    document.getElementById('custName').value = cust.name;
+                    document.getElementById('custTax').value = cust.tax;
+                    document.getElementById('custEmail').value = cust.email;
+                    if (modal) modal.style.display = 'flex';
+                });
+            });
+
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = e.target.getAttribute('data-index');
+                    if (confirm('Bạn có chắc chắn muốn xóa khách hàng này?')) {
+                        let customers = getCustomers();
+                        customers.splice(index, 1);
+                        saveCustomers(customers);
+                        renderTable();
+                        showToast('Đã xóa khách hàng thành công!', 'success');
+                    }
+                });
+            });
+        }
+
+        if (!localStorage.getItem(STORAGE_KEY)) {
+            saveCustomers(defaultCustomers);
+        }
+        renderTable();
+
+        window.addEventListener('storage', (event) => {
+            if (event.key === STORAGE_KEY || event.key === 'invoicepilot_invoices' || event.key === 'invoicepilot_data') {
+                renderTable();
+            }
+        });
+
+        window.addEventListener('invoicepilot_data_changed', () => {
+            renderTable();
+        });
+    }
+
+
+    // --- 2. MODULE: QUẢN LÝ NGƯỜI DÙNG (QTV-admin-user-management) ---
+    function initUserManagement() {
+        const USERS_KEY = 'invoicepilot_users';
+        const defaultUsers = [
+            { name: 'Đỗ Duy Nhân', username: 'duynhan', role: 'Kế toán (Accountant)', status: 'Hoạt động' },
+            { name: 'Nguyên Nhân Quân', username: 'admin', role: 'Quản trị viên (Admin)', status: 'Hoạt động' },
+            { name: 'Đàm Minh Quân', username: 'minhquan', role: 'Kinh doanh(Sale)', status: 'Hoạt động' },
+            { name: 'Trần Khôi Nguyên', username: 'khoinguyen', role: 'Quản lý (Manager)', status: 'Hoạt động' }
+        ];
+
+        const tbody = document.getElementById('userTableBody');
+        if (!tbody) return;
+
+        function getUsers() {
+            return getSharedData(USERS_KEY, defaultUsers);
+        }
+
+        function saveUsers(users) {
+            saveSharedData(USERS_KEY, users);
+        }
+
+        function renderUserTable() {
+            const users = getUsers();
+            tbody.innerHTML = '';
+            users.forEach((u, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${u.name}</strong></td>
+                    <td>${u.username}</td>
+                    <td><span class="badge" style="background: rgba(139,92,246,0.15); color: #a78bfa;">${u.role}</span></td>
+                    <td><span class="badge badge-success">${u.status}</span></td>
+                    <td>
+                        <button class="btn btn-outline btn-edit-user" data-index="${index}" style="padding: 4px 10px; font-size: 0.75rem; margin-right: 6px;">Sửa</button>
+                        <button class="btn btn-outline btn-delete-user" data-index="${index}" style="padding: 4px 10px; font-size: 0.75rem; color: #f87171; border-color: rgba(239,68,68,0.3);">Xóa</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            attachUserEvents();
+        }
+
+        const modal = document.getElementById('userModal');
+        const btnOpen = document.getElementById('btnOpenUserModal');
+        if (btnOpen && modal) {
+            btnOpen.addEventListener('click', () => {
+                document.getElementById('userModalTitle').innerText = 'Thêm Tài Khoản Mới';
+                document.getElementById('userIndex').value = '';
+                document.getElementById('fullName').value = '';
+                document.getElementById('username').value = '';
+                modal.style.display = 'flex';
+            });
+        }
+
+        const btnClose = document.getElementById('btnCloseUserModal');
+        if (btnClose && modal) {
+            btnClose.addEventListener('click', () => { modal.style.display = 'none'; });
+        }
+
+        const userForm = document.getElementById('userForm');
+        if (userForm) {
+            userForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const index = document.getElementById('userIndex').value;
+                const newUser = {
+                    name: document.getElementById('fullName').value,
+                    username: document.getElementById('username').value,
+                    role: document.getElementById('userRole').value,
+                    status: 'Hoạt động'
+                };
+                let users = getUsers();
+                if (index === '') users.push(newUser);
+                else users[index] = newUser;
+                saveUsers(users);
+                if (modal) modal.style.display = 'none';
+                renderUserTable();
+                showToast('Đã lưu tài khoản thành công!', 'success');
+            });
+        }
+
+        function attachUserEvents() {
+            document.querySelectorAll('.btn-edit-user').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = e.target.getAttribute('data-index');
+                    const users = getUsers();
+                    const u = users[index];
+                    document.getElementById('userModalTitle').innerText = 'Chỉnh Sửa Tài Khoản';
+                    document.getElementById('userIndex').value = index;
+                    document.getElementById('fullName').value = u.name;
+                    document.getElementById('username').value = u.username;
+                    document.getElementById('userRole').value = u.role;
+                    if (modal) modal.style.display = 'flex';
+                });
+            });
+
+            document.querySelectorAll('.btn-delete-user').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = e.target.getAttribute('data-index');
+                    if (confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
+                        let users = getUsers();
+                        users.splice(index, 1);
+                        saveUsers(users);
+                        renderUserTable();
+                        showToast('Đã xóa tài khoản thành công!', 'success');
+                    }
+                });
+            });
+        }
+
+        if (!localStorage.getItem(USERS_KEY)) {
+            saveUsers(defaultUsers);
+        }
+        renderUserTable();
+
+        window.addEventListener('invoicepilot_data_changed', (e) => {
+            if (e.detail?.key === USERS_KEY || !e.detail?.key) renderUserTable();
+        });
+    }
+
+
+    // --- 3. MODULE: CẤU HÌNH HÓA ĐƠN (QTV-admin-invoice-settings) ---
+    function initInvoiceSettings() {
+        const SETTINGS_KEY = 'invoicepilot_settings';
+        const defaultSettings = {
+            prefix: '1C26TPT',
+            taxRate: 10,
+            threshold: 100000000,
+            provider: 'Viettel S-Invoice'
+        };
+
+        const settingsForm = document.getElementById('settingsForm');
+        if (!settingsForm) return;
+
+        function loadSettings() {
+            const settings = getSharedData(SETTINGS_KEY, defaultSettings);
+            const prefixEl = document.getElementById('invPrefix');
+            const taxRateEl = document.getElementById('taxRate');
+            const thresholdEl = document.getElementById('anomalyThreshold') || document.getElementById('thresholdInput');
+            const providerEl = document.getElementById('providerSelect');
+
+            if (prefixEl) prefixEl.value = settings.prefix;
+            if (taxRateEl) taxRateEl.value = settings.taxRate;
+            if (thresholdEl) thresholdEl.value = settings.threshold;
+            if (providerEl) providerEl.value = settings.provider;
+        }
+
+        settingsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const settings = {
+                prefix: document.getElementById('invPrefix')?.value || '1C26TPT',
+                taxRate: document.getElementById('taxRate')?.value || 10,
+                threshold: parseFloat(document.getElementById('anomalyThreshold')?.value || document.getElementById('thresholdInput')?.value || 100000000),
+                provider: document.getElementById('providerSelect')?.value || 'Viettel S-Invoice',
+                updatedAt: new Date().toISOString()
+            };
+
+            saveSharedData(SETTINGS_KEY, settings);
+            showToast('Đã lưu cấu hình hóa đơn và đồng bộ thành công!', 'success');
+        });
+
+        loadSettings();
+    }
+
+
+    // --- 4. MODULE: AI-ANOMALY SCANNER ---
+    function initAIAnomaly() {
+        const containerId = 'anomalyReportContainer';
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        function getDefaultThreshold() {
+            const settings = getSharedData('invoicepilot_settings', { threshold: 100000000 });
+            return settings.threshold ? parseFloat(settings.threshold) : 100000000;
+        }
+
+        function scan(invoices = []) {
+            const threshold = getDefaultThreshold();
             const anomalies = [];
 
             invoices.forEach((inv) => {
                 const issues = [];
-
-                // Kiểm tra thiếu hoặc mã số thuế không hợp lệ
                 if (!inv.taxCode || inv.taxCode.trim() === '' || inv.taxCode.length < 10) {
                     issues.push({
                         type: 'MISSING_TAX_CODE',
@@ -98,7 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
 
-                // Kiểm tra số tiền lớn vượt định mức cấu hình
                 const amount = parseFloat(inv.amount || 0);
                 if (amount > threshold) {
                     issues.push({
@@ -108,7 +401,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
 
-                // Kiểm tra tính hợp lệ của ngày tháng (nếu có)
                 if (inv.issueDate && inv.dueDate) {
                     const issueDate = new Date(inv.issueDate);
                     const dueDate = new Date(inv.dueDate);
@@ -126,25 +418,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         invoiceId: inv.id || inv.code || 'UNKNOWN',
                         customerName: inv.customerName || 'Khách hàng không xác định',
                         amount: amount,
-                        issues: issues,
-                        timestamp: new Date().toISOString()
+                        issues: issues
                     });
                 }
             });
 
             return anomalies;
-        },
+        }
 
-        /**
-         * Hiển thị báo cáo kết quả quét lên một vùng chứa (container) HTML chỉ định
-         * @param {String} containerId - ID của phần tử HTML nhận kết quả
-         * @param {Array} invoices - Danh sách hóa đơn kiểm tra
-         */
-        renderReport(containerId, invoices) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-
-            const results = this.scan(invoices);
+        function renderReport() {
+            const invoices = window.InvoiceAPI ? window.InvoiceAPI.getCollection('invoices') : [];
+            const results = scan(invoices);
 
             if (results.length === 0) {
                 container.innerHTML = `
@@ -182,38 +466,17 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `</div>`;
             container.innerHTML = html;
         }
-    };
 
-    // Gắn kết vào cửa sổ toàn cục để dễ gọi từ các tệp trang khác nhau
-    window.AIAnomalyScanner = AIAnomalyScanner;
+        renderReport();
 
-
-    // --- XỬ LÝ FORM CẤU HÌNH HỆ THỐNG (SETTINGS) ---
-    const settingsForm = document.getElementById('settingsForm');
-    const thresholdInput = document.getElementById('thresholdInput');
-
-    if (thresholdInput) {
-        thresholdInput.value = AIAnomalyScanner.getDefaultThreshold();
-    }
-
-    if (settingsForm) {
-        settingsForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const newThreshold = thresholdInput ? parseFloat(thresholdInput.value) || 100000000 : 100000000;
-            
-            const settings = {
-                threshold: newThreshold,
-                updatedAt: new Date().toISOString()
-            };
-
-            localStorage.setItem('invoicepilot_settings', JSON.stringify(settings));
-            showToast('Đã lưu cấu hình ngưỡng an toàn thành công!', 'success');
-            
-            // Chạy lại tiến trình quét ngay lập tức sau khi thay đổi ngưỡng
-            loadData();
+        window.addEventListener('invoicepilot_data_changed', () => {
+            renderReport();
         });
     }
 
-    // Khởi chạy dữ liệu lần đầu khi load trang quản trị
-    loadData();
+    // --- KHỞI CHẠY CÁC MODULE THEO NGỮ CẢNH TRANG HIỆN TẠI ---
+    initCustomerManagement();
+    initUserManagement();
+    initInvoiceSettings();
+    initAIAnomaly();
 });

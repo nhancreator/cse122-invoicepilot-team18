@@ -79,46 +79,8 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const SETTINGS_KEY = 'invoicepilot_settings';
-
-            const defaultSettings = {
-                prefix: '1C26TPT',
-                taxRate: 10,
-                threshold: 100000000,
-                provider: 'Viettel S-Invoice'
-            };
-
-            function loadSettings() {
-                const data = localStorage.getItem(SETTINGS_KEY);
-                const settings = data ? JSON.parse(data) : defaultSettings;
-
-                document.getElementById('invPrefix').value = settings.prefix;
-                document.getElementById('taxRate').value = settings.taxRate;
-                document.getElementById('anomalyThreshold').value = settings.threshold;
-                document.getElementById('providerSelect').value = settings.provider;
-            }
-
-            document.getElementById('settingsForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const settings = {
-                    prefix: document.getElementById('invPrefix').value,
-                    taxRate: document.getElementById('taxRate').value,
-                    threshold: document.getElementById('anomalyThreshold').value,
-                    provider: document.getElementById('providerSelect').value
-                };
-
-                localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-                alert('Đã lưu cấu hình hóa đơn thành công vào LocalStorage!');
-            });
-
-            loadSettings();
-        });
-    </script>
     <!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
     <script src="../js/api.js"></script>
-    <!-- Sau đó mới đến script riêng của từng trang -->
-    <script src="../js/modules/accountant.js"></script>
+    <script src="../js/modules/ai-anomaly.js"></script>
 </body>
 </html>

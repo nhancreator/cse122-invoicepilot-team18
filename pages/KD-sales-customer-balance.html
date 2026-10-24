@@ -57,17 +57,16 @@
                 <div style="background: rgba(6, 9, 19, 0.5); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 24px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Biểu đồ phân bổ cơ cấu công nợ theo danh mục</span>
-                        <span style="font-size: 0.75rem; color: var(--primary-color);">Tổng dư nợ: 45.000.000 VNĐ</span>
+                        <span id="headerTotalDebt" style="font-size: 0.75rem; color: var(--primary-color);">Tổng dư nợ: 0 VNĐ</span>
                     </div>
                     <div style="display: flex; height: 10px; width: 100%; background: #1e293b; border-radius: 99px; overflow: hidden; gap: 2px; margin-bottom: 12px;">
                         <div style="width: 35%; background: var(--warning-color);" title="Công ty CP A: 15tr"></div>
                         <div style="width: 50%; background: var(--danger-color);" title="Tập đoàn X: 30tr"></div>
                         <div style="width: 15%; background: var(--success-color);" title="Khác: 0tr"></div>
                     </div>
-                    <div style="display: flex; gap: 20px; font-size: 0.75rem; color: var(--text-secondary);">
-                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--warning-color); border-radius: 50%;"></span> Đang hạn (35%)</span>
-                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--danger-color); border-radius: 50%;"></span> Quá hạn (50%)</span>
-                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--success-color); border-radius: 50%;"></span> Đã thu (15%)</span>
+                    <div style="display: flex; gap: 20px; font-size: 0.75rem; color: var(--text-secondary);" id="chartLegend">
+                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--warning-color); border-radius: 50%;"></span> Chưa trả</span>
+                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--success-color); border-radius: 50%;"></span> Đã thu</span>
                     </div>
                 </div>
 
@@ -132,78 +131,8 @@
             </div>
         </div>
     </div>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('filterCustomer');
-        const btnFilter = document.getElementById('btnFilter');
-        const tableRows = document.querySelectorAll('.data-table tbody tr');
-        
-        // Lấy danh sách 3 nút lọc nhanh phía trên bảng
-        const filterActionButtons = document.querySelectorAll('.card div[style*="display: flex"] .btn');
-        let activeStatus = 'all';
-
-        // 1. Xử lý sự kiện click chọn nhóm trạng thái (Tất cả / Quá hạn / Đã thanh toán)
-        filterActionButtons.forEach((btn, index) => {
-            // Chỉ áp dụng cho 3 nút lọc trạng thái đầu tiên
-            if (index < 3) {
-                btn.addEventListener('click', () => {
-                    // Cập nhật giao diện active cho nút
-                    filterActionButtons.forEach((b, i) => {
-                        if (i < 3) {
-                            b.className = 'btn btn-outline';
-                        }
-                    });
-                    btn.className = 'btn btn-primary';
-
-                    if (index === 0) activeStatus = 'all';
-                    else if (index === 1) activeStatus = 'overdue';
-                    else if (index === 2) activeStatus = 'completed';
-
-                    executeFiltering();
-                });
-            }
-        });
-
-        // 2. Xử lý sự kiện khi bấm nút "Lọc dữ liệu" hoặc gõ phím Enter ở ô tìm kiếm
-        if (btnFilter) {
-            btnFilter.addEventListener('click', () => executeFiltering());
-        }
-        if (searchInput) {
-            searchInput.addEventListener('keyup', (e) => {
-                if (e.key === 'Enter') executeFiltering();
-            });
-        }
-
-        // 3. Hàm lọc dữ liệu thực tế trên bảng
-        function executeFiltering() {
-            const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
-
-            tableRows.forEach(row => {
-                const customerName = row.cells[1].textContent.toLowerCase();
-                const statusBadgeText = row.cells[5].textContent.toLowerCase();
-
-                let matchesStatus = true;
-                if (activeStatus === 'overdue') {
-                    matchesStatus = statusBadgeText.includes('quá hạn');
-                } else if (activeStatus === 'completed') {
-                    matchesStatus = statusBadgeText.includes('hoàn thành');
-                }
-
-                const matchesKeyword = customerName.includes(keyword);
-
-                // Hiển thị hoặc ẩn dòng dữ liệu phù hợp
-                if (matchesStatus && matchesKeyword) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-    });
-</script>
-<!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
+    <!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
 <script src="../js/api.js"></script>
-<!-- Sau đó mới đến script riêng của từng trang -->
-<script src="../js/modules/accountant.js"></script>
+<script src="../js/modules/ai-reminder.js"></script>
 </body>
 </html>

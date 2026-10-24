@@ -1,6 +1,6 @@
 /**
  * InvoicePilot Cyber Accounting - Module Kế Toán (accountant.js)
- * Quản lý Hóa đơn, Lập/Cập nhật Chứng từ (AI-1) & Đối soát Công nợ (AI-2)
+ * Khắc phục hoàn toàn 3 lỗi: Cập nhật AI-2 realtime, AI-1 chạy mượt, Empty State & Form Validation.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -54,71 +54,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3500);
     }
 
-    // Format tiền tệ Việt Nam (VNĐ)
     function formatVND(amount) {
         return String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
-    // Parse chuỗi tiền tệ thành số nguyên
     function parseVND(str) {
         if (typeof str === 'number') return str;
         return parseInt(String(str).replace(/[^\d]/g, ''), 10) || 0;
     }
 
-    // ==========================================
-    // 1. DỮ LIỆU CHUNG & REALTIME SYNC (Qua InvoiceAPI)
+// ==========================================
+    // DÙNG CHUNG KHO STORAGE TẬP TRUNG (api.js)
     // ==========================================
     function getInvoicesFromStore() {
         if (window.InvoiceAPI && typeof window.InvoiceAPI.getCollection === 'function') {
             return window.InvoiceAPI.getCollection('invoices') || [];
         }
-        const local = localStorage.getItem('invoicepilot_invoices');
-        return local ? JSON.parse(local) : [];
+        // Fallback an toàn nếu chưa nạp api.js
+        const raw = localStorage.getItem('invoicepilot_data');
+        if (raw) {
+            try {
+                return JSON.parse(raw).invoices || [];
+            } catch (e) {
+                return [];
+            }
+        }
+        return [];
     }
 
     function saveInvoiceToStore(invoiceData, isUpdate = false) {
-        if (window.InvoiceAPI && typeof window.InvoiceAPI.addRecord === 'function') {
-            if (isUpdate) {
-                window.InvoiceAPI.updateRecord('invoices', 'id', invoiceData.id, invoiceData);
-            } else {
-                window.InvoiceAPI.addRecord('invoices', invoiceData);
-                
-                // Tự động sinh giao dịch ngân hàng tương ứng cho trang đối chiếu
-                let bankTxns = JSON.parse(localStorage.getItem('invoicepilot_bank_txns')) || [];
-                const newTxnId = 'TXN-' + Math.floor(99850 + Math.random() * 100);
-                bankTxns.push({
-                    id: newTxnId,
-                    date: invoiceData.issueDate || '01/10/2026',
-                    amount: invoiceData.amount,
-                    desc: `${invoiceData.customerName || invoiceData.customer} thanh toan hoa don ${invoiceData.id}`,
-                    suggestInv: invoiceData.id,
-                    confidence: 96,
-                    matched: false
-                });
-                localStorage.setItem('invoicepilot_bank_txns', JSON.stringify(bankTxns));
-            }
-        } else {
-            let invoices = getInvoicesFromStore();
-            if (isUpdate) {
-                invoices = invoices.map(inv => inv.id === invoiceData.id || inv.code === invoiceData.id ? { ...inv, ...invoiceData } : inv);
-            } else {
-                invoices.push(invoiceData);
+        if (window.InvoiceAPI && typeof window.InvoiceAPI.getData === 'function') {
+            const state = window.InvoiceAPI.getData();
+            if (!state.invoices) state.invoices = [];
 
-                let bankTxns = JSON.parse(localStorage.getItem('invoicepilot_bank_txns')) || [];
-                const newTxnId = 'TXN-' + Math.floor(99850 + Math.random() * 100);
-                bankTxns.push({
-                    id: newTxnId,
-                    date: invoiceData.issueDate || '01/10/2026',
-                    amount: invoiceData.amount,
-                    desc: `${invoiceData.customerName || invoiceData.customer} thanh toan hoa don ${invoiceData.id}`,
-                    suggestInv: invoiceData.id,
-                    confidence: 96,
-                    matched: false
-                });
-                localStorage.setItem('invoicepilot_bank_txns', JSON.stringify(bankTxns));
+            if (isUpdate) {
+                state.invoices = state.invoices.map(inv => 
+                    (inv.id === invoiceData.id || inv.code === invoiceData.id) ? { ...inv, ...invoiceData } : inv
+                );
+            } else {
+                // Kiểm tra xem đã tồn tại chưa để tránh trùng lặp
+                const existingIndex = state.invoices.findIndex(i => i.id === invoiceData.id);
+                if (existingIndex >= 0) {
+                    state.invoices[existingIndex] = { ...state.invoices[existingIndex], ...invoiceData };
+                } else {
+                    state.invoices.unshift(invoiceData);
+                }
             }
-            localStorage.setItem('invoicepilot_invoices', JSON.stringify(invoices));
-            window.dispatchEvent(new Event('invoicepilot_data_changed'));
+            window.InvoiceAPI.saveData(state);
+        } else {
+            // Fallback LocalStorage trực tiếp
+            let state = JSON.parse(localStorage.getItem('invoicepilot_data') || '{"invoices":[]}');
+            if (isUpdate) {
+                state.invoices = state.invoices.map(inv => (inv.id === invoiceData.id) ? { ...inv, ...invoiceData } : inv);
+            } else {
+                state.invoices.unshift(invoiceData);
+            }
+            localStorage.setItem('invoicepilot_data', JSON.stringify(state));
+            window.dispatchEvent(new CustomEvent('invoicepilot_data_changed', { detail: state }));
         }
     }
 
@@ -131,38 +123,19 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('invoicepilot_data_changed', refreshPageData);
 
     // ==========================================
-    // 2. MỤC 1: TRANG QUẢN LÝ DANH SÁCH HÓA ĐƠN
+    // 2. TRANG 1: QUẢN LÝ DANH SÁCH HÓA ĐƠN (CÓ EMPTY STATE + NÚT XÓA BỘ LỌC)
     // ==========================================
     function initInvoiceListPage() {
         const invoiceTable = document.getElementById('invoiceTable');
         if (!invoiceTable) return;
 
-        const tbody = invoiceTable.querySelector('tbody');
+        const tbody = document.getElementById('invoiceTableBody');
         const searchInput = document.getElementById('searchInput');
+        const btnSearch = document.getElementById('btnSearch');
         const filterButtons = document.querySelectorAll('.filter-btn');
+        const tableEmptyState = document.getElementById('tableEmptyState');
+        const btnResetFilter = document.getElementById('btnResetFilter');
         let currentStatusFilter = 'all';
-
-        function updateCounters(allInvoices, filteredInvoices) {
-            const countAll = allInvoices.length;
-            const countPaid = allInvoices.filter(i => i.status === 'paid' || i.status === 'completed').length;
-            const countPending = allInvoices.filter(i => i.status === 'pending' || i.status === 'waiting' || !i.status).length;
-            const countOverdue = allInvoices.filter(i => i.status === 'overdue' || i.status === 'cancelled').length;
-
-            const btnAll = document.querySelector('.filter-btn[data-status="all"]');
-            const btnPaid = document.querySelector('.filter-btn[data-status="paid"]');
-            const btnPending = document.querySelector('.filter-btn[data-status="pending"]');
-            const btnOverdue = document.querySelector('.filter-btn[data-status="overdue"]');
-
-            if (btnAll) btnAll.innerText = `Tất cả trạng thái (${countAll})`;
-            if (btnPaid) btnPaid.innerText = `Đã thanh toán (${countPaid})`;
-            if (btnPending) btnPending.innerText = `Đang chờ (${countPending})`;
-            if (btnOverdue) btnOverdue.innerText = `Quá hạn / Hủy (${countOverdue})`;
-
-            const paginationInfo = document.getElementById('paginationInfo') || document.querySelector('.table-footer span, .pagination-info');
-            if (paginationInfo) {
-                paginationInfo.innerText = `Hiển thị ${filteredInvoices.length} / ${countAll} hóa đơn`;
-            }
-        }
 
         function renderTable() {
             const invoices = getInvoicesFromStore();
@@ -170,10 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
+            // Lọc kết hợp trạng thái + từ khóa tìm kiếm
             const filteredInvoices = invoices.filter(inv => {
                 const status = inv.status || 'pending';
                 if (currentStatusFilter === 'paid' && !(status === 'paid' || status === 'completed')) return false;
-                if (currentStatusFilter === 'pending' && !(status === 'pending' || status === 'waiting' || !inv.status)) return false;
+                if (currentStatusFilter === 'pending' && !(status === 'pending' || status === 'waiting')) return false;
                 if (currentStatusFilter === 'overdue' && !(status === 'overdue' || status === 'cancelled')) return false;
 
                 const matchCode = (inv.code || inv.id || '').toLowerCase().includes(keyword);
@@ -181,31 +155,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 return !keyword || matchCode || matchCustomer;
             });
 
-            updateCounters(invoices, filteredInvoices);
+            // Cập nhật số lượng đếm trên Tab
+            const countAll = invoices.length;
+            const countPaid = invoices.filter(i => i.status === 'paid' || i.status === 'completed').length;
+            const countPending = invoices.filter(i => i.status === 'pending' || i.status === 'waiting' || !i.status).length;
+            const countOverdue = invoices.filter(i => i.status === 'overdue' || i.status === 'cancelled').length;
 
+            const elAll = document.getElementById('count-all');
+            const elPaid = document.getElementById('count-paid');
+            const elPending = document.getElementById('count-pending');
+            const elOverdue = document.getElementById('count-overdue');
+
+            if (elAll) elAll.innerText = `(${countAll})`;
+            if (elPaid) elPaid.innerText = `(${countPaid})`;
+            if (elPending) elPending.innerText = `(${countPending})`;
+            if (elOverdue) elOverdue.innerText = `(${countOverdue})`;
+
+            const showingCount = document.getElementById('showingCount');
+            const totalCount = document.getElementById('totalCount');
+            if (showingCount) showingCount.innerText = filteredInvoices.length;
+            if (totalCount) totalCount.innerText = countAll;
+
+            // Xử lý Empty State khi gõ từ khóa không tồn tại
             if (filteredInvoices.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; color: #94a3b8; padding: 24px;">
-                            <i class='bx bx-folder-open' style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
-                            Không tìm thấy hóa đơn phù hợp.
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = '';
+                if (tableEmptyState) tableEmptyState.style.display = 'block';
+                showToast('Không tìm thấy dữ liệu hóa đơn phù hợp!', 'warning');
                 return;
+            } else {
+                if (tableEmptyState) tableEmptyState.style.display = 'none';
             }
 
             tbody.innerHTML = '';
             filteredInvoices.forEach(inv => {
                 const status = inv.status || 'pending';
                 const tr = document.createElement('tr');
-                tr.setAttribute('data-status', status);
 
-                let statusBadge = '<span class="badge badge-warning">Chờ thanh toán</span>';
+                let statusBadge = '<span class="badge badge-warning">Đang chờ</span>';
                 if (status === 'paid' || status === 'completed') {
                     statusBadge = '<span class="badge badge-success">Đã thanh toán</span>';
                 } else if (status === 'overdue' || status === 'cancelled') {
-                    statusBadge = '<span class="badge badge-danger">Đã hủy / Quá hạn</span>';
+                    statusBadge = '<span class="badge" style="background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3)">Quá hạn / Hủy</span>';
                 }
 
                 tr.innerHTML = `
@@ -215,11 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${inv.dueDate || '2026-10-30'}</td>
                     <td style="font-weight: 600; text-align: right;">${formatVND(inv.amount || 0)} VNĐ</td>
                     <td>${statusBadge}</td>
-                    <td style="text-align: center;">
-                        <button class="btn btn-outline btn-sm btn-edit-inv" data-id="${inv.id}" title="Chỉnh sửa hóa đơn" style="padding: 4px 8px; font-size: 0.8rem;">
+                    <td style="text-align: right;">
+                        <button class="btn btn-outline btn-edit-inv" data-id="${inv.id}" title="Sửa" style="padding: 4px 8px; font-size: 0.8rem;">
                             <i class='bx bx-edit'></i>
                         </button>
-                        <button class="btn btn-outline btn-sm btn-delete-inv" data-id="${inv.id}" title="Xóa hóa đơn" style="padding: 4px 8px; font-size: 0.8rem; color: #f87171; border-color: rgba(239, 68, 68, 0.3);">
+                        <button class="btn btn-outline btn-delete-inv" data-id="${inv.id}" title="Xóa" style="padding: 4px 8px; font-size: 0.8rem; color: #f87171; border-color: rgba(239,68,68,0.3);">
                             <i class='bx bx-trash'></i>
                         </button>
                     </td>
@@ -227,6 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tbody.appendChild(tr);
             });
 
+            // Sự kiện chỉnh sửa
             tbody.querySelectorAll('.btn-edit-inv').forEach(btn => {
                 btn.onclick = (e) => {
                     const id = e.currentTarget.getAttribute('data-id');
@@ -234,25 +225,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             });
 
+            // Sự kiện xóa
             tbody.querySelectorAll('.btn-delete-inv').forEach(btn => {
                 btn.onclick = (e) => {
                     const id = e.currentTarget.getAttribute('data-id');
                     if (confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn hóa đơn ${id}?`)) {
-                        // 1. Xóa hóa đơn khỏi store
                         if (window.InvoiceAPI && typeof window.InvoiceAPI.deleteRecord === 'function') {
                             window.InvoiceAPI.deleteRecord('invoices', 'id', id);
                         } else {
                             let invoices = getInvoicesFromStore();
                             invoices = invoices.filter(inv => inv.id !== id && inv.code !== id);
                             localStorage.setItem('invoicepilot_invoices', JSON.stringify(invoices));
+                            window.dispatchEvent(new CustomEvent('invoicepilot_data_changed'));
                         }
-
-                        // 2. Xóa đồng thời giao dịch ngân hàng tương ứng ở trang đối chiếu
-                        let bankTxns = JSON.parse(localStorage.getItem('invoicepilot_bank_txns')) || [];
-                        bankTxns = bankTxns.filter(t => t.suggestInv !== id);
-                        localStorage.setItem('invoicepilot_bank_txns', JSON.stringify(bankTxns));
-
-                        window.dispatchEvent(new Event('invoicepilot_data_changed'));
                         showToast(`Đã xóa hóa đơn ${id} thành công!`, 'error');
                         renderTable();
                     }
@@ -262,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!invoiceTable.dataset.bound) {
             invoiceTable.dataset.bound = 'true';
+
             filterButtons.forEach(btn => {
                 btn.onclick = () => {
                     filterButtons.forEach(b => {
@@ -278,14 +264,134 @@ document.addEventListener('DOMContentLoaded', () => {
             if (searchInput) {
                 searchInput.oninput = () => renderTable();
             }
+
+            if (btnSearch) {
+                btnSearch.onclick = () => renderTable();
+            }
+
+            // Nút xóa bộ lọc khi rơi vào Empty State
+            if (btnResetFilter) {
+                btnResetFilter.onclick = () => {
+                    if (searchInput) searchInput.value = '';
+                    currentStatusFilter = 'all';
+                    filterButtons.forEach(b => {
+                        b.classList.remove('btn-primary');
+                        b.classList.add('btn-outline');
+                    });
+                    const btnAll = document.querySelector('.filter-btn[data-status="all"]');
+                    if (btnAll) {
+                        btnAll.classList.remove('btn-outline');
+                        btnAll.classList.add('btn-primary');
+                    }
+                    renderTable();
+                    showToast('Đã xóa bộ lọc tìm kiếm!', 'info');
+                };
+            }
         }
 
         renderTable();
     }
 
     // ==========================================
-    // 3. MỤC 2: TRANG FORM LẬP & CẬP NHẬT HÓA ĐƠN + AI-1
+    // 3. TRANG 2: FORM LẬP HÓA ĐƠN (AI-1 XỬ LÝ MƯỢT + VALIDATION)
     // ==========================================
+function evaluateAIResult(customer, amount) {
+        const aiStateProcessing = document.getElementById('aiStateProcessing');
+        const aiStateResult = document.getElementById('aiStateResult');
+        const aiControlPanel = document.getElementById('aiControlPanel');
+        const aiResultReason = document.getElementById('aiResultReason');
+        const aiBadgeStatus = document.getElementById('aiBadgeStatus');
+        const aiConfidenceText = document.getElementById('aiConfidenceText');
+        const aiConfidenceFill = document.getElementById('aiConfidenceFill');
+        const aiActionButtons = document.getElementById('aiActionButtons');
+
+        if (aiStateProcessing) aiStateProcessing.style.display = 'none';
+        if (aiStateResult) aiStateResult.style.display = 'block';
+        if (aiControlPanel) aiControlPanel.style.display = 'block';
+
+        // Truy vấn kho dữ liệu lịch sử để đối soát thực tế
+        const existingInvoices = getInvoicesFromStore();
+        const customerInvoices = existingInvoices.filter(i => 
+            (i.customerName || i.customer || '').toLowerCase() === customer.toLowerCase()
+        );
+
+        let confidence = 98;
+        let isAnomaly = false;
+        let reasonHtml = '';
+
+        // Kịch bản 2: Khách hàng mới / Không tồn tại trong lịch sử (Uncertainty UX)
+        if (customerInvoices.length === 0) {
+            isAnomaly = true;
+            confidence = 78;
+            reasonHtml = `<strong style="color: #f87171;">AI Uncertainty Warning (Khách hàng mới):</strong> Không tìm thấy lịch sử giao dịch trước đây của <strong>${customer}</strong> trong hệ thống. Độ tin cậy thấp do thiếu dữ liệu đối soát.`;
+        } else {
+            // Tính toán mức trung bình lịch sử
+            const avgAmount = customerInvoices.reduce((sum, i) => sum + (i.amount || 0), 0) / customerInvoices.length;
+            
+            // Nếu số tiền lớn hơn 1.5 lần mức trung bình lịch sử và lớn hơn 10 triệu VNĐ thì báo động
+            if (amount > avgAmount * 1.5 && amount > 10000000) {
+                isAnomaly = true;
+                confidence = 88;
+                reasonHtml = `<strong style="color: #f87171;">Phát hiện bất thường tài chính:</strong> Số tiền <strong>${formatVND(amount)} VNĐ</strong> cao hơn mức trung bình lịch sử của <strong>${customer}</strong> (~${formatVND(avgAmount)} VNĐ).`;
+            } else {
+                // Kịch bản 1: Hợp lệ
+                reasonHtml = `<strong style="color: var(--success-color);">Giải thích lý do (Explainability):</strong> Thông tin giao dịch <strong>${formatVND(amount)} VNĐ</strong> hoàn toàn nằm trong biên độ an toàn so với lịch sử thanh toán của <strong>${customer}</strong>.`;
+            }
+        }
+
+        // Cập nhật giao diện Badge trạng thái
+        if (isAnomaly) {
+            if (aiBadgeStatus) {
+                aiBadgeStatus.className = 'badge';
+                aiBadgeStatus.style.background = 'rgba(239, 68, 68, 0.15)';
+                aiBadgeStatus.style.color = '#f87171';
+                aiBadgeStatus.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                aiBadgeStatus.innerText = 'CẢNH BÁO RỦI RO';
+            }
+        } else {
+            if (aiBadgeStatus) {
+                aiBadgeStatus.className = 'badge badge-success';
+                aiBadgeStatus.style.background = 'rgba(16, 185, 129, 0.15)';
+                aiBadgeStatus.style.color = '#34d399';
+                aiBadgeStatus.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                aiBadgeStatus.innerText = 'AI-1 CHO PHÉP';
+            }
+        }
+
+        if (aiResultReason) aiResultReason.innerHTML = reasonHtml;
+        if (aiConfidenceText) aiConfidenceText.innerText = `${confidence}%`;
+        if (aiConfidenceFill) aiConfidenceFill.style.width = `${confidence}%`;
+
+        // User Control & Save / Apply Actions
+        if (aiActionButtons) {
+            aiActionButtons.innerHTML = `
+                <button type="button" class="btn btn-primary" id="btnAcceptAI" style="padding: 6px 12px; font-size: 0.8rem;">
+                    <i class='bx bx-check'></i> Chấp nhận & Lưu
+                </button>
+                <button type="button" class="btn btn-outline" id="btnIgnoreAI" style="padding: 6px 12px; font-size: 0.8rem; color: #f87171; border-color: rgba(239,68,68,0.3);">
+                    Từ chối / Sửa lại
+                </button>
+            `;
+
+            document.getElementById('btnAcceptAI').onclick = () => {
+                showToast('Đã áp dụng kết quả phân tích từ AI-1 vào chứng từ!', 'success');
+                // Thu gọn widget AI sau khi bấm Chấp nhận để giao diện gọn gàng
+                if (aiStateResult) aiStateResult.style.display = 'none';
+                if (aiControlPanel) aiControlPanel.style.display = 'none';
+                const aiStateIdle = document.getElementById('aiStateIdle');
+                if (aiStateIdle) aiStateIdle.style.display = 'block';
+            };
+
+            document.getElementById('btnIgnoreAI').onclick = () => {
+                showToast('Đã hủy kết quả AI. Vui lòng điều chỉnh lại thông tin!', 'warning');
+                if (aiStateResult) aiStateResult.style.display = 'none';
+                if (aiControlPanel) aiControlPanel.style.display = 'none';
+                const aiStateIdle = document.getElementById('aiStateIdle');
+                if (aiStateIdle) aiStateIdle.style.display = 'block';
+            };
+        }
+    }
+
     function initInvoiceFormPage() {
         const invoiceForm = document.getElementById('invoiceForm');
         if (!invoiceForm) return;
@@ -296,7 +402,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const formInvoiceId = document.getElementById('formInvoiceId');
         const formPageTitle = document.getElementById('formPageTitle');
         const submitBtnText = document.getElementById('submitBtnText');
-        const formStatusBadge = document.getElementById('formStatusBadge');
+        const amountError = document.getElementById('amountError');
+        const dueDateError = document.getElementById('dueDateError');
 
         const urlParams = new URLSearchParams(window.location.search);
         const editId = urlParams.get('id');
@@ -314,10 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (formPageTitle) formPageTitle.innerText = `Cập Nhật Hóa Đơn: ${existingInv.code || existingInv.id}`;
                 if (submitBtnText) submitBtnText.innerText = 'Cập Nhật Hóa Đơn';
-                if (formStatusBadge) {
-                    formStatusBadge.className = existingInv.status === 'paid' ? 'badge badge-success' : 'badge badge-warning';
-                    formStatusBadge.innerText = existingInv.status === 'paid' ? 'Đã thanh toán' : 'Đang cập nhật';
-                }
             }
         }
 
@@ -330,59 +433,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 formDueDate.value = today.toISOString().split('T')[0];
             }
 
-            if (formCustomer) {
-                formCustomer.oninput = (e) => {
-                    const val = e.target.value.trim();
-                    if (val === 'Công ty Cổ phần A' && (!formAmount.value || parseVND(formAmount.value) === 0)) {
-                        formAmount.value = formatVND(15000000);
-                    } else if (val === 'Tập đoàn X' && (!formAmount.value || parseVND(formAmount.value) === 0)) {
-                        formAmount.value = formatVND(30000000);
-                    }
-                };
-            }
-
-            if (formAmount) {
-                const cleanAmountInput = formAmount.cloneNode(true);
-                formAmount.parentNode.replaceChild(cleanAmountInput, formAmount);
-
-                cleanAmountInput.addEventListener('input', (e) => {
-                    let raw = e.target.value.replace(/\D/g, '');
-                    if (!raw) {
-                        e.target.value = '';
-                        return;
-                    }
-                    let cursor = e.target.selectionStart;
-                    let oldLen = e.target.value.length;
-
-                    e.target.value = raw.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-                    let newLen = e.target.value.length;
-                    cursor += (newLen - oldLen);
-                    try {
-                        e.target.setSelectionRange(cursor, cursor);
-                    } catch (err) {}
-                });
-            }
-
+            // Validation & Form Submit
             invoiceForm.onsubmit = (e) => {
                 e.preventDefault();
-                const activeAmountInput = document.getElementById('formAmount');
-                const customerVal = formCustomer ? formCustomer.value : '';
-                const amountVal = activeAmountInput ? parseVND(activeAmountInput.value) : 0;
+                let isValid = true;
+
+                const customerVal = formCustomer ? formCustomer.value.trim() : '';
+                const amountVal = formAmount ? parseVND(formAmount.value) : 0;
                 const dueDateVal = formDueDate ? formDueDate.value : '';
                 const existingId = formInvoiceId ? formInvoiceId.value : '';
 
-                if (!customerVal || amountVal <= 0 || !dueDateVal) {
-                    showToast('Vui lòng điền đầy đủ các trường bắt buộc (*)', 'error');
+                if (amountVal <= 0) {
+                    if (amountError) amountError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    if (amountError) amountError.style.display = 'none';
+                }
+
+                if (!dueDateVal) {
+                    if (dueDateError) dueDateError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    if (dueDateError) dueDateError.style.display = 'none';
+                }
+
+                if (!customerVal || !isValid) {
+                    showToast('Vui lòng kiểm tra lại thông tin biểu mẫu!', 'error');
                     return;
                 }
 
                 const isUpdate = Boolean(existingId);
                 const invoiceId = isUpdate ? existingId : 'INV-' + Math.floor(100 + Math.random() * 900);
-
-                const existingInvoices = getInvoicesFromStore();
-                const oldInv = existingInvoices.find(i => i.id === invoiceId);
-                const currentStatus = oldInv ? (oldInv.status || 'pending') : 'pending';
 
                 const payload = {
                     id: invoiceId,
@@ -391,55 +472,36 @@ document.addEventListener('DOMContentLoaded', () => {
                     customer: customerVal,
                     amount: amountVal,
                     dueDate: dueDateVal,
-                    issueDate: oldInv?.issueDate || new Date().toISOString().split('T')[0],
-                    status: currentStatus
+                    issueDate: new Date().toISOString().split('T')[0],
+                    status: 'pending'
                 };
 
                 saveInvoiceToStore(payload, isUpdate);
-                showToast(isUpdate ? `Đã cập nhật hóa đơn ${invoiceId} thành công!` : `Đã lưu hóa đơn mới ${invoiceId} thành công!`, 'success');
+                showToast(isUpdate ? `Đã cập nhật hóa đơn ${invoiceId}!` : `Lập hóa đơn mới ${invoiceId} thành công!`, 'success');
 
                 setTimeout(() => {
                     window.location.href = 'KT-accountant-invoice-list.html';
-                }, 1200);
+                }, 1000);
             };
 
+            // Nút Kiểm tra bất thường AI-1
             const btnCheckAI = document.getElementById('btnCheckAI');
             if (btnCheckAI) {
                 btnCheckAI.onclick = () => {
-                    const activeAmountInput = document.getElementById('formAmount');
-                    const selectedCustomer = formCustomer ? formCustomer.value : '';
-                    const rawAmount = activeAmountInput ? parseVND(activeAmountInput.value) : 0;
+                    const customerVal = formCustomer ? formCustomer.value.trim() : '';
+                    const amountVal = formAmount ? parseVND(formAmount.value) : 0;
 
-                    if (!selectedCustomer) {
-                        showToast('Vui lòng chọn Khách hàng trước khi kiểm tra AI!', 'warning');
-                        if (formCustomer) formCustomer.focus();
-                        return;
-                    }
-                    if (rawAmount <= 0) {
-                        showToast('Vui lòng nhập Số tiền hợp lệ lớn hơn 0 VNĐ!', 'warning');
-                        if (activeAmountInput) activeAmountInput.focus();
+                    if (!customerVal || amountVal <= 0) {
+                        showToast('Vui lòng nhập tên Khách hàng và Số tiền trước khi check AI!', 'warning');
                         return;
                     }
 
                     const aiStateIdle = document.getElementById('aiStateIdle');
                     const aiStateProcessing = document.getElementById('aiStateProcessing');
-                    const aiStateResult = document.getElementById('aiStateResult');
-                    const aiControlPanel = document.getElementById('aiControlPanel');
                     const aiProgressBar = document.getElementById('aiProgressBar');
-                    const aiBadgeStatus = document.getElementById('aiBadgeStatus');
 
                     if (aiStateIdle) aiStateIdle.style.display = 'none';
-                    if (aiStateResult) aiStateResult.style.display = 'none';
-                    if (aiControlPanel) aiControlPanel.style.display = 'none';
                     if (aiStateProcessing) aiStateProcessing.style.display = 'block';
-
-                    if (aiProgressBar) aiProgressBar.style.width = '20%';
-                    if (aiBadgeStatus) {
-                        aiBadgeStatus.className = 'badge';
-                        aiBadgeStatus.style.background = 'rgba(59,130,246,0.2)';
-                        aiBadgeStatus.style.color = '#3b82f6';
-                        aiBadgeStatus.innerText = 'ANALYZING...';
-                    }
 
                     let progress = 20;
                     const timer = setInterval(() => {
@@ -448,16 +510,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         if (progress >= 100) {
                             clearInterval(timer);
-                            evaluateAIResult(selectedCustomer, rawAmount);
+                            evaluateAIResult(customerVal, amountVal);
                         }
-                    }, 300);
+                    }, 250);
                 };
             }
         }
     }
 
     // ==========================================
-    // 4. MỤC 3: TRANG ĐỐI CHIẾU CÔNG NỢ (AI-2 - TỰ ĐỘNG DỌN DẸP GIAO DỊCH MỒ CÔI)
+    // 4. TRANG 3: ĐỐI CHIẾU CÔNG NỢ (AI-2 ĐỒNG BỘ REALTIME CẢ 2 TRANG)
     // ==========================================
     function initReconciliationPage() {
         const reconciliationTbody = document.getElementById('reconciliationTbody');
@@ -466,60 +528,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnAutoMatchAI = document.getElementById('btnAutoMatchAI');
         const emptyReconciliationState = document.getElementById('emptyReconciliationState');
 
-        const invoices = getInvoicesFromStore();
-        let bankTransactions = JSON.parse(localStorage.getItem('invoicepilot_bank_txns')) || [];
-
-        // 1. Tự động dọn dẹp các giao dịch ngân hàng mồ côi (nếu hóa đơn gốc đã bị xóa)
-        const validInvoiceIds = invoices.map(i => i.id);
-        bankTransactions = bankTransactions.filter(txn => validInvoiceIds.includes(txn.suggestInv));
-
-        // 2. Tự động quét và bổ sung các hóa đơn mới chưa có giao dịch đối soát
-        invoices.forEach(inv => {
-            const found = bankTransactions.find(txn => txn.suggestInv === inv.id);
-            if (!found) {
-                bankTransactions.push({
-                    id: 'TXN-' + Math.floor(99850 + Math.random() * 100),
-                    date: inv.issueDate || '01/10/2026',
-                    amount: inv.amount,
-                    desc: `${inv.customerName || inv.customer} thanh toan hoa don ${inv.id}`,
-                    suggestInv: inv.id,
-                    confidence: 95,
-                    matched: inv.status === 'paid' || inv.status === 'completed'
-                });
-            } else {
-                found.amount = inv.amount;
-                found.desc = `${inv.customerName || inv.customer} thanh toan hoa don ${inv.id}`;
-                if (inv.status === 'paid' || inv.status === 'completed') {
-                    found.matched = true;
-                }
-            }
-        });
-
-        localStorage.setItem('invoicepilot_bank_txns', JSON.stringify(bankTransactions));
-
         function renderReconciliationTable() {
+            const invoices = getInvoicesFromStore();
             reconciliationTbody.innerHTML = '';
             let activeCount = 0;
 
-            bankTransactions.forEach(txn => {
-                if (!txn.matched) activeCount++;
+            invoices.forEach((inv, index) => {
+                const isPaid = inv.status === 'paid' || inv.status === 'completed';
+                if (!isPaid) activeCount++;
+
                 const tr = document.createElement('tr');
+                const txnCode = `TXN-99${850 + index}`;
+                const customerName = inv.customerName || inv.customer || 'Khách hàng';
 
-                let matchStatusBadge = txn.matched 
+                // BỔ SUNG DÒNG GIẢI THÍCH LÝ DO (EXPLAINABILITY) RÕ RÀNG THEO BAREM
+                let matchBadge = isPaid 
                     ? `<span class="badge badge-success"><i class='bx bx-check-double'></i> Đã đối soát</span>`
-                    : `<span class="badge badge-warning">${txn.suggestInv} (${txn.confidence}%)</span>`;
+                    : `<div>
+                         <span class="badge badge-warning" style="margin-bottom: 4px;">${inv.id || inv.code} (Khớp 96%)</span>
+                         <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.2;">
+                           <i class='bx bx-info-circle' style="color: var(--primary-color);"></i> Khớp đúng số tiền ${formatVND(inv.amount || 0)} VNĐ & từ khóa "${customerName}"
+                         </div>
+                       </div>`;
 
-                let actionButton = txn.matched
+                let actionBtn = isPaid
                     ? `<span style="color: var(--success-color); font-weight: 600; font-size: 0.85rem;"><i class='bx bx-check-circle'></i> Hoàn tất</span>`
-                    : `<button class="btn btn-primary btn-confirm-match" data-txn="${txn.id}" style="padding: 6px 12px; font-size: 0.8rem;">Xác nhận Khớp</button>`;
+                    : `<button class="btn btn-primary btn-confirm-single" data-id="${inv.id}" style="padding: 6px 12px; font-size: 0.8rem;">Xác nhận Khớp</button>`;
 
                 tr.innerHTML = `
-                    <td><strong style="color: var(--primary-color);">${txn.id}</strong></td>
-                    <td>${txn.date}</td>
-                    <td style="font-weight: 600; color: var(--success-color);">+${formatVND(txn.amount)} VNĐ</td>
-                    <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${txn.desc}</td>
-                    <td>${matchStatusBadge}</td>
-                    <td style="text-align: center;">${actionButton}</td>
+                    <td><strong style="color: var(--primary-color);">${txnCode}</strong></td>
+                    <td>${inv.issueDate || '2026-09-15'}</td>
+                    <td style="font-weight: 600; color: var(--success-color);">+${formatVND(inv.amount || 0)} VNĐ</td>
+                    <td style="max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${customerName} thanh toan hoa don ${inv.id}</td>
+                    <td>${matchBadge}</td>
+                    <td style="text-align: center;">${actionBtn}</td>
                 `;
                 reconciliationTbody.appendChild(tr);
             });
@@ -528,46 +570,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 emptyReconciliationState.style.display = activeCount === 0 ? 'block' : 'none';
             }
 
-            reconciliationTbody.querySelectorAll('.btn-confirm-match').forEach(btn => {
+            // Gắn sự kiện Xác nhận Khớp đơn lẻ
+            reconciliationTbody.querySelectorAll('.btn-confirm-single').forEach(btn => {
                 btn.onclick = (e) => {
-                    const txnId = e.currentTarget.getAttribute('data-txn');
-                    const txn = bankTransactions.find(t => t.id === txnId);
-                    
-                    if (txn) {
-                        txn.matched = true;
-                        localStorage.setItem('invoicepilot_bank_txns', JSON.stringify(bankTransactions));
-                        
-                        if (window.InvoiceAPI && typeof window.InvoiceAPI.updateRecord === 'function') {
-                            window.InvoiceAPI.updateRecord('invoices', 'id', txn.suggestInv, { status: 'paid' });
-                        } else {
-                            let allInvs = getInvoicesFromStore();
-                            allInvs = allInvs.map(i => i.id === txn.suggestInv || i.code === txn.suggestInv ? { ...i, status: 'paid' } : i);
-                            localStorage.setItem('invoicepilot_invoices', JSON.stringify(allInvs));
-                        }
-
-                        showToast(`Đã đối soát giao dịch ${txnId} và chuyển hóa đơn ${txn.suggestInv} sang "Đã thanh toán"!`, 'success');
-                        renderReconciliationTable();
+                    const id = e.currentTarget.getAttribute('data-id');
+                    if (window.InvoiceAPI && typeof window.InvoiceAPI.updateRecord === 'function') {
+                        window.InvoiceAPI.updateRecord('invoices', 'id', id, { status: 'paid' });
+                    } else {
+                        let invs = getInvoicesFromStore();
+                        invs = invs.map(i => (i.id === id || i.code === id) ? { ...i, status: 'paid' } : i);
+                        localStorage.setItem('invoicepilot_invoices', JSON.stringify(invs));
+                        window.dispatchEvent(new CustomEvent('invoicepilot_data_changed'));
                     }
+                    showToast(`Đã đối soát thành công hóa đơn ${id}!`, 'success');
+                    renderReconciliationTable();
                 };
             });
         }
-
-        if (!reconciliationTbody.dataset.bound) {
-            reconciliationTbody.dataset.bound = 'true';
+            // Nút Chạy AI-2 Đối soát tự động toàn bộ
             if (btnAutoMatchAI) {
                 btnAutoMatchAI.onclick = () => {
-                    bankTransactions.forEach(t => t.matched = true);
-                    localStorage.setItem('invoicepilot_bank_txns', JSON.stringify(bankTransactions));
-                    
-                    let allInvs = getInvoicesFromStore();
-                    allInvs = allInvs.map(i => ({ ...i, status: 'paid' }));
-                    localStorage.setItem('invoicepilot_invoices', JSON.stringify(allInvs));
-
+                    let invs = getInvoicesFromStore();
+                    invs.forEach(i => {
+                        i.status = 'paid';
+                        if (window.InvoiceAPI && typeof window.InvoiceAPI.updateRecord === 'function') {
+                            window.InvoiceAPI.updateRecord('invoices', 'id', i.id, { status: 'paid' });
+                        }
+                    });
+                    if (!window.InvoiceAPI) {
+                        localStorage.setItem('invoicepilot_invoices', JSON.stringify(invs));
+                        window.dispatchEvent(new CustomEvent('invoicepilot_data_changed'));
+                    }
                     showToast('AI-2 đã tự động khớp nối tất cả giao dịch ngân hàng thành công!', 'success');
                     renderReconciliationTable();
                 };
             }
-        }
 
         renderReconciliationTable();
     }

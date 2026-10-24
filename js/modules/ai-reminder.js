@@ -29,32 +29,141 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- HỆ THỐNG ĐỒNG BỘ REALTIME & TẢI DỮ LIỆU TẬP TRUNG ---
+    function getSharedInvoices() {
+        const rawData = localStorage.getItem('invoicepilot_data');
+        if (rawData) {
+            try {
+                const parsed = JSON.parse(rawData);
+                if (parsed.invoices && parsed.invoices.length > 0) return parsed.invoices;
+            } catch(e) {}
+        }
+        const localInv = localStorage.getItem('invoicepilot_invoices');
+        if (localInv) {
+            try { return JSON.parse(localInv); } catch(e) {}
+        }
+        return window.InvoiceAPI ? window.InvoiceAPI.getCollection('invoices') : [];
+    }
+
+    // Hàm kiểm tra trạng thái chuẩn xác
+    function isOverdue(inv) {
+        const st = (inv.status || '').toLowerCase();
+        return st.includes('overdue') || st.includes('quá hạn') || st.includes('hủy');
+    }
+
+    function isPaidStatus(inv) {
+        const st = (inv.status || '').toLowerCase();
+        return st.includes('paid') || st.includes('completed') || st.includes('đã thanh toán') || st.includes('hoàn thành');
+    }
+
     function loadData() {
-        // Lấy danh sách hóa đơn mới nhất từ api.js để cập nhật danh sách chọn nhắc nợ
-        const invoices = window.InvoiceAPI ? window.InvoiceAPI.getCollection('invoices') : [];
+        const invoices = getSharedInvoices();
         populateInvoiceSelect(invoices);
+        updateDashboardStats(invoices);
     }
 
     function populateInvoiceSelect(invoices) {
         const reminderTargetSelect = document.getElementById('reminderTarget');
         if (!reminderTargetSelect) return;
 
-        const currentValue = reminderTargetSelect.value;
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlId = urlParams.get('id');
 
         if (invoices && invoices.length > 0) {
             reminderTargetSelect.innerHTML = invoices.map(inv => 
-                `<option value="${inv.id || inv.code}">${inv.id || inv.code} - ${inv.customerName || 'Khách hàng'} (${(inv.amount || 0).toLocaleString()} VNĐ)</option>`
+                `<option value="${inv.id || inv.code}">${inv.id || inv.code} - ${inv.customerName || inv.customer || 'Khách hàng'} (${(Number(inv.amount) || 0).toLocaleString()} VNĐ)</option>`
             ).join('');
             
-            if (currentValue) {
-                reminderTargetSelect.value = currentValue;
+            if (urlId) {
+                reminderTargetSelect.value = urlId;
             }
         }
     }
 
-    // Đăng ký các ổ cắm sự kiện Realtime Sync giữa các tab/module
+    // Cập nhật động số liệu thống kê & Biểu đồ công nợ đầy đủ 3 trạng thái
+    function updateDashboardStats(invoices) {
+        let totalCollected = 0;
+        let totalPending = 0;
+        let totalOverdue = 0;
+
+        invoices.forEach(inv => {
+            const amount = Number(inv.amount) || 0;
+            if (isPaidStatus(inv)) {
+                totalCollected += amount;
+            } else if (isOverdue(inv)) {
+                totalOverdue += amount;
+            } else {
+                totalPending += amount;
+            }
+        });
+
+        const totalAll = totalCollected + totalPending + totalOverdue;
+        
+        let paidPercent = 0;
+        let overduePercent = 0;
+        let pendingPercent = 0;
+
+        if (totalAll > 0) {
+            paidPercent = totalCollected > 0 ? Math.max(2, Math.round((totalCollected / totalAll) * 100)) : 0;
+            overduePercent = totalOverdue > 0 ? Math.max(2, Math.round((totalOverdue / totalAll) * 100)) : 0;
+            pendingPercent = 100 - (paidPercent + overduePercent);
+            if (pendingPercent < 0) pendingPercent = 0;
+        }
+
+        // 1. Cập nhật 3 ô thống kê AI
+        const statCards = document.querySelectorAll('div[style*="background: rgba(14, 21, 38, 0.7)"]');
+        if (statCards.length >= 3) {
+            // Ô 1: Số email đã gửi
+            const sentValEl = statCards[0].querySelector('div:nth-child(2)');
+            if (sentValEl) {
+                const sentCount = Number(localStorage.getItem('invoicepilot_sent_emails') || 42);
+                sentValEl.innerText = `${sentCount} email`;
+            }
+
+            // Ô 2: Thu hồi thành công & Tự động tính % so với tháng trước (Tháng trước = 30.000.000 ₫)
+            const collectedValEl = statCards[1].querySelector('div:nth-child(2)');
+            const percentSubEl = statCards[1].querySelector('div:nth-child(3)');
+
+            if (collectedValEl) {
+                collectedValEl.innerText = `${totalCollected.toLocaleString()} ₫`;
+            }
+
+            if (percentSubEl) {
+                const lastMonthRevenue = 300000000;
+                let percentDiff = 0;
+                
+                if (lastMonthRevenue > 0) {
+                    percentDiff = Math.round(((totalCollected - lastMonthRevenue) / lastMonthRevenue) * 100);
+                }
+
+                const sign = percentDiff >= 0 ? '+' : '';
+                const colorClass = percentDiff >= 0 ? 'var(--success-color)' : '#f87171';
+                
+                percentSubEl.style.color = colorClass;
+                percentSubEl.innerText = `${sign}${percentDiff}% so với tháng trước`;
+            }
+        }
+
+        // 2. Cập nhật Biểu đồ công nợ 3 màu chuẩn xác (Chưa trả - Quá hạn - Đã thu)
+        const progressBarBars = document.querySelectorAll('div[style*="height: 10px"] > div');
+        if (progressBarBars.length >= 3) {
+            progressBarBars[0].style.width = `${pendingPercent}%`;  // Chưa trả (Cam)
+            progressBarBars[1].style.width = `${overduePercent}%`;  // Quá hạn (Đỏ)
+            progressBarBars[2].style.width = `${paidPercent}%`;     // Đã thu (Xanh)
+        }
+
+        // Cập nhật chú thích đầy đủ 3 màu cho biểu đồ
+        const legendContainer = document.getElementById('chartLegend') || document.querySelector('div[style*="gap: 20px; font-size: 0.75rem"]');
+        if (legendContainer) {
+            legendContainer.innerHTML = `
+                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--warning-color); border-radius: 50%;"></span> Chưa trả (${pendingPercent}%)</span>
+                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--danger-color); border-radius: 50%;"></span> Quá hạn (${overduePercent}%)</span>
+                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--success-color); border-radius: 50%;"></span> Đã thu (${paidPercent}%)</span>
+            `;
+        }
+    }
+
     window.addEventListener('storage', (event) => {
-        if (event.key === 'invoicepilot_data') {
+        if (event.key === 'invoicepilot_data' || event.key === 'invoicepilot_invoices') {
             loadData();
         }
     });
@@ -62,11 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('invoicepilot_data_changed', () => {
         loadData();
     });
-
-    window.addEventListener('focus', () => {
-        loadData();
-    });
-
 
     // --- 1. XỬ LÝ AI NHẮC NỢ ---
     const btnGenerate = document.getElementById('btnGenerateAI');
@@ -80,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const tone = document.getElementById('reminderTone') ? document.getElementById('reminderTone').value : 'formal';
             const userNote = document.getElementById('reminderNote') ? document.getElementById('reminderNote').value.trim() : '';
 
-            // 1. Trạng thái Đang xử lý (Loading)
             if (aiStatusBadge) {
                 aiStatusBadge.className = 'badge badge-warning';
                 aiStatusBadge.innerText = 'Đang xử lý AI...';
@@ -91,42 +194,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 aiContentArea.innerHTML = `
                     <div style="text-align: center; color: var(--text-secondary); padding: 50px 20px;">
                         <i class='bx bx-loader-alt bx-spin' style="font-size: 2.5rem; margin-bottom: 12px; color: var(--primary-color);"></i>
-                        <p style="font-size: 0.9rem; margin: 0; color: #fff;">AI đang đọc lịch sử giao dịch và phân tích dữ liệu...</p>
+                        <p style="font-size: 0.9rem; margin: 0; color: #fff;">AI đang phân tích và tích hợp ghi chú bổ sung...</p>
                     </div>
                 `;
             }
 
             setTimeout(() => {
-                // 2. Tỷ lệ lỗi ngẫu nhiên mô phỏng lỗi kết nối API (20%)
-                const isRandomError = Math.random() < 0.2;
-
-                if (isRandomError) {
-                    if (aiStatusBadge) {
-                        aiStatusBadge.className = 'badge';
-                        aiStatusBadge.style.background = 'rgba(239,68,68,0.15)';
-                        aiStatusBadge.style.color = '#f87171';
-                        aiStatusBadge.style.border = '1px solid rgba(239,68,68,0.3)';
-                        aiStatusBadge.innerText = 'Lỗi hệ thống AI';
-                    }
-
-                    if (aiContentArea) {
-                        aiContentArea.innerHTML = `
-                            <div style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 16px; text-align: center;">
-                                <i class='bx bx-error-circle' style="font-size: 2rem; color: #f87171; margin-bottom: 8px;"></i>
-                                <h4 style="margin: 0 0 6px 0; color: #f87171; font-size: 1rem;">Quá tải mô hình phân tích (Error Code: AI-503)</h4>
-                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0 0 12px 0;">Không thể kết nối đến cụm xử lý ngôn ngữ tự nhiên. Vui lòng thử lại.</p>
-                                <button class="btn btn-outline" onclick="document.getElementById('btnGenerateAI').click()" style="font-size: 0.8rem; padding: 6px 12px;">Thử lại ngay</button>
-                            </div>
-                        `;
-                    }
-                    showToast('Kết nối AI thất bại. Vui lòng thử lại!', 'error');
-                    return;
-                }
-
-                // 3. Trạng thái thành công
                 if (aiStatusBadge) {
                     aiStatusBadge.className = 'badge badge-success';
-                    aiStatusBadge.innerText = 'Hoàn thành (Độ tin cậy 98%)';
+                    aiStatusBadge.innerText = 'Hoàn thành (Độ tin cậy 98.6%)';
                 }
 
                 let sampleSubject = `[InvoicePilot] Nhắc nhở thanh toán hóa đơn ${targetInvoice}`;
@@ -140,35 +216,45 @@ document.addEventListener('DOMContentLoaded', () => {
                     sampleBody = `Chào bạn,\n\nChúng tôi gửi lời nhắc thân thiện về hóa đơn ${targetInvoice} sắp tới hạn thanh toán. Nếu đã chuyển khoản, bạn có thể bỏ qua email này nhé!\n\nChúc bạn một ngày làm việc hiệu quả.`;
                 }
 
+                if (userNote) {
+                    sampleBody += `\n\n[Ghi chú lưu ý từ Quản lý/Kinh doanh]: ${userNote}`;
+                }
+
                 if (aiContentArea) {
                     aiContentArea.innerHTML = `
                         <div style="font-size: 0.85rem; margin-bottom: 12px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 8px; padding: 10px;">
                             <strong style="color: var(--primary-color);">Lý do AI chọn cấu trúc này:</strong> 
-                            <span style="color: var(--text-secondary);">Dựa trên thói quen thanh toán và mức giọng văn (${tone}) đã chọn để tối ưu hóa tỷ lệ thu hồi công nợ.${userNote ? ' Đã kết hợp ghi chú bổ sung.' : ''}</span>
+                            <span style="color: var(--text-secondary);">Đã áp dụng giọng văn (${tone})${userNote ? ' và tích hợp thành công ghi chú bổ sung.' : '.'}</span>
                         </div>
                         
                         <div style="background: #060913; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 0.85rem;">
                             <div style="margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
-                                <strong style="color: var(--text-secondary);">Tiêu đề:</strong> <span style="color: #fff;">${sampleSubject}</span>
+                                <strong style="color: var(--text-secondary);">Tiêu đề:</strong> <span id="aiSubjectText" style="color: #fff;">${sampleSubject}</span>
                             </div>
                             <div>
                                 <strong style="color: var(--text-secondary); display: block; margin-bottom: 4px;">Nội dung email:</strong>
-                                <div style="white-space: pre-line; color: var(--text-primary); background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; font-family: monospace; font-size: 0.8rem;">${sampleBody}</div>
+                                <div id="aiBodyText" style="white-space: pre-line; color: var(--text-primary); background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; font-family: monospace; font-size: 0.8rem;">${sampleBody}</div>
                             </div>
                         </div>
                     `;
                 }
 
                 if (aiActionFooter) aiActionFooter.style.display = 'block';
-                showToast('AI đã tạo thành công email nhắc nợ!', 'success');
+                // Đã bỏ dòng cộng số lượng ở đây để chỉ cộng khi bấm Chấp nhận gửi bên dưới!
 
-            }, 1500);
+            }, 1200);
         });
     }
 
-    // Thao tác Chấp nhận / Từ chối / Sửa
+    // Xử lý Sửa thủ công & Chấp nhận/Từ chối
     document.addEventListener('click', (e) => {
         if (e.target.id === 'btnAccept' || e.target.closest('#btnAccept')) {
+            // CHỈ KHI BẤM NÚT CHẤP NHẬN GỬI THÌ MỚI CỘNG SỐ LƯỢNG EMAIL LÊN ĐÚNG 1 ĐƠN VỊ
+            let currentSent = Number(localStorage.getItem('invoicepilot_sent_emails') || 42);
+            currentSent += 1;
+            localStorage.setItem('invoicepilot_sent_emails', currentSent);
+            loadData();
+
             showToast('Đã chấp nhận nội dung AI và gửi email thành công!');
             if (aiActionFooter) aiActionFooter.style.display = 'none';
             if (aiStatusBadge) {
@@ -193,10 +279,170 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast('Đã hủy kết quả AI nhắc nợ.', 'error');
             }
         } else if (e.target.id === 'btnEdit' || e.target.closest('#btnEdit')) {
-            showToast('Mở chế độ chỉnh sửa nội dung trực tiếp.', 'success');
+            const bodyDiv = document.getElementById('aiBodyText');
+            if (bodyDiv) {
+                const currentText = bodyDiv.innerText;
+                bodyDiv.innerHTML = `<textarea id="manualEditArea" style="width: 100%; height: 120px; background: #0b0f19; color: #fff; border: 1px solid var(--primary-color); border-radius: 6px; padding: 8px; font-family: monospace; font-size: 0.8rem; resize: vertical;">${currentText}</textarea>
+                <button id="btnSaveManual" class="btn btn-primary" style="margin-top: 8px; padding: 4px 12px; font-size: 0.75rem;">Lưu thay đổi</button>`;
+                showToast('Đã mở chế độ sửa thủ công.', 'success');
+            }
+        } else if (e.target.id === 'btnSaveManual' || e.target.closest('#btnSaveManual')) {
+            const editArea = document.getElementById('manualEditArea');
+            if (editArea) {
+                const newText = editArea.value;
+                const parentBox = editArea.parentElement;
+                parentBox.innerText = newText;
+                showToast('Đã lưu nội dung chỉnh sửa thành công!', 'success');
+            }
         }
     });
 
-    // Khởi chạy nạp dữ liệu lần đầu
     loadData();
+
+    // --- 2. XỬ LÝ ĐỘNG CHO TRANG QUẢN LÝ CÔNG NỢ KINH DOANH ---
+    const customerBalanceTbody = document.querySelector('.data-table tbody');
+    const isCustomerBalancePage = document.querySelector('h1')?.textContent.includes('Theo Dõi Công Nợ Khách Hàng');
+
+    if (customerBalanceTbody && isCustomerBalancePage) {
+        function renderCustomerBalance() {
+            const invoices = getSharedInvoices();
+            customerBalanceTbody.innerHTML = '';
+            let totalDebtAll = 0;
+
+            invoices.forEach((inv, index) => {
+                const isPaid = isPaidStatus(inv);
+                const overdue = isOverdue(inv);
+                const amount = Number(inv.amount) || 0;
+                const paidAmount = isPaid ? amount : 0;
+                const remaining = isPaid ? 0 : amount;
+
+                if (!isPaid) totalDebtAll += remaining;
+
+                let statusText = 'Đang nợ đến hạn';
+                let badgeClass = 'badge-warning';
+
+                if (isPaid) {
+                    statusText = 'Hoàn thành';
+                    badgeClass = 'badge-success';
+                } else if (overdue) {
+                    statusText = 'Quá hạn';
+                    badgeClass = 'badge-danger';
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>KH-10${index + 1}</strong></td>
+                    <td>${inv.customerName || inv.customer || 'Khách hàng'}</td>
+                    <td>${amount.toLocaleString()} VNĐ</td>
+                    <td>${paidAmount.toLocaleString()} VNĐ</td>
+                    <td style="color: ${isPaid ? 'var(--success-color)' : (overdue ? '#f87171' : 'var(--warning-color)')}; font-weight: 600;">${remaining.toLocaleString()} VNĐ</td>
+                    <td><span class="badge ${badgeClass}" style="${overdue ? 'background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);' : ''}">${statusText}</span></td>
+                    <td><a href="KD-sales-invoice-detail.html?id=${inv.id || inv.code}" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Xem chi tiết</a></td>
+                `;
+                customerBalanceTbody.appendChild(tr);
+            });
+
+            const totalDebtHeader = document.getElementById('headerTotalDebt') || document.querySelector('span[style*="Tổng dư nợ"]');
+            if (totalDebtHeader) {
+                totalDebtHeader.innerText = `Tổng dư nợ: ${totalDebtAll.toLocaleString()} VNĐ`;
+            }
+        }
+
+        renderCustomerBalance();
+        window.addEventListener('invoicepilot_data_changed', renderCustomerBalance);
+    }
+
+    // --- 3. XỬ LÝ ĐỘNG CHO TRANG CHI TIẾT HÓA ĐƠN ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const invoiceId = urlParams.get('id');
+    const isInvoiceDetailPage = document.querySelector('.main-wrapper h1')?.textContent.includes('Chi Tiết Hóa Đơn');
+    
+    if ((invoiceId || isInvoiceDetailPage) && !isCustomerBalancePage && !document.getElementById('reminderTarget')) {
+        const invoices = getSharedInvoices();
+        const targetId = invoiceId || (invoices.length > 0 ? (invoices[0].id || invoices[0].code) : 'INV-001');
+        const currentInv = invoices.find(inv => (inv.id === targetId || inv.code === targetId));
+
+        if (currentInv) {
+            const titleEl = document.querySelector('h1');
+            if (titleEl) titleEl.innerText = `Chi Tiết Hóa Đơn #${currentInv.id || currentInv.code}`;
+
+            const customerEl = document.querySelector('.card h3');
+            if (customerEl) customerEl.innerText = currentInv.customerName || currentInv.customer || 'Khách hàng';
+
+            const statusBadge = document.querySelector('.card .badge');
+            const isPaid = isPaidStatus(currentInv);
+            const overdue = isOverdue(currentInv);
+            
+            if (statusBadge) {
+                if (isPaid) {
+                    statusBadge.className = 'badge badge-success';
+                    statusBadge.innerText = 'Đã thanh toán';
+                } else if (overdue) {
+                    statusBadge.className = 'badge badge-danger';
+                    statusBadge.style.cssText = 'background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);';
+                    statusBadge.innerText = 'Quá hạn';
+                } else {
+                    statusBadge.className = 'badge badge-warning';
+                    statusBadge.innerText = 'Đang chờ thanh toán';
+                }
+            }
+
+            const amount = Number(currentInv.amount) || 0;
+            const vat = amount * 0.1;
+            const total = amount + vat;
+            const paidText = isPaid ? `Đã thanh toán đủ (${amount.toLocaleString()} VNĐ)` : `Chưa thanh toán (0% / ${amount.toLocaleString()} VNĐ)`;
+            const progressBarPercent = isPaid ? '100%' : '0%';
+            const progressBarColor = isPaid ? '#10b981' : (overdue ? '#f87171' : '#f59e0b');
+
+            const progressContainer = document.querySelector('.card div[style*="background: rgba(6, 9, 19, 0.4)"]');
+            if (progressContainer) {
+                progressContainer.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 8px;">
+                        <span style="color: var(--text-secondary);">Tiến độ thanh toán hóa đơn</span>
+                        <span style="color: ${progressBarColor}; font-weight: 600;">${paidText}</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background: #1e293b; border-radius: 99px; overflow: hidden;">
+                        <div style="width: ${progressBarPercent}; height: 100%; background: ${progressBarColor}; transition: width 0.4s ease;"></div>
+                    </div>
+                `;
+            }
+
+            const tableBody = document.querySelector('.data-table tbody');
+            if (tableBody) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td>1</td>
+                        <td>Dịch vụ theo chứng từ phát sinh (${currentInv.id || currentInv.code})</td>
+                        <td>1</td>
+                        <td>${amount.toLocaleString()} VNĐ</td>
+                        <td>${amount.toLocaleString()} VNĐ</td>
+                    </tr>
+                `;
+            }
+
+            const summaryCard = document.querySelector('.card div[style*="flex-direction: column"]');
+            if (summaryCard) {
+                summaryCard.innerHTML = `
+                    <div>
+                        <h4 style="margin-top: 0; margin-bottom: 16px; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">Tổng quan tài chính</h4>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
+                            <span style="color: var(--text-secondary);">Tạm tính:</span>
+                            <span>${amount.toLocaleString()} VNĐ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
+                            <span style="color: var(--text-secondary);">Thuế VAT (10%):</span>
+                            <span>${vat.toLocaleString()} VNĐ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 1rem; font-weight: bold;">
+                            <span>Tổng cộng:</span>
+                            <span style="color: var(--primary-color);">${total.toLocaleString()} VNĐ</span>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="KD-sales-payment-reminders.html?id=${currentInv.id || currentInv.code}" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class='bx bx-mail-send'></i> Soạn nhắc nợ AI cho HĐ này</a>
+                    </div>
+                `;
+            }
+        }
+    }
 });
