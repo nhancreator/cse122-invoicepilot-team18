@@ -8,7 +8,7 @@
 InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa và nhỏ (SME) tự động hóa quy trình theo dõi hóa đơn, đối soát sao kê ngân hàng và dự báo dòng tiền thông minh.
 
 ## 🔗 2. Đường Dẫn Triển Khai & Tài Nguyên
-* **Link Live Deployment (GitHub Pages / Vercel)**: `[ĐIỀN LINK DEPLOY THẬT TẠI ĐÂY]`
+* **Link Live Deployment (GitHub Pages / Vercel)**: `[npx plugins add vercel/vercel-plugin]`
 * **Link Dự Án Figma / Canva**: `[ĐIỀN LINK FIGMA PUBLIC TẠI ĐÂY]`
 * **Link Bảng Quản Lý Công Việc (Trello / Jira / Notion)**: `[ĐIỀN LINK TRELLO/JIRA TẠI ĐÂY]`
 
@@ -62,7 +62,7 @@ BT-CK/
 │   ├── KT-accountant-*.html
 │   ├── QL-manager-*.html
 │   ├── QTV-admin-*.html
-│   └── Trangchu.html        # Landing page giới thiệu
+│   └── index.html        # Landing page giới thiệu
 └── README.md
 
 🎥 6. Minh Chứng Video OBS (1 Màn Hình = 1 Video OBS)

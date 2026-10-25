@@ -1,93 +1,203 @@
+
 document.addEventListener('DOMContentLoaded', () => {
-    // --- TOAST NOTIFICATION HELPER ---
+
+    // ==============================
+    // 1. THÔNG BÁO
+    // ==============================
     function showToast(message, type = 'success') {
-        const existingToast = document.getElementById('cyberToast');
-        if (existingToast) existingToast.remove();
+        const old = document.getElementById('cyberToast');
+        if (old) old.remove();
 
         const toast = document.createElement('div');
         toast.id = 'cyberToast';
-        toast.style.position = 'fixed';
-        toast.style.bottom = '24px';
-        toast.style.right = '24px';
-        toast.style.background = type === 'success' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.9)';
-        toast.style.color = '#fff';
-        toast.style.padding = '12px 20px';
-        toast.style.borderRadius = '8px';
-        toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
-        toast.style.zIndex = '9999';
-        toast.style.fontSize = '0.85rem';
-        toast.style.fontWeight = '600';
-        toast.style.backdropFilter = 'blur(10px)';
-        toast.style.transition = 'all 0.3s ease';
-        toast.innerHTML = `<i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error-circle'}' style="margin-right: 8px;"></i> ${message}`;
+        toast.textContent = message;
+
+        Object.assign(toast.style, {
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            color: 'white',
+            background: type === 'success' ? '#059669' : '#dc2626',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+            zIndex: '9999',
+            fontSize: '14px',
+            fontWeight: '600'
+        });
 
         document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    // --- HỆ THỐNG ĐỒNG BỘ REALTIME & TẢI DỮ LIỆU TẬP TRUNG ---
+    // ==============================
+    // 2. DỮ LIỆU HÓA ĐƠN
+    // ==============================
     function getSharedInvoices() {
-        const rawData = localStorage.getItem('invoicepilot_data');
-        if (rawData) {
-            try {
-                const parsed = JSON.parse(rawData);
-                if (parsed.invoices && parsed.invoices.length > 0) return parsed.invoices;
-            } catch(e) {}
+        try {
+            const raw = localStorage.getItem('invoicepilot_data');
+
+            if (raw) {
+                const data = JSON.parse(raw);
+                if (Array.isArray(data.invoices)) {
+                    return data.invoices;
+                }
+            }
+        } catch (e) {
+            console.error(e);
         }
-        const localInv = localStorage.getItem('invoicepilot_invoices');
-        if (localInv) {
-            try { return JSON.parse(localInv); } catch(e) {}
+
+        try {
+            const raw = localStorage.getItem('invoicepilot_invoices');
+            if (raw) {
+                const data = JSON.parse(raw);
+                if (Array.isArray(data)) return data;
+            }
+        } catch (e) {
+            console.error(e);
         }
-        return window.InvoiceAPI ? window.InvoiceAPI.getCollection('invoices') : [];
+
+        if (window.InvoiceAPI &&
+            typeof window.InvoiceAPI.getCollection === 'function') {
+            return window.InvoiceAPI.getCollection('invoices') || [];
+        }
+
+        return [];
     }
 
     function saveSharedInvoices(invoices) {
-        const rawData = localStorage.getItem('invoicepilot_data');
-        if (rawData) {
-            try {
-                const parsedData = JSON.parse(rawData);
-                parsedData.invoices = invoices;
-                localStorage.setItem('invoicepilot_data', JSON.stringify(parsedData));
-            } catch(e) {}
-        }
-        localStorage.setItem('invoicepilot_invoices', JSON.stringify(invoices));
-        window.dispatchEvent(new CustomEvent('invoicepilot_data_changed', { detail: { invoices } }));
-    }
+        try {
+            const raw = localStorage.getItem('invoicepilot_data');
 
-    function isOverdue(inv) {
-        const st = (inv.status || '').toLowerCase();
-        return st.includes('overdue') || st.includes('quá hạn') || st.includes('hủy');
+            if (raw) {
+                const data = JSON.parse(raw);
+                data.invoices = invoices;
+                localStorage.setItem(
+                    'invoicepilot_data',
+                    JSON.stringify(data)
+                );
+            }
+
+            localStorage.setItem(
+                'invoicepilot_invoices',
+                JSON.stringify(invoices)
+            );
+
+            window.dispatchEvent(
+                new CustomEvent('invoicepilot_data_changed')
+            );
+        } catch (e) {
+            console.error(e);
+            showToast('Không thể lưu dữ liệu', 'error');
+        }
     }
 
     function isPaidStatus(inv) {
-        const st = (inv.status || '').toLowerCase();
-        return st.includes('paid') || st.includes('completed') || st.includes('đã thanh toán') || st.includes('hoàn thành');
+        const status = String(inv.status || '').toLowerCase();
+
+        return status.includes('paid') ||
+               status.includes('completed') ||
+               status.includes('đã thanh toán') ||
+               status.includes('hoàn thành');
     }
 
-    function loadData() {
-        const invoices = getSharedInvoices();
-        updateManagerDashboard(invoices);
-        renderOverdueTable(invoices);
-        renderImportantInvoices(invoices);
-        updateCashflowForecast(invoices);
+    // ==============================
+    // 3. XỬ LÝ NGÀY THÁNG
+    // ==============================
+    function parseDate(value) {
+        if (!value) return null;
+
+        const str = String(value).trim();
+        let date = null;
+
+        if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+            const [y, m, d] = str.slice(0, 10)
+                .split('-').map(Number);
+
+            date = new Date(y, m - 1, d);
+
+            if (date.getFullYear() !== y ||
+                date.getMonth() !== m - 1 ||
+                date.getDate() !== d) return null;
+
+        } else if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
+            const [d, m, y] = str.slice(0, 10)
+                .split('/').map(Number);
+
+            date = new Date(y, m - 1, d);
+
+            if (date.getFullYear() !== y ||
+                date.getMonth() !== m - 1 ||
+                date.getDate() !== d) return null;
+        }
+
+        return date;
     }
 
-    // --- 1. CẬP NHẬT DASHBOARD TỔNG QUAN & ĐIỂM TÍN DỤNG ĐỘNG ---
+    function getOverdueDays(inv) {
+        const dueDate = parseDate(inv.dueDate);
+
+        if (!dueDate) {
+            return Math.max(0, Number(inv.daysOverdue) || 0);
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        return Math.max(
+            0,
+            Math.round((today - dueDate) / 86400000)
+        );
+    }
+
+    function isOverdue(inv) {
+        if (isPaidStatus(inv)) return false;
+
+        const status = String(inv.status || '').toLowerCase();
+
+        if (status.includes('overdue') ||
+            status.includes('quá hạn')) {
+            return true;
+        }
+
+        return getOverdueDays(inv) > 0;
+    }
+
+    function getInvoiceId(inv) {
+        return String(inv.id || inv.code || '');
+    }
+
+    function getCustomer(inv) {
+        return String(
+            inv.customerName || inv.customer || 'Khách hàng'
+        );
+    }
+
+    function getAmount(inv) {
+        const value = inv.amount;
+        if (typeof value === 'number') return value;
+
+        return Number(String(value || '0').replace(/[^\d.-]/g, '')) || 0;
+    }
+
+    function formatMoney(amount) {
+        return Number(amount).toLocaleString('vi-VN') + ' VNĐ';
+    }
+
+    // ==============================
+    // 4. CẬP NHẬT DASHBOARD
+    // ==============================
     function updateManagerDashboard(invoices) {
         let totalDebt = 0;
         let totalOverdue = 0;
         let totalCollected = 0;
         let overdueCount = 0;
-        let paidCount = 0;
 
         invoices.forEach(inv => {
-            const amount = Number(inv.amount) || 0;
+            const amount = getAmount(inv);
+
             if (isPaidStatus(inv)) {
                 totalCollected += amount;
-                paidCount++;
             } else if (isOverdue(inv)) {
                 totalOverdue += amount;
                 overdueCount++;
@@ -96,296 +206,452 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        const allDebtSum = totalDebt + totalOverdue;
-        const totalInvoicesCount = invoices.length || 1;
+        const allDebt = totalDebt + totalOverdue;
 
-        // TÍNH TOÁN CHÍNH XÁC ĐIỂM SỨC KHỎE TÍN DỤNG
-        let healthScore = 90.0;
-        if (overdueCount > 0) {
-            healthScore = Math.max(50, 90 - (overdueCount * 15));
-        } else if (allDebtSum === 0) {
-            healthScore = 98.5; // Đã thu sạch nợ, không còn dư nợ -> Điểm xuất sắc tối đa!
-        } else {
-            healthScore = 92.0;
+        const healthScore = overdueCount > 0
+            ? Math.max(50, 90 - overdueCount * 15)
+            : allDebt === 0 ? 98.5 : 92;
+
+        const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        };
+
+        setText('kpiTotalDebt', formatMoney(allDebt));
+        setText('kpiOverdue', formatMoney(totalOverdue));
+        setText('kpiCollected', formatMoney(totalCollected));
+        setText('healthScoreValue', healthScore.toFixed(1) + ' / 100');
+
+        setText(
+            'healthScoreDesc',
+            healthScore >= 95
+                ? 'Đánh giá: Xuất sắc (Sạch nợ)'
+                : 'Đánh giá: Ổn định'
+        );
+
+        const debtEl = document.getElementById('kpiTotalDebt');
+        if (debtEl && debtEl.nextElementSibling) {
+            const percent = Math.round(
+                ((allDebt - 300000000) / 300000000) * 100
+            );
+
+            debtEl.nextElementSibling.textContent =
+                `${percent >= 0 ? '+' : ''}${percent}% so với kỳ trước`;
         }
 
-        const kpiTotalDebt = document.getElementById('kpiTotalDebt');
-        const kpiOverdue = document.getElementById('kpiOverdue');
-        const kpiCollected = document.getElementById('kpiCollected');
-        
-        // Cập nhật điểm tín dụng động qua ID mới thêm
-        const healthScoreEl = document.getElementById('healthScoreValue');
-        const healthScoreDesc = document.getElementById('healthScoreDesc');
-
-        if (healthScoreEl) {
-            healthScoreEl.innerText = `${healthScore.toFixed(1)} / 100`;
-            if (healthScoreDesc) {
-                healthScoreDesc.innerText = healthScore >= 95 ? 'Đánh giá: Xuất sắc (Sạch nợ)' : 'Đánh giá: Ổn định';
-            }
+        const overdueEl = document.getElementById('kpiOverdue');
+        if (overdueEl && overdueEl.nextElementSibling) {
+            overdueEl.nextElementSibling.textContent =
+                `Cần xử lý gấp ${overdueCount} KH`;
         }
 
-        if (kpiTotalDebt) {
-            kpiTotalDebt.innerText = `${allDebtSum.toLocaleString()} ₫`;
-            const subDebtEl = kpiTotalDebt.nextElementSibling;
-            if (subDebtEl) {
-                const prevDebt = 300000000;
-                let debtDiffPercent = Math.round(((allDebtSum - prevDebt) / prevDebt) * 100);
-                const sign = debtDiffPercent >= 0 ? '+' : '';
-                const color = debtDiffPercent <= 0 ? 'var(--success-color)' : '#f87171';
-                const arrowIcon = debtDiffPercent >= 0 ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt';
-                
-                subDebtEl.style.color = color;
-                subDebtEl.innerHTML = `<i class='bx ${arrowIcon}'></i> ${sign}${debtDiffPercent}% so với kỳ trước`;
-            }
-        }
+        const collectedEl = document.getElementById('kpiCollected');
+        if (collectedEl && collectedEl.nextElementSibling) {
+            const percent = Math.round(
+                ((totalCollected - 30000000) / 30000000) * 100
+            );
 
-        if (kpiOverdue) {
-            kpiOverdue.innerText = `${totalOverdue.toLocaleString()} ₫`;
-            const subOverdue = kpiOverdue.nextElementSibling;
-            if (subOverdue) subOverdue.innerText = `Cần xử lý gấp ${overdueCount} KH`;
-        }
-
-        if (kpiCollected) {
-            kpiCollected.innerText = `${totalCollected.toLocaleString()} ₫`;
-            const percentSubEl = kpiCollected.nextElementSibling;
-            if (percentSubEl) {
-                const lastMonthRevenue = 30000000;
-                let percentDiff = 0;
-                if (lastMonthRevenue > 0) {
-                    percentDiff = Math.round(((totalCollected - lastMonthRevenue) / lastMonthRevenue) * 100);
-                }
-                const sign = percentDiff >= 0 ? '+' : '';
-                percentSubEl.style.color = percentDiff >= 0 ? 'var(--success-color)' : '#f87171';
-                percentSubEl.innerText = `${sign}${percentDiff}% so với tháng trước`;
-            }
+            collectedEl.nextElementSibling.textContent =
+                `${percent >= 0 ? '+' : ''}${percent}% so với tháng trước`;
         }
     }
 
-    // --- 2. RENDER BẢNG HÓA ĐƠN CẦN CHÚ Ý & GIA HẠN 1 THÁNG ---
+    // ==============================
+    // 5. BẢNG HÓA ĐƠN CẦN CHÚ Ý
+    // ==============================
     function renderImportantInvoices(invoices) {
-        const tbody = document.querySelector('#notableInvoicesTable tbody') || document.querySelector('.main-wrapper .card .data-table tbody');
-        if (!tbody || document.getElementById('forecastTable')) return;
+        const tbody = document.querySelector(
+            '#notableInvoicesTable tbody'
+        );
 
-        const targetInvoices = invoices.filter(inv => isOverdue(inv) || !isPaidStatus(inv));
+        if (!tbody) return;
 
-        if (targetInvoices.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 20px;">Không có hóa đơn nào cần chú ý đặc biệt. (Đã thu hồi hoàn tất)</td></tr>`;
+        const targets = invoices.filter(inv => !isPaidStatus(inv));
+
+        tbody.innerHTML = '';
+
+        if (targets.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align:center;padding:20px;">
+                        Không có hóa đơn cần chú ý
+                    </td>
+                </tr>
+            `;
             return;
         }
 
-        tbody.innerHTML = targetInvoices.map(inv => {
-            const amount = Number(inv.amount) || 0;
+        targets.forEach(inv => {
+            const id = getInvoiceId(inv);
             const overdue = isOverdue(inv);
-            const paid = isPaidStatus(inv);
-            const id = inv.id || inv.code;
-            const isExtended = inv.isExtended || false;
+            const tr = document.createElement('tr');
 
-            let statusBadge = `<span class="badge badge-warning">Trung bình</span>`;
-            let overdueText = `<span style="color: var(--warning-color); font-weight: 600;">${inv.dueDate || 'Đang chờ'}</span>`;
-            let actionBtn = isExtended 
-                ? `<button class="btn btn-outline" disabled style="padding: 6px 12px; font-size: 0.8rem; opacity: 0.6; cursor: not-allowed; color: var(--success-color); border-color: var(--success-color);"><i class='bx bx-check'></i> Đã gia hạn +1 tháng</button>`
-                : `<button class="btn btn-outline btn-extend-credit" data-id="${id}" style="padding: 6px 12px; font-size: 0.8rem;">Gia hạn tín dụng</button>`;
-
-            if (overdue) {
-                statusBadge = `<span class="badge" style="background: rgba(239,68,68,0.15); color: #f87171;">Cao (High Risk)</span>`;
-                overdueText = `<span style="color: #f87171; font-weight: 600;">Quá hạn</span>`;
-                actionBtn = `<button class="btn btn-primary btn-action-reminder" data-id="${id}" style="padding: 6px 12px; font-size: 0.8rem;"><i class='bx bx-mail-send'></i> Phê duyệt nhắc nợ</button>`;
-            } else if (paid) {
-                statusBadge = `<span class="badge badge-success">An toàn</span>`;
-                overdueText = `<span style="color: var(--success-color); font-weight: 600;">Đã hoàn thành</span>`;
-                actionBtn = `<span style="color: var(--success-color); font-size: 0.8rem; font-weight: 600;">Hoàn tất</span>`;
+            function cell(value) {
+                const td = document.createElement('td');
+                td.textContent = value;
+                tr.appendChild(td);
+                return td;
             }
 
-            return `
-                <tr>
-                    <td><strong>${id}</strong></td>
-                    <td>${inv.customerName || inv.customer || 'Khách hàng'}</td>
-                    <td style="font-weight: 600;">${amount.toLocaleString()} VNĐ</td>
-                    <td>${overdueText}</td>
-                    <td>${statusBadge}</td>
-                    <td>${actionBtn}</td>
-                </tr>
-            `;
-        }).join('');
+            cell(id);
+            cell(getCustomer(inv));
+            cell(formatMoney(getAmount(inv)));
+            cell(overdue ? 'Quá hạn' : (inv.dueDate || 'Đang chờ'));
+            cell(overdue ? 'Cao (High Risk)' : 'Trung bình');
+
+            const td = document.createElement('td');
+            const btn = document.createElement('button');
+
+            btn.className = inv.isExtended
+                ? 'btn btn-outline'
+                : overdue
+                    ? 'btn btn-primary btn-action-reminder'
+                    : 'btn btn-outline btn-extend-credit';
+
+            btn.dataset.id = id;
+            btn.textContent = inv.isExtended
+                ? 'Đã gia hạn +1 tháng'
+                : overdue
+                    ? 'Phê duyệt nhắc nợ'
+                    : 'Gia hạn tín dụng';
+
+            btn.disabled = Boolean(inv.isExtended);
+            btn.style.padding = '6px 12px';
+            btn.style.fontSize = '0.8rem';
+
+            td.appendChild(btn);
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+        });
     }
 
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('.btn-extend-credit');
-        if (btn) {
-            const id = btn.getAttribute('data-id');
-            let invoices = getSharedInvoices();
-            let inv = invoices.find(i => (i.id === id || i.code === id));
-            
-            if (inv) {
-                let baseDate = inv.dueDate && !inv.dueDate.includes('Đang chờ') && !inv.dueDate.includes('Gia hạn') 
-                    ? new Date(inv.dueDate) 
-                    : new Date();
-                
-                if (isNaN(baseDate.getTime())) baseDate = new Date();
-                baseDate.setDate(baseDate.getDate() + 30);
-
-                const yyyy = baseDate.getFullYear();
-                const mm = String(baseDate.getMonth() + 1).padStart(2, '0');
-                const dd = String(baseDate.getDate()).padStart(2, '0');
-                const newDueDateStr = `${yyyy}-${mm}-${dd}`;
-
-                inv.dueDate = `${newDueDateStr} (Đã gia hạn +1 tháng)`;
-                inv.isExtended = true;
-                if (inv.status === 'overdue') inv.status = 'pending';
-
-                saveSharedInvoices(invoices);
-                showToast(`Đã gia hạn tín dụng thành công thêm 1 tháng cho hóa đơn ${id}! (${newDueDateStr})`, 'success');
-                loadData();
-            }
-        }
-    });
-
-    // --- 3. XỬ LÝ LỌC BẢNG HÓA ĐƠN QUÁ HẠN ---
+    // ==============================
+    // 6. TÌM KIẾM VÀ LỌC HÓA ĐƠN
+    // ==============================
     let selectedRange = 'all';
 
     function renderOverdueTable(invoices) {
         const tbody = document.querySelector('#overdueTable tbody');
         if (!tbody) return;
 
-        const keyword = document.getElementById('searchOverdue')?.value.trim().toLowerCase() || '';
-        const overdueInvoices = invoices.filter(inv => isOverdue(inv));
+        const searchInput = document.getElementById('searchOverdue');
 
-        if (overdueInvoices.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 20px;">Không có hóa đơn quá hạn nào.</td></tr>`;
+        const keyword = searchInput
+            ? searchInput.value.trim().toLowerCase()
+            : '';
+
+        const results = invoices.filter(inv => {
+            if (!isOverdue(inv)) return false;
+
+            const id = getInvoiceId(inv);
+            const customer = getCustomer(inv);
+
+            const contract = String(
+                inv.contractName ||
+                inv.contractCode ||
+                inv.contractId ||
+                ''
+            );
+
+            const searchText =
+                `${id} ${customer} ${contract}`.toLowerCase();
+
+            if (!searchText.includes(keyword)) {
+                return false;
+            }
+
+            const days = getOverdueDays(inv);
+
+            if (selectedRange === '30' && days >= 30) {
+                return false;
+            }
+
+            if (selectedRange === '60' && days <= 30) {
+                return false;
+            }
+
+            return true;
+        });
+
+        tbody.innerHTML = '';
+
+        if (results.length === 0) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+
+            td.colSpan = 7;
+            td.textContent = 'Không tìm thấy hóa đơn phù hợp';
+            td.style.textAlign = 'center';
+            td.style.padding = '25px';
+            td.style.color = '#94a3b8';
+
+            tr.appendChild(td);
+            tbody.appendChild(tr);
             return;
         }
 
-        tbody.innerHTML = overdueInvoices.map((inv) => {
-            const amount = Number(inv.amount) || 0;
-            const days = 15; 
-            let matchesRange = true;
-            if (selectedRange === '30') matchesRange = days <= 30;
-            else if (selectedRange === '60') matchesRange = days > 30;
+        results.forEach(inv => {
+            const id = getInvoiceId(inv);
+            const days = getOverdueDays(inv);
+            const amount = getAmount(inv);
 
-            const rowText = `${inv.id || inv.code} ${inv.customerName || inv.customer || ''}`.toLowerCase();
-            const matchesKeyword = rowText.includes(keyword);
+            const tr = document.createElement('tr');
+            tr.dataset.days = days;
+            tr.dataset.amount = amount;
 
-            if (!matchesRange || !matchesKeyword) return '';
+            function addCell(value, bold = false) {
+                const td = document.createElement('td');
 
-            return `
-                <tr data-days="${days}" data-amount="${amount}">
-                    <td><strong>${inv.id || inv.code}</strong></td>
-                    <td>${inv.customerName || inv.customer || 'Khách hàng'}</td>
-                    <td>${inv.issueDate || '2026-09-15'}</td>
-                    <td>${inv.dueDate || '2026-09-30'}</td>
-                    <td style="color: #f87171; font-weight: 600;">${amount.toLocaleString()} VNĐ</td>
-                    <td><span class="badge" style="background: rgba(239,68,68,0.15); color: #f87171;">${days} ngày</span></td>
-                    <td><button class="btn btn-primary btn-action-reminder" data-id="${inv.id || inv.code}" style="padding: 6px 12px; font-size: 0.8rem;"><i class='bx bx-mail-send'></i> Gửi AI Nhắc Nợ</button></td>
-                </tr>
-            `;
-        }).join('');
-    }
+                if (bold) {
+                    const strong = document.createElement('strong');
+                    strong.textContent = value;
+                    td.appendChild(strong);
+                } else {
+                    td.textContent = value;
+                }
 
-    const filterOverdueBtns = document.querySelectorAll('.filter-overdue');
-    if (filterOverdueBtns.length > 0) {
-        filterOverdueBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterOverdueBtns.forEach(b => b.className = 'btn btn-outline filter-overdue');
-                btn.className = 'btn btn-primary filter-overdue';
-                selectedRange = btn.getAttribute('data-range');
-                loadData();
-            });
+                tr.appendChild(td);
+                return td;
+            }
+
+            addCell(id, true);
+            addCell(getCustomer(inv));
+            addCell(inv.issueDate || 'Chưa có');
+            addCell(inv.dueDate || 'Chưa có');
+
+            const amountCell = addCell(formatMoney(amount));
+            amountCell.style.color = '#f87171';
+            amountCell.style.fontWeight = '600';
+
+            const daysCell = document.createElement('td');
+            const badge = document.createElement('span');
+
+            badge.className = 'badge';
+            badge.textContent = days + ' ngày';
+            badge.style.background = 'rgba(239,68,68,0.15)';
+            badge.style.color = '#f87171';
+
+            daysCell.appendChild(badge);
+            tr.appendChild(daysCell);
+
+            const actionCell = document.createElement('td');
+            const button = document.createElement('button');
+
+            button.className = 'btn btn-primary btn-action-reminder';
+            button.dataset.id = id;
+            button.style.padding = '6px 12px';
+            button.style.fontSize = '0.8rem';
+            button.textContent = 'Gửi AI Nhắc Nợ';
+
+            actionCell.appendChild(button);
+            tr.appendChild(actionCell);
+
+            tbody.appendChild(tr);
         });
     }
 
-    const btnFilterOverdue = document.getElementById('btnFilterOverdue');
-    if (btnFilterOverdue) {
-        btnFilterOverdue.addEventListener('click', () => loadData());
-    }
-
+    // Tìm kiếm ngay khi nhập
     const searchOverdue = document.getElementById('searchOverdue');
+
     if (searchOverdue) {
-        searchOverdue.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') loadData();
+        searchOverdue.addEventListener('input', () => {
+            renderOverdueTable(getSharedInvoices());
         });
     }
 
-    // --- 4. TÍNH TOÁN DỰ BÁO DÒNG TIỀN AI-3 (BÁM SÁT THỰC TẾ HÓA ĐƠN CHƯA THU) ---
-    function updateCashflowForecast(invoices) {
-        const forecastTableBody = document.querySelector('#forecastTable tbody');
-        const inflowEl = document.getElementById('inflowValue');
-        const outflowEl = document.getElementById('outflowValue');
-        const netSurplusEl = document.getElementById('netSurplus');
+    // Nút Lọc
+    const btnFilterOverdue = document.getElementById('btnFilterOverdue');
 
-        // CHỈ TÍNH DÒNG TIỀN DỰ KIẾN THU TỪ CÁC HÓA ĐƠN CHƯA THANH TOÁN (Chờ hoặc quá hạn)
+    if (btnFilterOverdue) {
+        btnFilterOverdue.addEventListener('click', () => {
+            renderOverdueTable(getSharedInvoices());
+        });
+    }
+
+    // Lọc theo số ngày
+    const filterButtons = document.querySelectorAll('.filter-overdue');
+
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterButtons.forEach(b => {
+                b.classList.remove('btn-primary');
+                b.classList.add('btn-outline');
+            });
+
+            btn.classList.remove('btn-outline');
+            btn.classList.add('btn-primary');
+
+            selectedRange = btn.dataset.range || 'all';
+
+            renderOverdueTable(getSharedInvoices());
+        });
+    });
+
+    // ==============================
+    // 7. GIA HẠN TÍN DỤNG
+    // ==============================
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('.btn-extend-credit');
+
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        const invoices = getSharedInvoices();
+
+        const inv = invoices.find(item => getInvoiceId(item) === id);
+
+        if (!inv) {
+            showToast('Không tìm thấy hóa đơn', 'error');
+            return;
+        }
+
+        if (inv.isExtended) {
+            showToast('Hóa đơn đã được gia hạn', 'error');
+            return;
+        }
+
+        let date = parseDate(inv.dueDate) || new Date();
+
+        date.setMonth(date.getMonth() + 1);
+
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+
+        inv.dueDate = `${yyyy}-${mm}-${dd}`;
+        inv.isExtended = true;
+
+        if (isOverdue(inv)) {
+            inv.status = 'pending';
+        }
+
+        saveSharedInvoices(invoices);
+        showToast(`Đã gia hạn tín dụng cho ${id}`);
+        loadData();
+    });
+
+    // ==============================
+    // 8. NHẮC NỢ
+    // ==============================
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('.btn-action-reminder');
+
+        if (!btn) return;
+
+        const id = btn.dataset.id || 'hóa đơn';
+
+        showToast(`Đã ghi nhận yêu cầu nhắc nợ cho ${id}`);
+    });
+
+    // ==============================
+    // 9. DỰ BÁO DÒNG TIỀN
+    // ==============================
+    function updateCashflowForecast(invoices) {
         let totalInflow = 0;
+
         invoices.forEach(inv => {
-            const amount = Number(inv.amount) || 0;
-            if (amount < 10000000000000 && !isPaidStatus(inv)) {
+            const amount = getAmount(inv);
+
+            if (!isPaidStatus(inv) && amount < 10000000000000) {
                 totalInflow += amount;
             }
         });
 
-        // Chi phí vận hành chuẩn mực chiếm 35% tổng thu (đảm bảo thặng dư dương 65% an toàn tài chính)
-        const estimatedOutflow = Math.round(totalInflow * 0.35);
-        const net = totalInflow - estimatedOutflow;
+        const outflow = Math.round(totalInflow * 0.35);
+        const net = totalInflow - outflow;
 
-        if (inflowEl) inflowEl.innerText = `${Math.round(totalInflow).toLocaleString()} ₫`;
-        if (outflowEl) outflowEl.innerText = `${Math.round(estimatedOutflow).toLocaleString()} ₫`;
-        if (netSurplusEl) netSurplusEl.innerText = `+${Math.round(net).toLocaleString()} ₫`;
+        const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        };
 
-        if (forecastTableBody) {
-            forecastTableBody.innerHTML = `
-                <tr>
-                    <td><strong>Tháng 10/2026</strong></td>
-                    <td style="color: var(--success-color); font-weight: 600;">${Math.round(totalInflow * 0.5).toLocaleString()} VNĐ</td>
-                    <td style="color: #f87171;">${Math.round(estimatedOutflow * 0.5).toLocaleString()} VNĐ</td>
-                    <td style="font-weight: 600; color: var(--primary-color);">+${Math.round(net * 0.5).toLocaleString()} VNĐ</td>
-                    <td><span class="badge badge-success">Thấp</span></td>
-                </tr>
-                <tr>
-                    <td><strong>Tháng 11/2026</strong></td>
-                    <td style="color: var(--success-color); font-weight: 600;">${Math.round(totalInflow * 0.35).toLocaleString()} VNĐ</td>
-                    <td style="color: #f87171;">${Math.round(estimatedOutflow * 0.3).toLocaleString()} VNĐ</td>
-                    <td style="font-weight: 600; color: var(--primary-color);">+${Math.round(net * 0.35).toLocaleString()} VNĐ</td>
-                    <td><span class="badge badge-success">Thấp</span></td>
-                </tr>
-                <tr>
-                    <td><strong>Tháng 12/2026</strong></td>
-                    <td style="color: var(--success-color); font-weight: 600;">${Math.round(totalInflow * 0.15).toLocaleString()} VNĐ</td>
-                    <td style="color: #f87171;">${Math.round(estimatedOutflow * 0.2).toLocaleString()} VNĐ</td>
-                    <td style="font-weight: 600; color: var(--primary-color);">+${Math.round(net * 0.15).toLocaleString()} VNĐ</td>
-                    <td><span class="badge badge-warning">Trung bình</span></td>
-                </tr>
-            `;
-        }
+        setText('inflowValue', formatMoney(totalInflow));
+        setText('outflowValue', formatMoney(outflow));
+        setText('netSurplus', '+' + formatMoney(net));
+
+        const tbody = document.querySelector('#forecastTable tbody');
+
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+
+        const months = [
+            { name: 'Tháng 10/2026', income: 0.5, expense: 0.5 },
+            { name: 'Tháng 11/2026', income: 0.35, expense: 0.3 },
+            { name: 'Tháng 12/2026', income: 0.15, expense: 0.2 }
+        ];
+
+        months.forEach(month => {
+            const income = Math.round(totalInflow * month.income);
+            const expense = Math.round(outflow * month.expense);
+            const balance = income - expense;
+
+            const tr = document.createElement('tr');
+
+            [
+                month.name,
+                formatMoney(income),
+                formatMoney(expense),
+                formatMoney(balance),
+                'Thấp'
+            ].forEach(value => {
+                const td = document.createElement('td');
+                td.textContent = value;
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
     }
 
     const btnRunForecast = document.getElementById('btnRunForecast');
-    const forecastPeriod = document.getElementById('forecastPeriod');
-    const aiSummaryContent = document.getElementById('aiSummaryContent');
 
     if (btnRunForecast) {
         btnRunForecast.addEventListener('click', () => {
-            const period = forecastPeriod ? forecastPeriod.value : '30';
-            showToast('Đang chạy lại mô hình dự báo dòng tiền AI-3...');
-            setTimeout(() => {
-                const invoices = getSharedInvoices();
-                updateCashflowForecast(invoices);
-                if (aiSummaryContent) {
-                    aiSummaryContent.innerHTML = `<strong>Báo cáo AI-3:</strong> Dòng tiền được cập nhật theo thời gian thực dựa trên các hóa đơn chưa hoàn thành. Sức khỏe tài chính tối ưu.`;
-                }
-                showToast('Cập nhật dự báo dòng tiền thành công!');
-            }, 1000);
+            updateCashflowForecast(getSharedInvoices());
+
+            const summary = document.getElementById('aiSummaryContent');
+
+            if (summary) {
+                summary.textContent =
+                    'Báo cáo AI-3: Dòng tiền đã được cập nhật từ dữ liệu hóa đơn.';
+            }
+
+            showToast('Đã cập nhật dự báo dòng tiền');
         });
     }
 
     const btnExport = document.getElementById('btnExportReport');
+
     if (btnExport) {
         btnExport.addEventListener('click', () => {
-            showToast('Đang tạo tệp PDF báo cáo tài chính AI-3...');
+            showToast('Chức năng xuất PDF chưa được triển khai', 'error');
         });
     }
 
-    window.addEventListener('storage', (event) => {
-        if (event.key === 'invoicepilot_data' || event.key === 'invoicepilot_invoices') loadData();
-    });
-    window.addEventListener('invoicepilot_data_changed', () => loadData());
+    // ==============================
+    // 10. ĐỒNG BỘ DỮ LIỆU
+    // ==============================
+    function loadData() {
+        const invoices = getSharedInvoices();
 
+        updateManagerDashboard(invoices);
+        renderOverdueTable(invoices);
+        renderImportantInvoices(invoices);
+        updateCashflowForecast(invoices);
+    }
+
+    window.addEventListener('storage', event => {
+        if (
+            event.key === 'invoicepilot_data' ||
+            event.key === 'invoicepilot_invoices'
+        ) {
+            loadData();
+        }
+    });
+
+    window.addEventListener('invoicepilot_data_changed', loadData);
+
+    // Khởi chạy
     loadData();
 });
