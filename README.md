@@ -9,15 +9,15 @@ InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa v
 
 ## 🔗 2. Đường Dẫn Triển Khai & Tài Nguyên
 * **Link Live Deployment (GitHub Pages / Vercel)**: `[npx plugins add vercel/vercel-plugin]`
-* **Link Dự Án Figma / Canva**: `[https://www.figma.com/make/By0BlLFJIfE25l45L33pD7/G%E1%BB%99p-n%E1%BB%99i-dung-th%C3%A0nh-m%E1%BB%99t-file?t=v8LnnoLMD5bfNR3X-20&fullscreen=1]`
-* **Link Bảng Quản Lý Công Việc (Trello / Jira / Notion)**: `[https://trello.com/invite/b/6add0f39f076be2795d27aec/ATTIdeb54990b157a3aa54aee895b74c4bc1575C2B12/📌-bảng-trello-theo-trạng-thai-cong-việc]`
+* **Link Dự Án Figma / Canva**: `[ĐIỀN LINK FIGMA PUBLIC TẠI ĐÂY]`
+* **Link Bảng Quản Lý Công Việc (Trello / Jira / Notion)**: `[ĐIỀN LINK TRELLO/JIRA TẠI ĐÂY]`
 
 ## 👥 3. Phân Công Vai Trò & Trách Nhiệm Chéo (Cross-Responsibility)
 | STT | Họ và Tên | Mã SV | Vai Trò Chính | Trách Nhiệm Chéo (Cross-Responsibility) |
 |:---:|:---|:---:|:---|:---|
-| 1 | **Đỗ Duy Nhân** | `[2551060659]` | Trưởng Nhóm / Lead Dev | Design System (CSS Variables) + Navigation + Accessibility (A11y) |
+| 1 | **Đỗ Duy Nhân** | `[2551060659]` | Trưởng Nhóm / QA Dev | Kiểm thử Responsive + Merge Branches (dev → main) + Triển khai Deployment |
 | 2 | **Trần Khôi Nguyên** | `[MÃ SV]` | Frontend Developer | Architecture JavaScript + LocalStorage API + Chuẩn hóa AI UX |
-| 3 | **Đàm Minh Quân** | `[MÃ SV]` | Logic & QA Dev | Kiểm thử Responsive + Merge Branches (dev → main) + Triển khai Deployment |
+| 3 | **Đàm Minh Quân** | `[MÃ SV]` | Logic & Lead Dev  |  Design System (CSS Variables) + Navigation + Accessibility (A11y)  |
 
 ## 🛠️ 4. Hướng Dẫn Chạy Cục Bộ (Local Setup)
 ```bash
