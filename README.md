@@ -16,8 +16,8 @@ InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa v
 | STT | Họ và Tên | Mã SV | Vai Trò Chính | Trách Nhiệm Chéo (Cross-Responsibility) |
 |:---:|:---|:---:|:---|:---|
 | 1 | **Đỗ Duy Nhân** | `[2551060659]` | Trưởng Nhóm / QA Dev | Kiểm thử Responsive + Merge Branches (dev → main) + Triển khai Deployment |
-| 2 | **Trần Khôi Nguyên** | `[MÃ SV]` | Frontend Developer | Design System (CSS Variables) + Navigation + Accessibility (A11y)  |
-| 3 | **Đàm Minh Quân** | `[MÃ SV]` | Logic & Lead Dev  | Architecture JavaScript + LocalStorage API + Chuẩn hóa AI UX |
+| 2 | **Trần Khôi Nguyên** | `[2551060658]` | Frontend Developer | Design System (CSS Variables) + Navigation + Accessibility (A11y)  |
+| 3 | **Đàm Minh Quân** | `[2551060665]` | Logic & Lead Dev  | Architecture JavaScript + LocalStorage API + Chuẩn hóa AI UX |
 
 ## 🛠️ 4. Hướng Dẫn Chạy Cục Bộ (Local Setup)
 ```bash
@@ -67,8 +67,8 @@ BT-CK/
 
 🎥 6. Minh Chứng Video OBS (1 Màn Hình = 1 Video OBS)
 STT	Mã Màn Hình	    Tên Màn Hình / Tệp	                            Sinh Viên Phụ Trách	            Link Video OBS Minh Chứng
-1	SCR-01	        Trangchu.html	                                ....                            [LINK VIDEO OBS]
-2	SCR-02	        pages/Dangnhap.html		                        ....                            [LINK VIDEO OBS]
+1	SCR-01	        Trangchu.html	                                Đỗ Duy Nhân                            [LINK VIDEO OBS]
+2	SCR-02	        pages/Dangnhap.html		                        Đàm Minh Quân                            [LINK VIDEO OBS]
 3	SCR-03	        pages/KT-accountant-invoice-list.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
 4	SCR-04	        pages/KT-accountant-invoice-form.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
 5	SCR-05	        pages/KT-accountant-reconciliation.html 	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
