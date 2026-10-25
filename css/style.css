@@ -248,3 +248,74 @@ img {
     max-width: 100%;
     height: auto;
 }
+/* Bổ sung bộ biến màu cho Chế độ Sáng (Light Mode) */
+[data-theme="light"] {
+    --bg-main: #f1f5f9;
+    --bg-surface: #ffffff;
+    --bg-surface-hover: #e2e8f0;
+    --border-color: rgba(0, 0, 0, 0.12);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+}
+
+[data-theme="light"] .app-container {
+    background: radial-gradient(circle at top right, #e0e7ff 0%, #f1f5f9 60%) !important;
+}
+
+[data-theme="light"] .sidebar {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .browser-header-bar {
+    background: #e2e8f0 !important;
+}
+
+[data-theme="light"] .browser-url {
+    background: #ffffff !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .card {
+    background: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .data-table th {
+    background: rgba(0, 0, 0, 0.04) !important;
+    color: #475569 !important;
+}
+/* --- TỐI ƯU HÓA KHI IN ẤN (PRINT REPORT FIX) --- */
+@media print {
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+    .app-container {
+        background: #ffffff !important;
+        display: block !important;
+    }
+    .sidebar, .browser-header-bar, .filter-group, .search-box, button {
+        display: none !important; /* Ẩn menu và các nút bấm khi in */
+    }
+    .main-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+    .card {
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+    .data-table th {
+        background: #f1f5f9 !important;
+        color: #000000 !important;
+        border-bottom: 2px solid #000 !important;
+    }
+    .data-table td {
+        color: #000000 !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+    }
+}

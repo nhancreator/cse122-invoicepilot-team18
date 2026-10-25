@@ -37,7 +37,7 @@
             </nav>
 
             <!-- User Badge & Role -->
-            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <div style="width: 32px; height: 32px; background: #10b981; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;" aria-hidden="true">KT</div>
                     <div>
@@ -49,6 +49,11 @@
                     <i class='bx bx-home-alt' style="font-size: 1.2rem;"></i>
                 </a>
             </div>
+
+            <!-- Nút Đổi Giao Diện (Mở rộng 3) -->
+            <button id="themeToggleBtn" class="btn btn-outline" style="width: 100%; justify-content: center; padding: 8px 12px; font-size: 0.8rem;">
+                <i class='bx bx-moon'></i> Đổi giao diện
+            </button>
         </aside>
 
         <!-- Main Content Area -->
@@ -59,8 +64,13 @@
                     <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px; font-weight: 600;">GIAO DIỆN 02 / ACCOUNTING WORKSPACE</div>
                     <h1 id="formPageTitle" style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Lập Hóa Đơn Mới</h1>
                 </div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); text-align: right; max-width: 320px;">
-                    Tạo hóa đơn mới hoặc cập nhật chứng từ kết hợp kiểm tra bất thường AI-1.
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" id="btnExportCSV" class="btn btn-outline" style="padding: 8px 14px; font-size: 0.85rem;">
+                        <i class='bx bx-export'></i> Xuất CSV
+                    </button>
+                    <button type="button" id="btnPrinters" onclick="window.print();" class="btn btn-outline" style="padding: 8px 14px; font-size: 0.85rem;">
+                        <i class='bx bx-printer'></i> In báo cáo
+                    </button>
                 </div>
             </header>
 
@@ -74,21 +84,18 @@
             <!-- Layout chính (Grid Form & AI Widget) -->
             <main id="main-content" class="card" style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; position: relative;">
                 
-                <!-- BÊN TRÁI: FORM NHẬP LIỆU (C / R / U) -->
+                <!-- BÊN TRÁI: FORM NHẬP LIỆU -->
                 <section aria-labelledby="formSectionHeader">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px;">
                         <h2 id="formSectionHeader" style="margin: 0; font-size: 1.1rem; color: var(--primary-color); font-weight: 600;">Thông tin chứng từ</h2>
                         <span id="formStatusBadge" class="badge badge-warning">Bản nháp</span>
                     </div>
 
-                    <!-- ARIA Live Region cho thông báo Validation chung -->
                     <div id="formValidationSummary" class="sr-only" aria-live="assertive"></div>
 
                     <form id="invoiceForm" novalidate>
-                        <!-- Thẻ ẩn lưu ID khi ở mode Cập nhật (Update) -->
                         <input type="hidden" id="formInvoiceId" value="">
 
-                        <!-- Field 1: Khách hàng -->
                         <!-- Field 1: Khách hàng -->
                         <div style="margin-bottom: 16px;">
                             <label for="formCustomer" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary); font-weight: 500;">
@@ -104,8 +111,9 @@
                                 <option value="Công ty TNHH B"></option>
                                 <option value="Công ty Công nghệ Vanguard"></option>
                                 <option value="Khách hàng mới"></option>
-                                </datalist>
+                            </datalist>
                         </div>
+
                         <!-- Field 2: Tổng tiền (VNĐ) -->
                         <div style="margin-bottom: 16px;">
                             <label for="formAmount" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary); font-weight: 500;">
@@ -139,7 +147,6 @@
                 <!-- BÊN PHẢI: AI ANOMALY CHECK WIDGET (MODULE AI-1) -->
                 <aside aria-label="Khung kiểm tra bất thường bằng AI" style="background: rgba(6, 9, 19, 0.7); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 380px;">
                     <div>
-                        <!-- Header Widget -->
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <i class='bx bx-shield-quarter' style="font-size: 1.5rem; color: var(--primary-color);" aria-hidden="true"></i>
@@ -149,16 +156,13 @@
                         </div>
                         <div style="font-size: 0.75rem; color: var(--primary-color); margin-bottom: 16px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">KẾT QUẢ PHÂN TÍCH VÀ ĐỀ XUẤT</div>
                         
-                        <!-- Dynamic AI Content Container -->
                         <div id="aiWidgetContent" aria-live="polite">
-                            <!-- Trạng thái mặc định ban đầu -->
                             <div id="aiStateIdle" class="ai-state-box">
                                 <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
                                     Nhập thông tin hóa đơn và nhấn nút <strong>"Kiểm tra bất thường AI"</strong> để phân tích rủi ro hạn mức và đối soát lịch sử giao dịch.
                                 </p>
                             </div>
 
-                            <!-- 1. Trạng thái Loading (Progress Bar / Processing) -->
                             <div id="aiStateProcessing" class="ai-state-box" style="display: none; text-align: center; padding: 20px 0;">
                                 <i class='bx bx-loader-alt spin' style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 12px;" aria-hidden="true"></i>
                                 <p style="font-size: 0.85rem; color: #fff; margin: 0 0 10px 0; font-weight: 500;">AI-1 đang truy vấn lịch sử giao dịch...</p>
@@ -167,16 +171,12 @@
                                 </div>
                             </div>
 
-                            <!-- 2. Trạng thái Kết quả AI (Thành công / Cảnh báo / Thất bại / Bất định) -->
                             <div id="aiStateResult" class="ai-state-box" style="display: none;">
-                                <p id="aiResultReason" style="font-size: 0.88rem; color: #e2e8f0; line-height: 1.5; margin: 0 0 16px 0;">
-                                    <!-- Nội dung giải thích nguyên nhân do JS render -->
-                                </p>
+                                <p id="aiResultReason" style="font-size: 0.88rem; color: #e2e8f0; line-height: 1.5; margin: 0 0 16px 0;"></p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- AI Confidence Bar & Action Control Panel -->
                     <div id="aiControlPanel" style="display: none; margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px;">
                         <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
                             <span style="color: var(--text-secondary);">Độ tin cậy mô hình</span>
@@ -185,21 +185,16 @@
                         <div style="width: 100%; height: 6px; background: #1e293b; border-radius: 99px; overflow: hidden; margin-bottom: 16px;">
                             <div id="aiConfidenceFill" style="width: 96%; height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--success-color)); transition: width 0.5s ease;"></div>
                         </div>
-
-                        <!-- Các nút điều khiển người dùng (User Control: Accept / Edit / Reject / Retry / Manual / Ignore / Report) -->
-                        <div id="aiActionButtons" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <!-- JS Render linh hoạt các nút tương ứng với từng trạng thái -->
-                        </div>
+                        <div id="aiActionButtons" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
                     </div>
                 </aside>
             </main>
         </div>
     </div>
 
-    <!-- Toast Notification Container -->
     <div id="toastContainer" aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;"></div>
 
-    <!-- Scripts Module (Nhúng API và Script Kế toán) -->
+    <!-- Scripts Module -->
     <script src="../js/api.js"></script>
     <script src="../js/modules/accountant.js"></script>
 </body>

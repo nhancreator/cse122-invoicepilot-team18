@@ -49,6 +49,9 @@
                     <i class='bx bx-home-alt' style="font-size: 1.2rem;"></i>
                 </a>
             </div>
+            <button id="themeToggleBtn" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">
+                <i class='bx bx-moon'></i> Đổi giao diện
+            </button>
         </aside>
 
         <!-- Main Content Area -->
@@ -88,6 +91,12 @@
                         </button>
                         <button class="btn btn-outline filter-btn" data-status="overdue" role="tab" aria-selected="false" style="padding: 8px 16px; font-size: 0.85rem;">
                             Quá hạn <span class="badge-count" id="count-overdue">(0)</span>
+                        </button>
+                        <button type="button" class="btn btn-outline" id="btnExportCSV" style="padding: 8px 16px; font-size: 0.85rem;">
+                            <i class='bx bx-export'></i> Xuất CSV
+                        </button>
+                        <button type="button" class="btn btn-outline" id="btnPrinters" onclick="window.print();" style="padding: 8px 16px; font-size: 0.85rem;">
+                            <i class='bx bx-printer'></i> In báo cáo
                         </button>
                     </div>
 

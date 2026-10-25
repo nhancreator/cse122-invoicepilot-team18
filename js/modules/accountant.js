@@ -1,11 +1,11 @@
 /**
- * InvoicePilot Cyber Accounting - Module Kế Toán (Đã sắp xếp đúng trình tự luồng thao tác)
+ * InvoicePilot Cyber Accounting - Module Kế Toán (Đầy đủ tất cả các tính năng & Mở rộng)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // BƯỚC 1: KHỞI TẠO TIỆN ÍCH DÙNG CHUNG (TOAST & FORMAT TIỀN TỆ)
+    // BƯỚC 1: TIỆN ÍCH DÙNG CHUNG (TOAST, FORMAT, THEME SWITCHER)
     // ==========================================
     function showToast(message, type = 'success') {
         let container = document.getElementById('toastContainer');
@@ -40,9 +40,46 @@ document.addEventListener('DOMContentLoaded', () => {
         return parseInt(String(str).replace(/[^\d]/g, ''), 10) || 0;
     }
 
+    // Khởi tạo Dark/Light Mode (Mở rộng 3)
+    const savedTheme = localStorage.getItem('invoicepilot_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    if (themeToggleBtn) {
+        themeToggleBtn.innerHTML = savedTheme === 'light' ? "<i class='bx bx-sun'></i> Chế độ Tối" : "<i class='bx bx-moon'></i> Đổi giao diện";
+        themeToggleBtn.onclick = () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('invoicepilot_theme', newTheme);
+            themeToggleBtn.innerHTML = newTheme === 'light' ? "<i class='bx bx-sun'></i> Chế độ Tối" : "<i class='bx bx-moon'></i> Đổi giao diện";
+            showToast(`Đã chuyển sang chế độ ${newTheme === 'light' ? 'Sáng (Light)' : 'Tối (Dark)'}!`, 'success');
+        };
+    }
+
+    // Xuất báo cáo CSV (Mở rộng 4)
+    const btnExportCSV = document.getElementById('btnExportCSV');
+    if (btnExportCSV) {
+        btnExportCSV.onclick = () => {
+            const invoices = getInvoicesFromStore();
+            let csvContent = "data:text/csv;charset=utf-8,MaHD,KhachHang,NgayPhatHanh,HanThanhToan,SoTien,TrangThai\r\n";
+            invoices.forEach(inv => {
+                csvContent += `${inv.id},"${inv.customerName || inv.customer}",${inv.issueDate},${inv.dueDate},${inv.amount},${inv.status}\r\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "invoicepilot_report.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Xuất tệp báo cáo CSV thành công!");
+        };
+    }
+
 
     // ==========================================
-    // BƯỚC 2: KHO LƯU TRỮ TRUNG TÂM & TỰ ĐỘNG QUÉT QUÁ HẠN (OVERDUE)
+    // BƯỚC 2: KHO LƯU TRỮ TRUNG TÂM & QUÉT QUÁ HẠN
     // ==========================================
     function getInvoicesFromStore() {
         let invoices = [];
@@ -57,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Tự động quét: So sánh hạn thanh toán (dueDate) với ngày hiện tại để chuyển sang 'overdue'
         const today = new Date().toISOString().split('T')[0];
         let hasChanges = false;
 
@@ -138,14 +174,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 return !keyword || matchCode || matchCustomer;
             });
 
-            // Cập nhật số lượng đếm trên Tab
-            document.getElementById('count-all').innerText = `(${invoices.length})`;
-            document.getElementById('count-paid').innerText = `(${invoices.filter(i => i.status === 'paid' || i.status === 'completed').length})`;
-            document.getElementById('count-pending').innerText = `(${invoices.filter(i => i.status === 'pending' || i.status === 'waiting' || !i.status).length})`;
-            document.getElementById('count-overdue').innerText = `(${invoices.filter(i => i.status === 'overdue' || i.status === 'cancelled').length})`;
+            const countAll = document.getElementById('count-all');
+            const countPaid = document.getElementById('count-paid');
+            const countPending = document.getElementById('count-pending');
+            const countOverdue = document.getElementById('count-overdue');
 
-            document.getElementById('showingCount').innerText = filteredInvoices.length;
-            document.getElementById('totalCount').innerText = invoices.length;
+            if (countAll) countAll.innerText = `(${invoices.length})`;
+            if (countPaid) countPaid.innerText = `(${invoices.filter(i => i.status === 'paid' || i.status === 'completed').length})`;
+            if (countPending) countPending.innerText = `(${invoices.filter(i => i.status === 'pending' || i.status === 'waiting' || !i.status).length})`;
+            if (countOverdue) countOverdue.innerText = `(${invoices.filter(i => i.status === 'overdue' || i.status === 'cancelled').length})`;
+
+            const showingCount = document.getElementById('showingCount');
+            const totalCount = document.getElementById('totalCount');
+            if (showingCount) showingCount.innerText = filteredInvoices.length;
+            if (totalCount) totalCount.innerText = invoices.length;
 
             if (tableEmptyState) tableEmptyState.style.display = filteredInvoices.length === 0 ? 'block' : 'none';
 
@@ -218,9 +260,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // BƯỚC 4: TRANG 2 - FORM LẬP HÓA ĐƠN & CHECK AI-1
+    // BƯỚC 4: TRANG 2 - FORM LẬP HÓA ĐƠN & AI-1
     // ==========================================
-// --- 4. TRANG 2: LẬP HÓA ĐƠN & CHECK AI-1 ---
     function evaluateAIResult(customer, amount) {
         const aiStateProcessing = document.getElementById('aiStateProcessing');
         const aiStateResult = document.getElementById('aiStateResult');
@@ -229,7 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const aiBadgeStatus = document.getElementById('aiBadgeStatus');
         const aiConfidenceText = document.getElementById('aiConfidenceText');
         const aiConfidenceFill = document.getElementById('aiConfidenceFill');
-        const aiActionButtons = document.getElementById('aiActionButtons');
 
         if (aiStateProcessing) aiStateProcessing.style.display = 'none';
         if (aiStateResult) aiStateResult.style.display = 'block';
@@ -281,7 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (aiResultReason) aiResultReason.innerHTML = reasonHtml;
         if (aiConfidenceText) aiConfidenceText.innerText = `${confidence}%`;
         if (aiConfidenceFill) aiConfidenceFill.style.width = `${confidence}%`;
-
     }
 
     function initInvoiceFormPage() {
@@ -374,7 +413,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 reconciliationTbody.appendChild(tr);
             });
 
-            document.getElementById('emptyReconciliationState').style.display = activeCount === 0 ? 'block' : 'none';
+            const emptyState = document.getElementById('emptyReconciliationState');
+            if (emptyState) emptyState.style.display = activeCount === 0 ? 'block' : 'none';
 
             reconciliationTbody.querySelectorAll('.btn-confirm-single').forEach(btn => {
                 btn.onclick = (e) => {
@@ -384,6 +424,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderReconciliationTable();
                 };
             });
+        }
+        // --- BỔ SUNG XỬ LÝ SỰ KIỆN TẢI TỆP SAO KÊ (UPLOAD STATEMENT) ---
+        const btnUploadStatement = document.getElementById('btnUploadStatement');
+        const statementFileInput = document.getElementById('statementFileInput');
+
+        if (btnUploadStatement && statementFileInput) {
+            btnUploadStatement.onclick = () => {
+                statementFileInput.click(); // Mở cửa sổ chọn file của hệ điều hành
+            };
+
+            statementFileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    showToast(`Đã tải lên tệp sao kê: ${file.name}. AI-2 đang phân tích dữ liệu...`, 'info');
+                    
+                    // Giả lập hiệu ứng quét thanh tiến trình AI sau khi chọn file
+                    const progressBox = document.getElementById('aiReconciliationProgress');
+                    if (progressBox) {
+                        progressBox.style.display = 'block';
+                        setTimeout(() => {
+                            progressBox.style.display = 'none';
+                            showToast(`Đọc thành công tệp sao kê ${file.name}! Đã nạp giao dịch vào bảng.`);
+                            renderReconciliationTable();
+                        }, 1500);
+                    }
+                }
+            };
         }
 
         const btnAutoMatchAI = document.getElementById('btnAutoMatchAI');
@@ -399,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // BƯỚC 6: ĐIỂM KHỞI CHẠY HỆ THỐNG (INITIALIZATION)
+    // BƯỚC 6: KHỞI CHẠY HỆ THỐNG
     // ==========================================
     initInvoiceListPage();
     initInvoiceFormPage();
