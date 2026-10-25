@@ -78,7 +78,7 @@ STT	Mã Màn Hình	    Tên Màn Hình / Tệp	                            Sinh 
 8	SCR-08	        pages/QL-manager-overdue-invoices.html	        Đàm Minh Quân	                https://youtu.be/Ja63RCrZvjE
 9	SCR-09	        pages/QL-manager-cashflow-forecast.html	        Đàm Minh Quân	                https://youtu.be/CbDEh1i5dbQ
 10	SCR-10	        pages/QTV-admin-user-management.html	        Trần Khôi Nguyên	            https://youtu.be/tjp83m6uqxU
-11	SCR-11	        pages/QTV-admin-customer-management.html	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+11	SCR-11	        pages/QTV-admin-customer-management.html	    Đỗ Duy Nhân	                    [https://youtu.be/G_gV0OzGLgU]
 12	SCR-12	        pages/QTV-admin-invoice-settings.html	        Đàm Minh Quân	                https://youtu.be/4U9IqwSVd68
 
 
