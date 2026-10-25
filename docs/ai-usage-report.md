@@ -1,40 +1,71 @@
-# Báo Cáo Khai Báo Sử Dụng Thuật Toán AI & Automation (AI Usage Report)
+# BÁO CÁO CHI TIẾT KHAI BÁO SỬ DỤNG THUẬT TOÁN AI & AUTOMATION (AI USAGE REPORT)
+
+**Dự án**: InvoicePilot - Hệ thống Quản lý Hóa đơn & Phát hiện Bất thường Tài chính
+
+**Môn học**: CSE122 (Đại học Thủy Lợi - Lớp 67CNTT1)
+
+**Nhóm phát triển**: Nhóm 18 (Đỗ Duy Nhân,Trần Khôi Nguyên, Đàm Minh Quân)
 
 ---
 
-## 1. Tổng Quan Các Module AI Trong Dự Án
-Hệ thống InvoicePilot tích hợp 3 module AI/Automation xử lý thông minh hỗ trợ vận hành nghiệp vụ:
+## 1. TỔNG QUAN KIẾN TRÚC & CÁC MODULE AI TRONG HỆ THỐNG
 
-1. **AI Anomaly Check (`js/modules/ai-anomaly.js` & `accountant.js`)**:
-   - **Chức năng**: Tự động quét và phát hiện các giao dịch đối soát ngân hàng bất thường (số tiền không khớp lịch sử, rủi ro khách hàng mới)[cite: 60].
-   - **Màn hình ứng dụng**: `KT-accountant-invoice-form.html` & `KT-accountant-reconciliation.html`[cite: 60].
-   - **Cơ chế triển khai**: Giả lập thuật toán rule-based kết hợp dữ liệu lịch sử trong `LocalStorage`[cite: 61].
+Hệ thống được chia thành 3 phân hệ độc lập nhưng đồng bộ dữ liệu thông suốt qua tầng lưu trữ trung tâm `LocalStorage`:
 
-2. **AI Smart Reminder (`js/modules/ai-reminder.js`)**:
-   - **Chức năng**: Phân tích số ngày quá hạn và giá trị hóa đơn để tự động gợi ý kịch bản và soạn nội dung Email nhắc nợ phù hợp[cite: 60].
-   - **Màn hình ứng dụng**: `KD-sales-payment-reminders.html`[cite: 60].
+1. **Phân hệ Kế toán (Accounting Workspace - KT)**:
+* *Màn hình*: `KT-accountant-invoice-list.html`, `KT-accountant-invoice-form.html`, `KT-accountant-reconciliation.html`.
+* *Module tích hợp*: `accountant.js`.
+* *Tính năng AI*: **AI Anomaly Check (AI-1)** tự động quét lịch sử giao dịch để phát hiện bất thường về giá trị hoặc khách hàng mới; **AI Reconciliation (AI-2)** tự động khớp lệnh giao dịch ngân hàng với hóa đơn.
 
-3. **AI Cashflow Forecasting (`js/modules/ai-cashflow.js`)**:
-   - **Chức năng**: Dựa trên chu kỳ thanh toán lịch sử của khách hàng để dự báo dòng tiền thực thu trong 30-90 ngày tới[cite: 60].
-   - **Màn hình ứng dụng**: `QL-manager-cashflow-forecast.html`[cite: 60].
 
----
+2. **Phân hệ Kinh doanh (Sales Workspace - KD)**:
+* *Màn hình*: `KD-sales-customer-balance.html`, `KD-sales-payment-reminders.html`.
+* *Module tích hợp*: `ai-reminder.js`.
+* *Tính năng AI*: **AI Smart Reminder** phân tích mức độ quá hạn và giá trị nợ để soạn thảo email nhắc nợ tự động theo 3 phong cách (Lịch sự, Khẩn cấp, Thân thiện), hỗ trợ chỉnh sửa thủ công và theo dõi số lượng email đã gửi.
 
-## 2. Nhật Ký Sử Dụng Công Cụ AI & Câu Lệnh Prompt Chính
-- **Công cụ AI sử dụng**: ChatGPT / Claude / Gemini / GitHub Copilot[cite: 21].
-- **Các câu lệnh (Prompts) chính đã áp dụng**:
-  1. `[GHI CÂU LỆNH PROMPT 1 EM ĐÃ DÙNG, VD: Hãy viết hàm JavaScript thuần lọc mảng hóa đơn theo từ khóa và trạng thái thanh toán mà không làm mất dữ liệu gốc]`
-  2. `[GHI CÂU LỆNH PROMPT 2 EM ĐÃ DÙNG, VD: Tạo giao diện AI UX 6 bước gồm Loading progress bar, badge rủi ro và 2 nút bấm Chấp nhận / Từ chối]`
 
----
+3. **Phân hệ Quản lý & Kiểm soát Rủi ro (Management & Risk Control - QL)**:
+* *Màn hình*: `QL-manager-receivable-dashboard.html`, `QL-manager-overdue-invoices.html`, `QL-manager-cashflow-forecast.html`.
+* *Module tích hợp*: `ai-cashflow.js`.
+* *Tính năng AI & Automation*:
+* Tính toán điểm sức khỏe tín dụng động (`healthScoreValue`).
+* Quản lý hóa đơn quá hạn với bộ lọc thông minh và tính năng **Gia hạn tín dụng (+1 tháng)** đồng bộ real-time sang KT và KD.
+* **AI-3 Cashflow Forecasting**: Dự báo dòng tiền thu - chi theo kỳ hạn (30, 90, 180 ngày).
 
-## 3. Phần Code AI Sinh Ra Bị Lỗi & Cách Sinh Viên Tự Kiểm Chứng/Chỉnh Sửa
-* **Lỗi 1 (Hành vi AI)**: AI sinh ra đoạn code render kết quả kiểm tra bất thường (AI-1) dạng chuỗi văn bản đơn giản mà **thiếu hoàn toàn hai nút bấm tương tác "Chấp nhận & Lưu" và "Từ chối / Sửa lại"**, đồng thời không gắn sự kiện lưu dữ liệu[cite: 21, 23, 24].
-  - **Cách sinh viên khắc phục**: Tự viết bổ sung lại hàm `evaluateAIResult` trong tệp `accountant.js`, khởi tạo lại phần tử `aiActionButtons.innerHTML` với đầy đủ 2 nút bấm, gắn sự kiện `onclick` hiển thị thông báo `showToast` và cập nhật lại giao diện trạng thái thực sự.
-* **Lỗi 2 (Hành vi AI)**: Logic xóa hóa đơn ban đầu AI sinh ra bị lệch tên khóa lưu trữ (`invoicepilot_invoices` thay vì `invoicepilot_data`), làm cho hóa đơn bấm xóa xong bị hiện lại sau khi nhấn F5.
-  - **Cách sinh viên khắc phục**: Đã chỉnh sửa lại sự kiện nút Xóa trong `initInvoiceListPage` để đồng bộ đúng vào kho dữ liệu chung `localStorage.getItem('invoicepilot_data')` và gọi phát sự kiện `invoicepilot_data_changed`.
 
----
+## 2. NHẬT KÝ 3 TUẦN PHÁT TRIỂN & CÁC CÂU LỆNH PROMPT CHÍNH ĐÃ ÁP DỤNG
+Công cụ AI sử dụng: `Gemini` , `Chat GPT`
+* **Tuần 1 (Khởi tạo & Kiến trúc)**:
+> *"Hãy thiết kế cấu trúc thư mục và mô hình dữ liệu tập trung sử dụng LocalStorage kết hợp CustomEvent (`invoicepilot_data_changed`) để đảm bảo khi thao tác ở phân hệ Kế toán thì phân hệ Quản lý và Kinh doanh tự động cập nhật real-time mà không cần tải lại trang."*
 
-## 4. Cam Kết Minh Bạch Thử Nghiệm AI
-- **Tính năng gọi API thật vs Mockup**: Hệ thống chạy hoàn toàn dưới dạng Client-side Frontend với dữ liệu giả lập (Mock data / LocalStorage)[cite: 61] để đảm bảo an toàn API Key, an toàn bảo mật và phục vụ demo mượt mà không bị trễ mạng[cite: 19, 20].
+
+* **Tuần 2 (Xử lý nghiệp vụ AI & Thời gian thực)**:
+> *"Viết hàm tính toán số ngày quá hạn bám sát thời gian thực (tính từ mốc hạn 30/09/2026 đến hiện tại 25/10/2026), đồng thời xây dựng cơ chế gia hạn tín dụng cộng thêm 1 tháng, tự động đổi trạng thái hóa đơn về pending để loại bỏ khỏi danh sách quá hạn một cách an toàn."*
+
+
+* **Tuần 3 (Tối ưu Tìm kiếm & Đồng bộ UI)**:
+> *"Sửa lại module `ai-cashflow.js` sao cho tính năng tìm kiếm hóa đơn quá hạn hoạt động mượt mà, chính xác y hệt như logic tìm kiếm bên module Kế toán (`accountant.js`) — cho phép gõ ký tự bất kỳ (như chữ 'v' hoặc 'Vanguard') vào ô `#searchOverdue` là lọc ra đúng mã hóa đơn hoặc tên khách hàng ngay lập tức khi đang gõ phím."*
+
+
+## 3. CÁC LỖI KỸ THUẬT HÓC BÚA ĐÃ GẶP VÀ CÁCH KHẮC PHỤC THỰC TẾ
+
+* **Lỗi 1: Lệch trạng thái hóa đơn sau khi gia hạn tín dụng**
+* *Biểu hiện*: Khi bấm "Gia hạn tín dụng" ở phân hệ Quản lý, hạn mới được đẩy lên tháng 12/2026 nhưng hóa đơn vẫn bị kẹt ở bảng Hóa đơn quá hạn và không đồng bộ sang Kế toán/Kinh doanh.
+* *Cách khắc phục*: Bổ sung Guard Clause kiểm tra `if (inv.isExtended) return false;` trong hàm `isActuallyOverdue` và đồng thời cập nhật `inv.status = 'pending'` trước khi gọi `saveSharedInvoices()`.
+
+
+* **Lỗi 2: Tính năng tìm kiếm ở `ai-cashflow.js` bị trôi hoặc không khớp tên khách hàng**
+* *Biểu hiện*: Gõ chữ "v" hoặc "Vanguard" không ra kết quả hoặc bị nhảy mất dòng do cấu trúc đối tượng dữ liệu lưu trữ khác nhau giữa các phân hệ (`customerName` và `customer`).
+* *Cách khắc phục*: Chuẩn hóa thuật toán lọc bằng cách gộp chuỗi tìm kiếm không phân biệt hoa thường (`matchCode || matchCustomer`), lắng nghe trực tiếp sự kiện `input` trên ô `#searchOverdue` y hệt như chuẩn bên `accountant.js`.
+
+
+* **Lỗi 3: Nút bấm "Phê duyệt nhắc nợ" bị mất liên kết sự kiện**
+* *Biểu hiện*: Bấm vào nút gửi AI nhắc nợ ở bảng quản lý quá hạn không có phản hồi hoặc không mở được trang soạn email.
+* *Cách khắc phục*: Sử dụng Event Delegation (`document.addEventListener('click', e => { ... })`) để bắt chính xác class `.btn-action-reminder` và điều hướng mượt mà sang `KD-sales-payment-reminders.html?id=${id}`.
+
+
+## 4. CAM KẾT MINH BẠCH & KỸ THUẬT TRIỂN KHAI
+
+* **Mô hình Dữ liệu**: Ứng dụng chạy hoàn toàn ở phía Client (Client-side Frontend) sử dụng `LocalStorage` làm cơ sở dữ liệu giả lập (`Mock Data`), giúp bảo mật tuyệt đối thông tin, không phụ thuộc vào Internet và đảm bảo tốc độ phản hồi cực nhanh khi chấm điểm đồ án.
+* **Quản lý phiên bản**: Toàn bộ mã nguồn được quản lý chặt chẽ thông qua các lệnh Git (`git add`, `git commit`, `git push origin main`) trên kho lưu trữ `cse122-invoicepilot-team18`.
+
