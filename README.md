@@ -17,7 +17,7 @@ InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa v
 |:---:|:---|:---:|:---|:---|
 | 1 | **Đỗ Duy Nhân** | `[2551060659]` | Trưởng Nhóm / QA Dev | Kiểm thử Responsive + Merge Branches (dev → main) + Triển khai Deployment |
 | 2 | **Trần Khôi Nguyên** | `[2551060658]` | Frontend Developer | Design System (CSS Variables) + Navigation + Accessibility (A11y)  |
-| 3 | **Đàm Minh Quân** | `[MÃ SV]` | Logic & Lead Dev  | Architecture JavaScript + LocalStorage API + Chuẩn hóa AI UX |
+| 3 | **Đàm Minh Quân** | `[2551060665]` | Logic & Lead Dev  | Architecture JavaScript + LocalStorage API + Chuẩn hóa AI UX |
 
 ## 🛠️ 4. Hướng Dẫn Chạy Cục Bộ (Local Setup)
 ```bash
@@ -67,18 +67,18 @@ BT-CK/
 
 🎥 6. Minh Chứng Video OBS (1 Màn Hình = 1 Video OBS)
 STT	Mã Màn Hình	    Tên Màn Hình / Tệp	                            Sinh Viên Phụ Trách	            Link Video OBS Minh Chứng
-1	SCR-01	          Trangchu.html	                                  ....                            [LINK VIDEO OBS]
-2	SCR-02	          pages/Dangnhap.html		                          ....                            [LINK VIDEO OBS]
-3	SCR-03	          pages/KT-accountant-invoice-list.html	          Đỗ Duy Nhân	                    [LINK VIDEO OBS]
-4	SCR-04	          pages/KT-accountant-invoice-form.html	          Đỗ Duy Nhân	                    [LINK VIDEO OBS]
-5	SCR-05	          pages/KT-accountant-reconciliation.html 	      Đỗ Duy Nhân	                    [LINK VIDEO OBS]
-6	SCR-06	          pages/KD-sales-customer-balance.html	          Trần Khôi Nguyên	              [LINK VIDEO OBS]
-7	SCR-07	          pages/KD-sales-payment-reminders.html	          Trần Khôi Nguyên	              [LINK VIDEO OBS]
-8	SCR-08	          pages/KD-sales-invoice-detail.html	            Trần Khôi Nguyên	              [LINK VIDEO OBS]
-9	SCR-09	          pages/QL-manager-receivable-dashboard.html	    Đàm Minh Quân	                  [LINK VIDEO OBS]
-10	SCR-10	        pages/QL-manager-overdue-invoices.html	        Đàm Minh Quân	                  [LINK VIDEO OBS]
-11	SCR-11	        pages/QL-manager-cashflow-forecast.html	        Đàm Minh Quân	                  [LINK VIDEO OBS]
-12	SCR-12	        pages/QTV-admin-user-management.html	          Trần Khôi Nguyên	              [LINK VIDEO OBS]
-13	SCR-13	        pages/QTV-admin-customer-management.html	      Đỗ Duy Nhân	                    [LINK VIDEO OBS]
-14	SCR-14	        pages/QTV-admin-invoice-settings.html	          Đàm Minh Quân	                  [LINK VIDEO OBS]
+1	SCR-01	        Trangchu.html	                                Đỗ Duy Nhân                            [LINK VIDEO OBS]
+2	SCR-02	        pages/Dangnhap.html		                        Đàm Minh Quân                            [LINK VIDEO OBS]
+3	SCR-03	        pages/KT-accountant-invoice-list.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+4	SCR-04	        pages/KT-accountant-invoice-form.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+5	SCR-05	        pages/KT-accountant-reconciliation.html 	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+6	SCR-06	        pages/KD-sales-customer-balance.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
+7	SCR-07	        pages/KD-sales-payment-reminders.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
+8	SCR-08	        pages/KD-sales-invoice-detail.html	            Trần Khôi Nguyên	            [LINK VIDEO OBS]
+9	SCR-09	        pages/QL-manager-receivable-dashboard.html	    Đàm Minh Quân	                [LINK VIDEO OBS]
+10	SCR-10	        pages/QL-manager-overdue-invoices.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
+11	SCR-11	        pages/QL-manager-cashflow-forecast.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
+12	SCR-12	        pages/QTV-admin-user-management.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
+13	SCR-13	        pages/QTV-admin-customer-management.html	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+14	SCR-14	        pages/QTV-admin-invoice-settings.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
 
