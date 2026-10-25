@@ -8,7 +8,7 @@ const STORAGE_KEY = 'invoicepilot_data';
 // Trạng thái mặc định khởi tạo hệ thống (Mock Data chuẩn hóa)
 const DEFAULT_STATE = {
     invoices: [
-        { id: 'INV-001', code: 'INV-001', customerName: 'Công ty Cổ phần A', amount: 15000000, taxCode: '0309876543', issueDate: '2026-09-01', dueDate: '2026-09-30', status: 'overdue' },
+        { id: 'INV-001', code: 'INV-001', customerName: 'Công ty Cổ phần A', amount: 15000000, taxCode: '0309876543', issueDate: '2026-09-01', dueDate: '2026-10-30', status: 'pending' },
         { id: 'INV-008', code: 'INV-008', customerName: 'Tập đoàn X', amount: 30000000, taxCode: '0100123456', issueDate: '2026-09-15', dueDate: '2026-09-30', status: 'overdue' }
     ],
     customers: [

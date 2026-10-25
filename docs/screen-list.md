@@ -7,7 +7,7 @@
 | Role    | User Goal           | User Task         | Screen Name           | File Path     | CRUD / State  | AI UX | Assignee    | Task ID     | Branch                | OBS Link |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
 | **Public** | Khám phá giải pháp | Xem giới thiệu & Bảng giá | Trang chủ | `Trangchu.html` | Read / Normal | Không | Đỗ Duy Nhân | `TASK-01` | `feature/landing-page` | `[LINK OBS]` |
-| **All** | Xác thực hệ thống | Đăng nhập tài khoản | Đăng nhập | `pages/Dangnhap.html` | Read / Normal, Validation | Không | Đàm Minh Quân | `TASK-02` | `feature/auth-login` | `[LINK OBS]` |
+| **All** | Xác thực hệ thống | Đăng nhập tài khoản | Đăng nhập | `pages/Dangnhap.html` | Read / Normal, Validation | Không | Đàm Minh Quân | `TASK-02` | `feature/auth-login` | `[LINK OBS]` | 
 | **Kế toán** | Quản lý hóa đơn | Lọc & Xem danh sách hóa đơn | Danh sách hóa đơn | `pages/KT-accountant-invoice-list.html` | Read, Delete / Normal, Empty | Không | Đỗ Duy Nhân | `TASK-03` | `feature/accountant-list` | `[LINK OBS]` |
 | **Kế toán** | Lập chứng từ | Tạo mới & Kiểm tra hóa đơn | Form lập hóa đơn | `pages/KT-accountant-invoice-form.html` | Create, Update / Normal, Validation | AI-1 (Anomaly Check) | Đỗ Duy Nhân | `TASK-04` | `feature/accountant-form` | `[LINK OBS]` |
 | **Kế toán** | Đối soát tài khoản | Khớp lệnh sao kê ngân hàng | Đối soát công nợ | `pages/KT-accountant-reconciliation.html` | Create, Update / Normal, Loading | AI-1 (Auto Match) | Đỗ Duy Nhân | `TASK-05` | `feature/accountant-reconcile` | `[LINK OBS]` |

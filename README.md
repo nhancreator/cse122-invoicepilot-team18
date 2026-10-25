@@ -2,7 +2,7 @@
 
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)](#)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](#)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](#)
+[![JavaScript] (https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](#)
 
 ## 📌 1. Giới Thiệu Dự Án
 InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa và nhỏ (SME) tự động hóa quy trình theo dõi hóa đơn, đối soát sao kê ngân hàng và dự báo dòng tiền thông minh.
@@ -67,6 +67,7 @@ BT-CK/
 
 🎥 6. Minh Chứng Video OBS (1 Màn Hình = 1 Video OBS)
 STT	Mã Màn Hình	    Tên Màn Hình / Tệp	                            Sinh Viên Phụ Trách	            Link Video OBS Minh Chứng
+<<<<<<< HEAD
 1	SCR-01	        pages/KT-accountant-invoice-list.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
 2	SCR-02	        pages/KT-accountant-invoice-form.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
 3	SCR-03	        pages/KT-accountant-reconciliation.html 	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
@@ -79,4 +80,20 @@ STT	Mã Màn Hình	    Tên Màn Hình / Tệp	                            Sinh 
 10	SCR-10	        pages/QTV-admin-user-management.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
 11	SCR-11	        pages/QTV-admin-customer-management.html	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
 12	SCR-12	        pages/QTV-admin-invoice-settings.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
+=======
+1	SCR-01	        Trangchu.html	                                Đỗ Duy Nhân                            [LINK VIDEO OBS]
+2	SCR-02	        pages/Dangnhap.html		                        Đàm Minh Quân                            [LINK VIDEO OBS]
+3	SCR-03	        pages/KT-accountant-invoice-list.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+4	SCR-04	        pages/KT-accountant-invoice-form.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+5	SCR-05	        pages/KT-accountant-reconciliation.html 	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+6	SCR-06	        pages/KD-sales-customer-balance.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
+7	SCR-07	        pages/KD-sales-payment-reminders.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
+8	SCR-08	        pages/KD-sales-invoice-detail.html	            Trần Khôi Nguyên	            [LINK VIDEO OBS]
+9	SCR-09	        pages/QL-manager-receivable-dashboard.html	    Đàm Minh Quân	                [LINK VIDEO OBS]
+10	SCR-10	        pages/QL-manager-overdue-invoices.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
+11	SCR-11	        pages/QL-manager-cashflow-forecast.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
+12	SCR-12	        pages/QTV-admin-user-management.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
+13	SCR-13	        pages/QTV-admin-customer-management.html	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+14	SCR-14	        pages/QTV-admin-invoice-settings.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
+>>>>>>> 2c51a435fd21dd9fa5107bd96927bf0d2e91cbdd
 

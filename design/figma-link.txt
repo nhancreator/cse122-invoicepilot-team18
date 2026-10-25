@@ -1,6 +1,6 @@
 DỰ ÁN DESIGN FIGMA / CANVA - INVOICEPILOT
 
 Link thiết kế UI/UX công khai (Public Access):
-[https://www.figma.com/make/n0C9zRJADEHZUQ36xPdu2n/G%E1%BB%99p-th%C3%A0nh-m%E1%BB%99t-file?t=UAjYXVCMFpRTDA5T-20&fullscreen=1]
+`[https://www.figma.com/make/By0BlLFJIfE25l45L33pD7/G%E1%BB%99p-n%E1%BB%99i-dung-th%C3%A0nh-m%E1%BB%99t-file?t=v8LnnoLMD5bfNR3X-20&fullscreen=1]`
 
 Ghi chú: Bản thiết kế bao gồm Sitemap, User Flow, Wireframe Desktop & Mobile, Component Guide và UI Mockups của các tính năng AI UX.
