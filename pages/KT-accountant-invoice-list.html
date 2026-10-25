@@ -42,7 +42,7 @@
                     <div style="width: 32px; height: 32px; background: #10b981; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;" aria-hidden="true">KT</div>
                     <div>
                         <div style="font-size: 0.85rem; font-weight: 600; color: #ffffff;">Đỗ Duy Nhân</div>
-                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Kế toán viên (KT)</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Kế toán viên </div>
                     </div>
                 </div>
                 <a href="Trangchu.html" title="Trở về Trang chủ" style="color: var(--primary-color); display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 6px; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); text-decoration: none; transition: all 0.2s;">
@@ -93,7 +93,7 @@
                             Quá hạn <span class="badge-count" id="count-overdue">(0)</span>
                         </button>
                         <button type="button" class="btn btn-outline" id="btnExportCSV" style="padding: 8px 16px; font-size: 0.85rem;">
-                            <i class='bx bx-export'></i> Xuất CSV ::::
+                            <i class='bx bx-export'></i> Xuất CSV
                         </button>
                         <button type="button" class="btn btn-outline" id="btnPrinters" onclick="window.print();" style="padding: 8px 16px; font-size: 0.85rem;">
                             <i class='bx bx-printer'></i> In báo cáo
@@ -102,7 +102,7 @@
 
                     <!-- Search Input Form -->
                     <form class="search-box" id="searchForm" role="search" style="display: flex; gap: 8px; flex-grow: 1; max-width: 360px;" onsubmit="event.preventDefault();">
-                        <label for="searchInput" class="sr-only">Tìm kiếm theo mã hóa đơn hoặc tên khách hàng</label>
+                        <label for="searchInput" class="sr-only">Tìm kiếm theo mã hóa đơn hoặc khách hàng</label>
                         <div style="position: relative; width: 100%;">
                             <input type="search" id="searchInput" class="btn-outline" placeholder="Tìm mã HĐ hoặc khách hàng..." aria-label="Tìm theo mã HĐ hoặc khách hàng" style="padding: 8px 14px 8px 36px; border-radius: 8px; color: #fff; width: 100%; font-size: 0.85rem;">
                             <i class='bx bx-search' style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary);" aria-hidden="true"></i>
@@ -113,7 +113,7 @@
                     </form>
                 </section>
 
-                <!-- ARIA Live Region for Screen Reader Announcements -->
+                <!-- ARIA Live Region for Screen Reader Announcements -->                                                        
                 <div id="aria-status-announcer" class="sr-only" aria-live="polite"></div>
 
                 <!-- Live Data Table Container -->
@@ -121,11 +121,11 @@
                     <table class="data-table" id="invoiceTable" aria-label="Bảng danh sách hóa đơn kế toán">
                         <thead>
                             <tr>
-                                <th scope="col">Mã HĐ</th>
+                                <th scope="col">Mã Hóa Đơn</th>
                                 <th scope="col">Khách Hàng</th>
                                 <th scope="col">Ngày Phát Hành</th>
                                 <th scope="col">Hạn Thanh Toán</th>
-                                <th scope="col">Số Tiền ($)</th>
+                                <th scope="col">Số Tiền (VND)</th>
                                 <th scope="col">Trạng Thái</th>
                                 <th scope="col" style="text-align: right;">Thao Tác</th>
                             </tr>
@@ -155,7 +155,7 @@
                     <!-- 3. UI State: Error State -->
                     <div id="tableErrorState" class="ui-state-error" style="display: none; text-align: center; padding: 40px 20px; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px;">
                         <i class='bx bx-error-circle' style="font-size: 3rem; color: #f87171; margin-bottom: 10px;" aria-hidden="true"></i>
-                        <h3 style="font-size: 1rem; margin: 0 0 6px 0; color: #f87171;">Tải dữ liệu thất bại</h3>
+                        <h3 style="font-size: 1rem; margin: 0 0 6px 0; color: #f87171;">Thất bại</h3>
                         <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0 0 14px 0;" id="errorMessageText">Có lỗi xảy ra trong quá trình truy xuất LocalStorage hoặc mock data.</p>
                         <button type="button" class="btn btn-primary" onclick="window.location.reload();" style="padding: 6px 14px; font-size: 0.8rem;">
                             Thử lại
