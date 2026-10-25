@@ -69,7 +69,7 @@ BT-CK/
 STT	Mã Màn Hình	    Tên Màn Hình / Tệp	                            Sinh Viên Phụ Trách	            Link Video OBS Minh Chứng
 <<<<<<< HEAD
 1	SCR-01	        pages/KT-accountant-invoice-list.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
-2	SCR-02	        pages/KT-accountant-invoice-form.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+2	SCR-02	        pages/KT-accountant-invoice-form.html	        Đỗ Duy Nhân	                    [https://youtu.be/9ZF1PAIZAiU]
 3	SCR-03	        pages/KT-accountant-reconciliation.html 	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
 4	SCR-04	        pages/KD-sales-customer-balance.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
 5	SCR-05	        pages/KD-sales-payment-reminders.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
