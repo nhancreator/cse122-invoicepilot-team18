@@ -1,12 +1,7 @@
-/**
- * InvoicePilot Cyber Accounting - Module Kế Toán (Đầy đủ tất cả các tính năng & Mở rộng)
- */
-
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ==========================================
     // BƯỚC 1: TIỆN ÍCH DÙNG CHUNG (TOAST, FORMAT, THEME SWITCHER)
-    // ==========================================
+
     function showToast(message, type = 'success') {
         let container = document.getElementById('toastContainer');
         if (!container) {
@@ -78,9 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // ==========================================
     // BƯỚC 2: KHO LƯU TRỮ TRUNG TÂM & QUÉT QUÁ HẠN
-    // ==========================================
     function getInvoicesFromStore() {
         let invoices = [];
         if (window.InvoiceAPI && typeof window.InvoiceAPI.getCollection === 'function') {
@@ -144,9 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // ==========================================
     // BƯỚC 3: TRANG 1 - QUẢN LÝ DANH SÁCH HÓA ĐƠN
-    // ==========================================
     function initInvoiceListPage() {
         const invoiceTable = document.getElementById('invoiceTable');
         if (!invoiceTable) return;
@@ -259,9 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // ==========================================
     // BƯỚC 4: TRANG 2 - FORM LẬP HÓA ĐƠN & AI-1
-    // ==========================================
     function evaluateAIResult(customer, amount) {
         const aiStateProcessing = document.getElementById('aiStateProcessing');
         const aiStateResult = document.getElementById('aiStateResult');
@@ -385,9 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // ==========================================
     // BƯỚC 5: TRANG 3 - ĐỐI CHIẾU CÔNG NỢ AI-2
-    // ==========================================
     function initReconciliationPage() {
         const reconciliationTbody = document.getElementById('reconciliationTbody');
         if (!reconciliationTbody) return;
@@ -465,9 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // ==========================================
     // BƯỚC 6: KHỞI CHẠY HỆ THỐNG
-    // ==========================================
     initInvoiceListPage();
     initInvoiceFormPage();
     initReconciliationPage();
