@@ -8,7 +8,7 @@ const STORAGE_KEY = 'invoicepilot_data';
 // Trạng thái mặc định khởi tạo hệ thống (Mock Data chuẩn hóa)
 const DEFAULT_STATE = {
     invoices: [
-        { id: 'INV-001', code: 'INV-001', customerName: 'Công ty Cổ phần A', amount: 15000000, taxCode: '0309876543', issueDate: '2026-09-01', dueDate: '2026-09-30', status: 'pending' },
+        { id: 'INV-001', code: 'INV-001', customerName: 'Công ty Cổ phần A', amount: 15000000, taxCode: '0309876543', issueDate: '2026-09-01', dueDate: '2026-09-30', status: 'overdue' },
         { id: 'INV-008', code: 'INV-008', customerName: 'Tập đoàn X', amount: 30000000, taxCode: '0100123456', issueDate: '2026-09-15', dueDate: '2026-09-30', status: 'overdue' }
     ],
     customers: [
@@ -16,8 +16,8 @@ const DEFAULT_STATE = {
         { code: 'KH-002', name: 'Công ty Cổ phần A', tax: '0309876543', email: 'info@cpa.vn', status: 'Hoạt động' }
     ],
     users: [
-        { name: 'Đỗ Duy Nhân', username: 'duynhan', role: 'Quản lý (Manager)', status: 'Hoạt động' },
-        { name: 'Nguyễn Văn Minh', username: 'minhnv', role: 'Kế toán (Accountant)', status: 'Hoạt động' }
+        { name: 'Dàm Minh Quân', username: 'minhquan', role: 'Quản lý (Manager)', status: 'Hoạt động' },
+        { name: 'Đỗ Duy Nhân', username: 'duynhan', role: 'Kế toán (Accountant)', status: 'Hoạt động' }
     ],
     settings: {
         prefix: '1C26TPT',

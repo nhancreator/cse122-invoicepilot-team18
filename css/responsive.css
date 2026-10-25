@@ -1,11 +1,17 @@
-/* ===================================================
-   InvoicePilot - Responsive Design & Mobile Adaption
-   =================================================== */
+/*InvoicePilot - Responsive Design & Mobile Adaption*/
 
-/* Tablet View (Max width: 992px) */
+/* 1. Chống cuộn ngang tuyệt đối cho toàn bộ ứng dụng */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden !important;
+}
+
+/* 2. Tablet View (Max width: 992px) */
 @media screen and (max-width: 992px) {
     .app-container {
-        grid-template-columns: 1fr;
+        display: block !important;
+        height: auto !important;
+        min-height: 100vh;
     }
 
     .sidebar {
@@ -37,10 +43,12 @@
         display: block;
     }
 
+    .main-wrapper,
     .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 15px;
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 15px !important;
+        box-sizing: border-box;
     }
 
     .stats-grid, .dashboard-cards {
@@ -49,7 +57,7 @@
     }
 }
 
-/* Mobile View (Max width: 576px) */
+/* 3. Mobile View (Max width: 576px) */
 @media screen and (max-width: 576px) {
     .stats-grid, .dashboard-cards {
         grid-template-columns: 1fr !important;
@@ -63,7 +71,7 @@
 
     .header-actions {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 10px;
     }
 
@@ -76,5 +84,49 @@
     .btn-group .btn {
         width: 100%;
         margin-bottom: 5px;
+    }
+
+    .browser-url {
+        width: 160px !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* 4. Màn hình điện thoại rất nhỏ (320px - 425px) */
+@media screen and (max-width: 425px) {
+    .main-wrapper {
+        padding: 8px !important;
+    }
+
+    .card {
+        padding: 12px !important;
+        border-radius: 8px;
+    }
+
+    h1, h2, h3 {
+        word-break: break-word;
+        font-size: 1.25rem !important;
+    }
+
+    .form-control, 
+    input[type="text"], 
+    input[type="number"], 
+    input[type="date"], 
+    select, 
+    textarea {
+        font-size: 16px !important; /* Chống iOS tự động zoom khi focus */
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+}
+
+/* 5. Xử lý Modal / Dialog trên Mobile */
+@media screen and (max-width: 768px) {
+    .modal-dialog, 
+    .modal-content {
+        width: 92% !important;
+        margin: 0 auto !important;
+        max-height: 90vh;
+        overflow-y: auto;
     }
 }

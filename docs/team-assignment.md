@@ -1,9 +1,7 @@
-# Phân Công Nhiệm Vụ Bài Tập Lớn Nhóm
+# Phân Công Nhiệm Vụ Bài Tập Lớn (Team Assignment & Cross-Responsibility)
 
-| STT | Họ và Tên | Vai Trò | Phụ Trách Mô-đun & Màn Hình | Tỷ Lệ Hoàn Thành |
-|:---:|:---|:---|:---|:---:|
-| 1 | **Đỗ Duy Nhân** | Trưởng Nhóm / Lead Dev | Architecture, `main.js`, `api.js`, `Dangnhap.html`, `Trangchu.html`, Phân hệ QTV | 100% |
-| 2 | Đỗ Duy Nhân | Frontend Developer | Phân hệ Kế toán (`KT-accountant-*.html`), `style.css` | 100% |
-| 3 | Trần Khôi Nguyên | Frontend Developer | Phân hệ Kinh doanh (`KD-sales-*.html`), `responsive.css` | 100% |
-| 4 | Đàm Minh Quân | Logic / AI Modules Dev | Phân hệ Quản lý (`QL-manager-*.html`), 3 Module AI (`js/modules/`) | 100% |
-| 5 | Đỗ Duy Nhân | Technical Writer / QA | Bộ tài liệu `docs/*.md`, `README.md`, Testing & Mock Data | 100% |
+| STT | Họ và Tên        | Mã SV      | Vai Trò | Mô-đun & Màn Hình Phụ Trách | Trách Nhiệm Xuyên Suốt (Cross-Responsibility) | Tỷ Lệ hoàn thành |
+|:---:|:---|:---:|:---|:---|:---|:---:|
+|  1  | Đỗ Duy Nhân      | 2551060659 | Lead Dev | Phân hệ Kế toán (`KT-*.html`), `pages/QTV-admin-customer-management.html`, `responsive.css`,`accountant.js` | **Trục 1**: Kho dữ liệu `LocalStorage` (`api.js`), Responsive đa thiết bị[cite: 18]. | 100% |
+| 2   | Trần Khôi Nguyên | 255....... | Frontend Developer | Phân hệ Kinh doanh (`KD-sales-*.html`),`pages/QTV-admin-invoice-settings.html`,`ai-reminder.js` | **Trục 2**: Kiến trúc JavaScript, Hệ thống thiết kế UI (`style.css`), Navigation chung & Khả năng tiếp cận (A11y)[cite: 18]. | 100% |
+| 3   | Đàm Minh Quân    | 255....... | Logic & QA Dev | Phân hệ Quản lý (`QL-manager-*.html`),`pages/QTV-admin-user-management.html`, `ai-cashflow.js`, `ai-anomany.js` | **Trục 3**: Kiểm thử  Chuẩn hóa AI UX, Hợp nhất nhánh Git (dev → main) & Deployment[cite: 18]. | 100% |

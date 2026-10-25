@@ -4,11 +4,32 @@
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](#)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](#)
 
-## 📌 Giới Thiệu
-InvoicePilot là giải pháp Web App giúp tự động hóa quản lý công nợ, đối soát hóa đơn và dự báo dòng tiền thông minh dành cho doanh nghiệp SME.
+## 📌 1. Giới Thiệu Dự Án
+InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa và nhỏ (SME) tự động hóa quy trình theo dõi hóa đơn, đối soát sao kê ngân hàng và dự báo dòng tiền thông minh.
 
-## 📁 Cấu Trúc Thư Mục Chuẩn
-```text
+## 🔗 2. Đường Dẫn Triển Khai & Tài Nguyên
+* **Link Live Deployment (GitHub Pages / Vercel)**: `[ĐIỀN LINK DEPLOY THẬT TẠI ĐÂY]`
+* **Link Dự Án Figma / Canva**: `[ĐIỀN LINK FIGMA PUBLIC TẠI ĐÂY]`
+* **Link Bảng Quản Lý Công Việc (Trello / Jira / Notion)**: `[ĐIỀN LINK TRELLO/JIRA TẠI ĐÂY]`
+
+## 👥 3. Phân Công Vai Trò & Trách Nhiệm Chéo (Cross-Responsibility)
+| STT | Họ và Tên | Mã SV | Vai Trò Chính | Trách Nhiệm Chéo (Cross-Responsibility) |
+|:---:|:---|:---:|:---|:---|
+| 1 | **Đỗ Duy Nhân** | `[2551060659]` | Trưởng Nhóm / Lead Dev | Design System (CSS Variables) + Navigation + Accessibility (A11y) |
+| 2 | **Trần Khôi Nguyên** | `[MÃ SV]` | Frontend Developer | Architecture JavaScript + LocalStorage API + Chuẩn hóa AI UX |
+| 3 | **Đàm Minh Quân** | `[MÃ SV]` | Logic & QA Dev | Kiểm thử Responsive + Merge Branches (dev → main) + Triển khai Deployment |
+
+## 🛠️ 4. Hướng Dẫn Chạy Cục Bộ (Local Setup)
+```bash
+# 1. Tải repository về máy
+git clone [ĐIỀN LINK GITHUB REPO TẠI ĐÂY]
+
+# 2. Di chuyển vào thư mục dự án
+cd BT-CK
+
+# 3. Mở dự án bằng VS Code và chạy với Open with Live Server (Port 5500)
+
+📁 5. Cấu Trúc Thư Mục Dự Án
 BT-CK/
 ├── assets/                  # Dữ liệu tĩnh, icon, hình ảnh
 │   ├── data/
@@ -25,7 +46,7 @@ BT-CK/
 │   ├── ai-usage-report.md
 │   ├── project-proposal.md
 │   ├── roles-and-features.md
-│   ├── screen-list.md
+│   ├── screen-inventory.md
 │   └── team-assignment.md
 ├── js/                      # Mã nguồn JavaScript
 │   ├── modules/             # Các mô-đun xử lý nghiệp vụ & AI
@@ -42,7 +63,22 @@ BT-CK/
 │   ├── QL-manager-*.html
 │   ├── QTV-admin-*.html
 │   └── Trangchu.html        # Landing page giới thiệu
-└── README.md                # Hướng dẫn dự án# cse122-invoicepilot-team18
-# cse122-invoicepilot-team18
-# cse122-invoicepilot-team18
-# cse122-invoicepilot-team18
+└── README.md
+
+🎥 6. Minh Chứng Video OBS (1 Màn Hình = 1 Video OBS)
+STT	Mã Màn Hình	    Tên Màn Hình / Tệp	                            Sinh Viên Phụ Trách	            Link Video OBS Minh Chứng
+1	SCR-01	        Trangchu.html	                                ....                            [LINK VIDEO OBS]
+2	SCR-02	        pages/Dangnhap.html		                        ....                            [LINK VIDEO OBS]
+3	SCR-03	        pages/KT-accountant-invoice-list.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+4	SCR-04	        pages/KT-accountant-invoice-form.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+5	SCR-05	        pages/KT-accountant-reconciliation.html 	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+6	SCR-06	        pages/KD-sales-customer-balance.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
+7	SCR-07	        pages/KD-sales-payment-reminders.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
+8	SCR-08	        pages/KD-sales-invoice-detail.html	            Trần Khôi Nguyên	            [LINK VIDEO OBS]
+9	SCR-09	        pages/QL-manager-receivable-dashboard.html	    Đàm Minh Quân	                [LINK VIDEO OBS]
+10	SCR-10	        pages/QL-manager-overdue-invoices.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
+11	SCR-11	        pages/QL-manager-cashflow-forecast.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
+12	SCR-12	        pages/QTV-admin-user-management.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
+13	SCR-13	        pages/QTV-admin-customer-management.html	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
+14	SCR-14	        pages/QTV-admin-invoice-settings.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
+
