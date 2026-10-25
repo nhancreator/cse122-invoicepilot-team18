@@ -8,9 +8,9 @@
 InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa và nhỏ (SME) tự động hóa quy trình theo dõi hóa đơn, đối soát sao kê ngân hàng và dự báo dòng tiền thông minh.
 
 ## 🔗 2. Đường Dẫn Triển Khai & Tài Nguyên
-* **Link Live Deployment (GitHub Pages / Vercel)**: `[npx plugins add vercel/vercel-plugin]`
-* **Link Dự Án Figma / Canva**: `[ĐIỀN LINK FIGMA PUBLIC TẠI ĐÂY]`
-* **Link Bảng Quản Lý Công Việc (Trello / Jira / Notion)**: `[ĐIỀN LINK TRELLO/JIRA TẠI ĐÂY]`
+* **Link Live Deployment (GitHub Pages):** [https://nhancreator.github.io/cse122-invoicepilot-team18/](https://nhancreator.github.io/cse122-invoicepilot-team18/)
+* **Link Dự Án Figma / Canva**: `[https://www.figma.com/make/By0BlLFJIfE25l45L33pD7/G%E1%BB%99p-n%E1%BB%99i-dung-th%C3%A0nh-m%E1%BB%99t-file?t=v8LnnoLMD5bfNR3X-20&fullscreen=1]`
+* **Link Bảng Quản Lý Công Việc (Trello / Jira / Notion)**: `[https://trello.com/invite/b/6add0f39f076be2795d27aec/ATTIdeb54990b157a3aa54aee895b74c4bc1575C2B12/📌-bảng-trello-theo-trạng-thai-cong-việc]`
 
 ## 👥 3. Phân Công Vai Trò & Trách Nhiệm Chéo (Cross-Responsibility)
 | STT | Họ và Tên | Mã SV | Vai Trò Chính | Trách Nhiệm Chéo (Cross-Responsibility) |
