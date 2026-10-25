@@ -16,13 +16,13 @@ InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa v
 | STT | Họ và Tên | Mã SV | Vai Trò Chính | Trách Nhiệm Chéo (Cross-Responsibility) |
 |:---:|:---|:---:|:---|:---|
 | 1 | **Đỗ Duy Nhân** | `[2551060659]` | Trưởng Nhóm / QA Dev | Kiểm thử Responsive + Merge Branches (dev → main) + Triển khai Deployment |
-| 2 | **Trần Khôi Nguyên** | `[MÃ SV]` | Frontend Developer | Architecture JavaScript + LocalStorage API + Chuẩn hóa AI UX |
-| 3 | **Đàm Minh Quân** | `[MÃ SV]` | Logic & Lead Dev  |  Design System (CSS Variables) + Navigation + Accessibility (A11y)  |
+| 2 | **Trần Khôi Nguyên** | `[MÃ SV]` | Frontend Developer | Design System (CSS Variables) + Navigation + Accessibility (A11y)  |
+| 3 | **Đàm Minh Quân** | `[MÃ SV]` | Logic & Lead Dev  | Architecture JavaScript + LocalStorage API + Chuẩn hóa AI UX |
 
 ## 🛠️ 4. Hướng Dẫn Chạy Cục Bộ (Local Setup)
 ```bash
 # 1. Tải repository về máy
-git clone [ĐIỀN LINK GITHUB REPO TẠI ĐÂY]
+git clone https://github.com/nhancreator/cse122-invoicepilot-team18.git
 
 # 2. Di chuyển vào thư mục dự án
 cd BT-CK
@@ -62,7 +62,7 @@ BT-CK/
 │   ├── KT-accountant-*.html
 │   ├── QL-manager-*.html
 │   ├── QTV-admin-*.html
-│   └── index.html        # Landing page giới thiệu
+│   └── trangchu.html        # Landing page giới thiệu
 └── README.md
 
 🎥 6. Minh Chứng Video OBS (1 Màn Hình = 1 Video OBS)
