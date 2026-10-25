@@ -114,7 +114,6 @@ function renderSidebarNav(user, currentPath) {
         </a>
     `).join('');
 
-    // Menu Cá nhân dùng chung
     navHtml += `
         <div class="nav-group-title" style="margin-top: 15px; font-size: 0.75rem; color: #64748b; padding: 0 10px;">CÁ NHÂN</div>
         <a href="profile.html" class="nav-link ${currentPath === 'profile.html' ? 'active' : ''}">
@@ -123,11 +122,10 @@ function renderSidebarNav(user, currentPath) {
         <a href="notifications.html" class="nav-link ${currentPath === 'notifications.html' ? 'active' : ''}">
             <i class='bx bx-bell'></i> <span>Thông báo</span>
         </a>
-        <a href="Trangchu.html" id="btnHomeAction" class="nav-link" style="color: #f87171;">
-            <i class='bx bx-home-alt'></i> <span>Quay lại trang chủ</span>
+        <a href="#" id="btnBackAction" class="nav-link" style="color: #f87171;" onclick="history.back(); return false;">
+            <i class='bx bx-arrow-back'></i> <span>Quay lại trang trước</span>
         </a>
     `;
-
     navContainer.innerHTML = navHtml;
 
 }

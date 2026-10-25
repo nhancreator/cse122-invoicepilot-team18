@@ -1,132 +1,118 @@
-/*InvoicePilot - Responsive Design & Mobile Adaption*/
+/* InvoicePilot - Ultimate Mobile Responsive Fix (Final Version) */
 
-/* 1. Chống cuộn ngang tuyệt đối cho toàn bộ ứng dụng */
 html, body {
-    max-width: 100%;
+    max-width: 100% !important;
     overflow-x: hidden !important;
+    box-sizing: border-box;
 }
 
-/* 2. Tablet View (Max width: 992px) */
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* Áp dụng khi màn hình dưới 992px (Tablet & Mobile) */
 @media screen and (max-width: 992px) {
-    .app-container {
+    /* 1. Đưa app-container về dạng khối dọc xếp chồng, không cố định chiều cao */
+    .app-container,
+    .app-layout {
         display: block !important;
         height: auto !important;
-        min-height: 100vh;
+        min-height: 100vh !important;
+        width: 100% !important;
+        position: relative !important;
     }
 
+    /* 2. Biến Sidebar thành thanh menu xếp dọc nằm trên cùng */
     .sidebar {
-        position: fixed;
-        top: 0;
-        left: -260px;
-        width: 260px;
-        height: 100vh;
-        z-index: 1000;
-        transition: left 0.3s ease;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        padding: 16px !important;
+        background: #0b0f19 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        box-sizing: border-box !important;
     }
 
-    .sidebar.active {
-        left: 0;
+    .sidebar-header {
+        margin-bottom: 0 !important;
+        font-size: 1.1rem !important;
     }
 
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+    .nav-group-title {
+        display: block !important;
+        font-size: 0.7rem !important;
+        margin-bottom: 6px !important;
     }
 
-    .sidebar-overlay.active {
-        display: block;
+    /* Danh sách các nút điều hướng trong menu */
+    .sidebar-nav {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
     }
 
+    .sidebar-nav .nav-link {
+        padding: 10px 14px !important;
+        font-size: 0.85rem !important;
+        border-radius: 8px !important;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Khung user badge và nút quay lại trang trước ở cuối sidebar */
+    .sidebar .user-badge-footer,
+    .sidebar > div:last-child {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        padding: 10px 14px !important;
+        border-radius: 8px !important;
+        margin-top: 8px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 3. Phần nội dung chính (main-wrapper / main-content) nằm ngay phía dưới menu */
     .main-wrapper,
     .main-content {
         margin-left: 0 !important;
         width: 100% !important;
-        padding: 15px !important;
-        box-sizing: border-box;
+        max-width: 100% !important;
+        padding: 14px !important;
+        box-sizing: border-box !important;
     }
 
     .stats-grid, .dashboard-cards {
+        display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 15px;
+        gap: 12px !important;
     }
 }
 
-/* 3. Mobile View (Max width: 576px) */
+/* Màn hình Mobile nhỏ (Dưới 576px) */
 @media screen and (max-width: 576px) {
     .stats-grid, .dashboard-cards {
         grid-template-columns: 1fr !important;
     }
 
+    /* Bảng dữ liệu có thanh cuộn ngang độc lập */
     .table-responsive {
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .header-actions {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
-
-    .btn-group {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .btn-group .btn {
-        width: 100%;
-        margin-bottom: 5px;
-    }
-
-    .browser-url {
-        width: 160px !important;
-        font-size: 0.75rem !important;
-    }
-}
-
-/* 4. Màn hình điện thoại rất nhỏ (320px - 425px) */
-@media screen and (max-width: 425px) {
-    .main-wrapper {
-        padding: 8px !important;
-    }
-
-    .card {
-        padding: 12px !important;
-        border-radius: 8px;
-    }
-
-    h1, h2, h3 {
-        word-break: break-word;
-        font-size: 1.25rem !important;
-    }
-
-    .form-control, 
-    input[type="text"], 
-    input[type="number"], 
-    input[type="date"], 
-    select, 
-    textarea {
-        font-size: 16px !important; /* Chống iOS tự động zoom khi focus */
         width: 100% !important;
-        box-sizing: border-box;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        display: block !important;
     }
-}
 
-/* 5. Xử lý Modal / Dialog trên Mobile */
-@media screen and (max-width: 768px) {
-    .modal-dialog, 
-    .modal-content {
-        width: 92% !important;
-        margin: 0 auto !important;
-        max-height: 90vh;
-        overflow-y: auto;
+    .data-table {
+        min-width: 620px !important;
     }
 }
