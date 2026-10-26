@@ -6,15 +6,15 @@
     <title>Chi Tiết Hóa Đơn | InvoicePilot Cyber</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../css/style.css"> 
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/responsive.css">
-</head> 
-<body> 
+</head>
+<body>
     <div class="app-container">
         <aside class="sidebar">
             <div class="sidebar-header"><i class='bx bx-hexagon' style="color: var(--primary-color); font-size: 1.5rem;"></i> InvoicePilot</div>
             <div class="nav-group-title">Sales Workspace</div>
-            <nav class="sidebar-nav"> 
+            <nav class="sidebar-nav">
                 <a href="KD-sales-customer-balance.html" class="nav-link"><i class='bx bx-wallet'></i> Công nợ Khách hàng</a>
                 <a href="KD-sales-invoice-detail.html" class="nav-link active"><i class='bx bx-file-blank'></i> Chi tiết Hóa đơn</a>
                 <a href="KD-sales-payment-reminders.html" class="nav-link"><i class='bx bx-mail-send'></i> Nhắc nợ thông minh AI</a>
@@ -115,12 +115,12 @@
                             <span>15.000.000 VNĐ</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
-                            <span style="color: var(--text-secondary);">Thuế VAT (10%):</span>
-                            <span>1.500.000 VNĐ</span>
+                            <span style="color: var(--text-secondary);">Thuế VAT (<span id="displayTaxRate">10</span>%):</span>
+                            <span><span id="displayTaxAmount">1.500.000 VNĐ</span></span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 1rem; font-weight: bold;">
                             <span>Tổng cộng:</span>
-                            <span style="color: var(--primary-color);">16.500.000 VNĐ</span>
+                            <span style="color: var(--primary-color);"><span id="displayInvoiceTotal">16.500.000 VNĐ</span></span>
                         </div>
                     </div>
                     <div>
@@ -133,6 +133,24 @@
     
     <div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;"></div>
 
+    <script>
+      // Đồng bộ cả khi hóa đơn chưa tồn tại trong dữ liệu tập trung.
+      function refreshDefaultTaxDisplay() {
+        const label = document.getElementById('displayTaxRate');
+        if (!label) return;
+        try {
+          const settings = JSON.parse(localStorage.getItem('invoicepilot_settings') || '{}');
+          const rate = Number(settings.taxRate ?? 10);
+          if (!Number.isFinite(rate) || rate < 0 || rate > 100) return;
+          const vat = 15000000 * rate / 100;
+          label.textContent = rate;
+          document.getElementById('displayTaxAmount').textContent = vat.toLocaleString('vi-VN') + ' VNĐ';
+          document.getElementById('displayInvoiceTotal').textContent = (15000000 + vat).toLocaleString('vi-VN') + ' VNĐ';
+        } catch (e) { /* Giữ thuế mặc định nếu dữ liệu bị lỗi */ }
+      }
+      refreshDefaultTaxDisplay();
+      window.addEventListener('storage', e => { if (e.key === 'invoicepilot_settings') refreshDefaultTaxDisplay(); });
+    </script>
     <script src="../js/api.js"></script>
     <script src="../js/modules/ai-reminder.js"></script>
 </body>
