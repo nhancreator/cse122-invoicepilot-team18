@@ -380,12 +380,16 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const settings = {
                 prefix: document.getElementById('invPrefix')?.value || '1C26TPT',
-                taxRate: document.getElementById('taxRate')?.value || 10,
+                taxRate: Number(document.getElementById('taxRate')?.value ?? 10),
                 threshold: parseFloat(document.getElementById('anomalyThreshold')?.value || document.getElementById('thresholdInput')?.value || 100000000),
                 provider: document.getElementById('providerSelect')?.value || 'Viettel S-Invoice',
                 updatedAt: new Date().toISOString()
             };
 
+            if (!Number.isFinite(settings.taxRate) || settings.taxRate < 0 || settings.taxRate > 100) {
+                showToast('Thuế suất phải nằm trong khoảng 0 đến 100%.', 'error');
+                return;
+            }
             saveSharedData(SETTINGS_KEY, settings);
             showToast('Đã lưu cấu hình hóa đơn và đồng bộ thành công!', 'success');
         });
