@@ -4,8 +4,8 @@
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](#)
 [![JavaScript] (https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](#)
 
-## 📌 1. Giới Thiệu Dự Án
-InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa và nhỏ (SME) tự động hóa quy trình theo dõi hóa đơn, đối soát sao kê ngân hàng và dự báo dòng tiền thông minh.
+## 📌 1. Giới Thiệu Dự Án 
+InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa và nhỏ (SME) tự động hóa quy trình theo dõi hóa đơn, đối soát sao kê ngân hàng và dự báo dòng tiền thông minh. 
 
 ## 🔗 2. Đường Dẫn Triển Khai & Tài Nguyên
 * **Link Live Deployment (GitHub Pages):** [https://nhancreator.github.io/cse122-invoicepilot-team18/](https://nhancreator.github.io/cse122-invoicepilot-team18/)
