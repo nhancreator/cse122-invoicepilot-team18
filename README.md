@@ -68,17 +68,17 @@ BT-CK/
 🎥 6. Minh Chứng Video OBS (1 Màn Hình = 1 Video OBS)
 STT	Mã Màn Hình	    Tên Màn Hình / Tệp	                            Sinh Viên Phụ Trách	            Link Video OBS Minh Chứng
 <<<<<<< HEAD
-1	SCR-01	        pages/KT-accountant-invoice-list.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
-2	SCR-02	        pages/KT-accountant-invoice-form.html	        Đỗ Duy Nhân	                    [LINK VIDEO OBS]
-3	SCR-03	        pages/KT-accountant-reconciliation.html 	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
-4	SCR-04	        pages/KD-sales-customer-balance.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
-5	SCR-05	        pages/KD-sales-payment-reminders.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
-6	SCR-06	        pages/KD-sales-invoice-detail.html	            Trần Khôi Nguyên	            [LINK VIDEO OBS]
-7	SCR-07	        pages/QL-manager-receivable-dashboard.html	    Đàm Minh Quân	                [LINK VIDEO OBS]
-8	SCR-08	        pages/QL-manager-overdue-invoices.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
-9	SCR-09	        pages/QL-manager-cashflow-forecast.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
-10	SCR-10	        pages/QTV-admin-user-management.html	        Trần Khôi Nguyên	            [LINK VIDEO OBS]
-11	SCR-11	        pages/QTV-admin-customer-management.html	    Đỗ Duy Nhân	                    [LINK VIDEO OBS]
-12	SCR-12	        pages/QTV-admin-invoice-settings.html	        Đàm Minh Quân	                [LINK VIDEO OBS]
+1	SCR-01	        pages/KT-accountant-invoice-list.html	        Đỗ Duy Nhân	                    [https://youtu.be/ZPY27WmUlY4]
+2	SCR-02	        pages/KT-accountant-invoice-form.html	        Đỗ Duy Nhân	                    [https://youtu.be/9ZF1PAIZAiU]
+3	SCR-03	        pages/KT-accountant-reconciliation.html 	    Đỗ Duy Nhân	                    [https://youtu.be/ppG2pna2ogs]
+4	SCR-04	        pages/KD-sales-customer-balance.html	        Trần Khôi Nguyên	            https://youtu.be/088Rup8m6YQ
+5	SCR-05	        pages/KD-sales-payment-reminders.html	        Trần Khôi Nguyên	            https://youtu.be/F5Vpe2506Co
+6	SCR-06	        pages/KD-sales-invoice-detail.html	            Trần Khôi Nguyên	            https://youtu.be/IyjR6LOi3qE
+7	SCR-07	        pages/QL-manager-receivable-dashboard.html	    Đàm Minh Quân	                https://youtu.be/tibe5eLLrSs
+8	SCR-08	        pages/QL-manager-overdue-invoices.html	        Đàm Minh Quân	                https://youtu.be/Ja63RCrZvjE
+9	SCR-09	        pages/QL-manager-cashflow-forecast.html	        Đàm Minh Quân	                https://youtu.be/CbDEh1i5dbQ
+10	SCR-10	        pages/QTV-admin-user-management.html	        Trần Khôi Nguyên	            https://youtu.be/tjp83m6uqxU
+11	SCR-11	        pages/QTV-admin-customer-management.html	    Đỗ Duy Nhân	                    [https://youtu.be/G_gV0OzGLgU]
+12	SCR-12	        pages/QTV-admin-invoice-settings.html	        Đàm Minh Quân	                https://youtu.be/4U9IqwSVd68
 
 
