@@ -1,31 +1,64 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- TOAST NOTIFICATION HELPER ---
     function showToast(message, type = 'success') {
-        const existingToast = document.getElementById('cyberToast');
-        if (existingToast) existingToast.remove();
+        let container = document.getElementById('toastContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;';
+            document.body.appendChild(container);
+        }
 
         const toast = document.createElement('div');
-        toast.id = 'cyberToast';
-        toast.style.position = 'fixed';
-        toast.style.bottom = '24px';
-        toast.style.right = '24px';
-        toast.style.background = type === 'success' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.9)';
-        toast.style.color = '#fff';
-        toast.style.padding = '12px 20px';
-        toast.style.borderRadius = '8px';
-        toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
-        toast.style.zIndex = '9999';
-        toast.style.fontSize = '0.85rem';
-        toast.style.fontWeight = '600';
-        toast.style.backdropFilter = 'blur(10px)';
-        toast.style.transition = 'all 0.3s ease';
-        toast.innerHTML = `<i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error-circle'}' style="margin-right: 8px;"></i> ${message}`;
+        const bgColor = type === 'success' ? 'rgba(16, 185, 129, 0.95)' :
+                        type === 'warning' ? 'rgba(245, 158, 11, 0.95)' :
+                        type === 'error' ? 'rgba(239, 68, 68, 0.95)' : 'rgba(59, 130, 246, 0.95)';
 
-        document.body.appendChild(toast);
+        toast.style.cssText = `background: ${bgColor}; color: #ffffff; padding: 12px 20px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-size: 0.85rem; font-weight: 600;`;
+        toast.innerHTML = `<i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error-circle'}' style="margin-right: 8px;"></i> ${message}`;
+        container.appendChild(toast);
+
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
         }, 3000);
+    }
+
+    // --- DARK / LIGHT MODE SWITCHER ---
+    const savedTheme = localStorage.getItem('invoicepilot_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    if (themeToggleBtn) {
+        themeToggleBtn.innerHTML = savedTheme === 'light' ? "<i class='bx bx-sun'></i> Chế độ Tối" : "<i class='bx bx-moon'></i> Đổi giao diện";
+        themeToggleBtn.onclick = () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('invoicepilot_theme', newTheme);
+            themeToggleBtn.innerHTML = newTheme === 'light' ? "<i class='bx bx-sun'></i> Chế độ Tối" : "<i class='bx bx-moon'></i> Đổi giao diện";
+            showToast(`Đã chuyển sang chế độ ${newTheme === 'light' ? 'Sáng (Light)' : 'Tối (Dark)'}!`, 'success');
+        };
+    }
+
+    // --- XUẤT BÁO CÁO CSV ---
+    const btnExportCSV = document.getElementById('btnExportCSV');
+    if (btnExportCSV) {
+        btnExportCSV.onclick = () => {
+            const invoices = getSharedInvoices();
+            let csvContent = "data:text/csv;charset=utf-8,MaHD,KhachHang,NgayPhatHanh,HanThanhToan,SoTien,TrangThai\r\n";
+            invoices.forEach(inv => {
+                csvContent += `${inv.id || inv.code},"${inv.customerName || inv.customer}",${inv.issueDate || ''},${inv.dueDate || ''},${inv.amount || 0},${inv.status || 'pending'}\r\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "invoicepilot_manager_report.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Xuất tệp báo cáo CSV phân hệ Quản lý thành công!");
+        };
     }
 
     function getSharedInvoices() {
@@ -143,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderImportantInvoices(invoices) {
-        const tbody = document.querySelector('#notableInvoicesTable tbody') || document.querySelector('.main-wrapper .card .data-table tbody');
+        const tbody = document.querySelector('.main-wrapper .card .data-table tbody');
         if (!tbody || document.getElementById('forecastTable')) return;
 
         const targetInvoices = invoices.filter(inv => isActuallyOverdue(inv) || !isPaidStatus(inv));
@@ -220,9 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ==========================================
-    // 3. RENDER BẢNG HÓA ĐƠN QUÁ HẠN & TÌM KIẾM CHUẨN KẾ TOÁN
-    // ==========================================
     let selectedRange = 'all';
 
     function renderOverdueTable(invoices) {
@@ -232,15 +262,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('searchOverdue');
         const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
-        // Lấy tất cả hóa đơn thực sự quá hạn
         const overdueInvoices = invoices.filter(inv => isActuallyOverdue(inv));
 
-        // Lọc theo từ khóa (khớp chuẩn xác y hệt như bên Kế toán)
         const filtered = overdueInvoices.filter(inv => {
             const matchCode = (inv.code || inv.id || '').toLowerCase().includes(keyword);
             const matchCustomer = (inv.customerName || inv.customer || '').toLowerCase().includes(keyword);
             
-            // Kiểm tra bộ lọc khoảng thời gian ngày quá hạn
             const daysOverdue = (() => {
                 const dueDt = new Date(String(inv.dueDate || '').split(' ')[0]);
                 const nowDt = new Date('2026-10-25');
@@ -307,7 +334,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const searchOverdue = document.getElementById('searchOverdue');
     if (searchOverdue) {
-        // Áp dụng sự kiện oninput / event listener y hệt bên Kế toán
         searchOverdue.addEventListener('input', () => {
             renderOverdueTable(getSharedInvoices());
         });
@@ -318,9 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnFilterOverdue.addEventListener('click', () => renderOverdueTable(getSharedInvoices()));
     }
 
-    // ==========================================
-    // 4. XỬ LÝ SỰ KIỆN NHẮC NỢ AI (PHÊ DUYỆT NHẮC NỢ)
-    // ==========================================
     document.addEventListener('click', (e) => {
         const reminderBtn = e.target.closest('.btn-action-reminder');
         if (!reminderBtn) return;
@@ -333,7 +356,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 600);
     });
 
-    // --- 5. TÍNH TOÁN DỰ BÁO DÒNG TIỀN AI-3 ---
     function updateCashflowForecast(invoices) {
         const forecastTableBody = document.querySelector('#forecastTable tbody');
         const inflowEl = document.getElementById('inflowValue');
@@ -372,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const estOut = Math.round(totalInflow * 0.35);
             const net = totalInflow - estOut;
             if (inflowEl) inflowEl.innerText = `${Math.round(totalInflow).toLocaleString()} ₫`;
-            if (outflowEl) inflowEl.innerText = `${Math.round(estOut).toLocaleString()} ₫`;
+            if (outflowEl) outflowEl.innerText = `${Math.round(estOut).toLocaleString()} ₫`;
             if (netSurplusEl) netSurplusEl.innerText = `+${Math.round(net).toLocaleString()} ₫`;
 
             monthsData = [

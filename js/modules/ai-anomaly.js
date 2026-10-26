@@ -1,31 +1,64 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- TOAST NOTIFICATION HELPER ---
     function showToast(message, type = 'success') {
-        const existingToast = document.getElementById('cyberToast');
-        if (existingToast) existingToast.remove();
+        let container = document.getElementById('toastContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;';
+            document.body.appendChild(container);
+        }
 
         const toast = document.createElement('div');
-        toast.id = 'cyberToast';
-        toast.style.position = 'fixed';
-        toast.style.bottom = '24px';
-        toast.style.right = '24px';
-        toast.style.background = type === 'success' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.9)';
-        toast.style.color = '#fff';
-        toast.style.padding = '12px 20px';
-        toast.style.borderRadius = '8px';
-        toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
-        toast.style.zIndex = '9999';
-        toast.style.fontSize = '0.85rem';
-        toast.style.fontWeight = '600';
-        toast.style.backdropFilter = 'blur(10px)';
-        toast.style.transition = 'all 0.3s ease';
-        toast.innerHTML = `<i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error-circle'}' style="margin-right: 8px;"></i> ${message}`;
+        const bgColor = type === 'success' ? 'rgba(16, 185, 129, 0.95)' :
+                        type === 'warning' ? 'rgba(245, 158, 11, 0.95)' :
+                        type === 'error' ? 'rgba(239, 68, 68, 0.95)' : 'rgba(59, 130, 246, 0.95)';
 
-        document.body.appendChild(toast);
+        toast.style.cssText = `background: ${bgColor}; color: #ffffff; padding: 12px 20px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-size: 0.85rem; font-weight: 600;`;
+        toast.innerHTML = `<i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error-circle'}' style="margin-right: 8px;"></i> ${message}`;
+        container.appendChild(toast);
+
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
         }, 3000);
+    }
+
+    // --- DARK / LIGHT MODE SWITCHER ---
+    const savedTheme = localStorage.getItem('invoicepilot_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    if (themeToggleBtn) {
+        themeToggleBtn.innerHTML = savedTheme === 'light' ? "<i class='bx bx-sun'></i> Chế độ Tối" : "<i class='bx bx-moon'></i> Đổi giao diện";
+        themeToggleBtn.onclick = () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('invoicepilot_theme', newTheme);
+            themeToggleBtn.innerHTML = newTheme === 'light' ? "<i class='bx bx-sun'></i> Chế độ Tối" : "<i class='bx bx-moon'></i> Đổi giao diện";
+            showToast(`Đã chuyển sang chế độ ${newTheme === 'light' ? 'Sáng (Light)' : 'Tối (Dark)'}!`, 'success');
+        };
+    }
+
+    // --- XUẤT BÁO CÁO CSV ---
+    const btnExportCSV = document.getElementById('btnExportCSV');
+    if (btnExportCSV) {
+        btnExportCSV.onclick = () => {
+            const customers = getSharedData('invoicepilot_customers', []);
+            let csvContent = "data:text/csv;charset=utf-8,MaKH,TenKhachHang,MaSoThue,Email,TrangThai\r\n";
+            customers.forEach(c => {
+                csvContent += `${c.code},"${c.name}",${c.tax},${c.email},${c.status}\r\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "invoicepilot_admin_report.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Xuất tệp báo cáo CSV phân hệ Quản trị thành công!");
+        };
     }
 
     // --- HỆ THỐNG LƯU TRỮ & ĐỒNG BỘ CHUNG ---
@@ -39,8 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.dispatchEvent(new CustomEvent('invoicepilot_data_changed', { detail: { key, data } }));
     }
 
-
-    // --- 1. MODULE: QUẢN LÝ KHÁCH HÀNG (QTV-admin-customer-management) - ĐỒNG BỘ TỪ HÓA ĐƠN ---
+    // --- 1. MODULE: QUẢN LÝ KHÁCH HÀNG (QTV-admin-customer-management) ---
     function initCustomerManagement() {
         const STORAGE_KEY = 'invoicepilot_customers';
         const defaultCustomers = [
@@ -53,8 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function getCustomers() {
             let customers = getSharedData(STORAGE_KEY, defaultCustomers);
-            
-            // Tự động lấy thêm danh sách khách hàng từ các hóa đơn mới do Kế toán/Kinh doanh tạo ra
             let invoices = [];
             if (window.InvoiceAPI) {
                 invoices = window.InvoiceAPI.getCollection('invoices');
@@ -68,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Đồng bộ tên khách hàng từ hóa đơn vào danh sách QTV nếu chưa có
             invoices.forEach((inv, idx) => {
                 const custName = inv.customerName || inv.customer;
                 if (custName) {
@@ -203,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
     // --- 2. MODULE: QUẢN LÝ NGƯỜI DÙNG (QTV-admin-user-management) ---
     function initUserManagement() {
         const USERS_KEY = 'invoicepilot_users';
@@ -322,7 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
     // --- 3. MODULE: CẤU HÌNH HÓA ĐƠN (QTV-admin-invoice-settings) ---
     function initInvoiceSettings() {
         const SETTINGS_KEY = 'invoicepilot_settings';
@@ -365,7 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         loadSettings();
     }
-
 
     // --- 4. MODULE: AI-ANOMALY SCANNER ---
     function initAIAnomaly() {
@@ -474,7 +500,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- KHỞI CHẠY CÁC MODULE THEO NGỮ CẢNH TRANG HIỆN TẠI ---
     initCustomerManagement();
     initUserManagement();
     initInvoiceSettings();

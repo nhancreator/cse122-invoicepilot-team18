@@ -23,6 +23,16 @@
             --glow-shadow: 0 0 25px rgba(6, 182, 212, 0.15);
         }
 
+        /* Hỗ trợ chế độ Light Mode */
+        [data-theme="light"] {
+            --cyber-bg: #f8fafc;
+            --cyber-card: #ffffff;
+            --cyber-border: rgba(0, 0, 0, 0.1);
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --glow-shadow: 0 0 25px rgba(37, 99, 235, 0.1);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -38,6 +48,7 @@
             flex-direction: column;
             justify-content: space-between;
             overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         /* Header Cyber Nav */
@@ -46,7 +57,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px 6%;
-            background: rgba(15, 23, 42, 0.8);
+            background: var(--cyber-card);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--cyber-border);
             position: sticky;
@@ -61,7 +72,7 @@
             text-decoration: none;
             font-size: 1.4rem;
             font-weight: 800;
-            color: #fff;
+            color: var(--text-main);
             letter-spacing: 0.5px;
         }
 
@@ -81,7 +92,7 @@
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
         .btn {
@@ -138,7 +149,7 @@
             line-height: 1.2;
             font-weight: 800;
             margin-bottom: 20px;
-            background: linear-gradient(135deg, #ffffff 30%, var(--neon-cyan));
+            background: linear-gradient(135deg, var(--text-main) 30%, var(--neon-cyan));
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -253,7 +264,7 @@
             font-size: 1.1rem;
             font-weight: 700;
             margin-bottom: 8px;
-            color: #fff;
+            color: var(--text-main);
         }
 
         .module-desc {
@@ -279,7 +290,7 @@
             border-top: 1px solid var(--cyber-border);
             color: var(--text-sub);
             font-size: 0.85rem;
-            background: #03060d;
+            background: var(--cyber-card);
         }
 
         /* Giao diện User đã đăng nhập */
@@ -287,8 +298,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: var(--cyber-card);
+            border: 1px solid var(--cyber-border);
             padding: 6px 14px;
             border-radius: 30px;
         }
@@ -320,21 +331,13 @@
             <div class="logo-icon"><i class='bx bxs-paper-plane'></i></div>
             <span>InvoicePilot</span>
         </a>
+
+        <!-- Khu vực chứa hành hướng: Thông báo, Hồ sơ, Đăng nhập & Nút Đổi giao diện Sáng/Tối -->
         <div class="nav-actions" id="navActions">
-            <a href="Dangnhap.html" class="btn btn-outline-cyber"><i class='bx bx-log-in'></i> Đăng nhập</a>
-            <a href="Dangnhap.html" class="btn btn-primary-cyber"><i class='bx bx-user-plus'></i> Đăng ký</a>
+            <!-- Nạp động qua JavaScript tùy thuộc trạng thái đăng nhập -->
         </div>
     </header>
-    <header style="display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #0b0f19; border-bottom: 1px solid #1e293b;">
-        <div class="brand" style="font-weight: 700; font-size: 1.3rem; color: #6366f1;">
-            <i class='bx bx-hexagon'></i> InvoicePilot
-        </div>
-        <!-- Khu vực chứa nút Thông Báo và Hồ Sơ -->
-        <div id="navUserArea" style="display: flex; align-items: center; gap: 16px;"></div>
-        <button id="themeToggleBtn" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">
-            <i class='bx bx-moon'></i> Đổi giao diện
-        </button>
-    </header>
+
     <main>
         <!-- Hero Section -->
         <section class="hero">
@@ -423,72 +426,102 @@
         <p>&copy; 2026 InvoicePilot. All rights reserved. Cyber-Fintech Platform.</p>
     </footer>
 
-    <!-- JS tự động đổi trạng thái Header & Hero khi đã Đăng nhập -->
+    <!-- Script Tích hợp: Trạng thái Đăng nhập, Thông báo, Hồ sơ & Đổi Sáng/Tối -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const navActions = document.getElementById('navActions');
             const heroBtns = document.getElementById('heroBtns');
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            // Lấy thông tin user từ LocalStorage
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || localStorage.getItem('invoicepilot_current_user') || 'null');
 
-            if (currentUser && navActions) {
-                const firstLetter = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U';
+            // --- 1. RENDER HEADER ACTIONS (Đăng nhập / Hồ sơ + Thông báo + Nút Sáng/Tối) ---
+            function renderNavActions() {
+                let userHtml = '';
 
-                // Thay thế cụm nút Đăng nhập / Đăng ký bằng Badge Thông tin User + Nút Đăng xuất
-                navActions.innerHTML = `
-                    <div class="user-info-badge">
-                        <div class="user-avatar">${firstLetter}</div>
-                        <div style="text-align: left;">
-                            <div style="font-weight:700; color:#fff; font-size:0.85rem;">${currentUser.name}</div>
-                            <div style="font-size:0.72rem; color:#06b6d4;">${currentUser.roleName}</div>
-                        </div>
-                    </div>
-                    <button id="logoutBtn" class="btn btn-outline-cyber" style="padding: 8px 16px;">
-                        <i class='bx bx-log-out'></i> Đăng xuất
-                    </button>
-                `;
-
-                // Thay thế nút hero banner bằng nút dẫn thẳng vào phân hệ hiện tại
-                if (heroBtns) {
-                    heroBtns.innerHTML = `
-                        <a href="${currentUser.targetPage}" class="btn btn-primary-cyber" style="padding: 12px 28px; text-decoration:none;">
-                            <i class='bx bx-right-arrow-circle'></i> Vào phân hệ (${currentUser.roleName})
+                if (currentUser) {
+                    const firstLetter = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U';
+                    userHtml = `
+                        <a href="notifications.html" title="Thông báo" style="color: var(--text-sub); font-size: 1.3rem; padding: 8px; border-radius: 50%; background: var(--cyber-card); border: 1px solid var(--cyber-border); text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                            <i class='bx bx-bell'></i>
                         </a>
+                        <a href="profile.html" title="Hồ sơ cá nhân" class="user-info-badge" style="text-decoration: none;">
+                            <div class="user-avatar">${firstLetter}</div>
+                            <div style="text-align: left; display: flex; flex-direction: column;">
+                                <span style="font-weight:700; color:var(--text-main); font-size:0.85rem;">${currentUser.name}</span>
+                                <span style="font-size:0.72rem; color:var(--neon-cyan);">${currentUser.roleName || currentUser.role}</span>
+                            </div>
+                        </a>
+                        <button id="logoutBtn" class="btn btn-outline-cyber" style="padding: 8px 14px; font-size: 0.85rem;" title="Đăng xuất">
+                            <i class='bx bx-log-out'></i>
+                        </button>
+                    `;
+                } else {
+                    userHtml = `
+                        <a href="Dangnhap.html" class="btn btn-outline-cyber"><i class='bx bx-log-in'></i> Đăng nhập</a>
+                        <a href="Dangnhap.html" class="btn btn-primary-cyber"><i class='bx bx-user-plus'></i> Đăng ký</a>
                     `;
                 }
 
-                // Xử lý sự kiện đăng xuất
-                document.getElementById('logoutBtn').addEventListener('click', () => {
-                    localStorage.removeItem('currentUser');
-                    window.location.reload();
-                });
+                // Thêm nút Đổi giao diện Sáng / Tối vào cuối thanh hành động
+                const themeBtnHtml = `
+                    <button id="themeToggleBtn" class="btn btn-outline-cyber" style="padding: 8px 12px; font-size: 0.85rem;" title="Đổi giao diện Sáng/Tối">
+                        <i class='bx bx-moon'></i>
+                    </button>
+                `;
+
+                navActions.innerHTML = userHtml + themeBtnHtml;
+
+                // Xử lý sự kiện Đăng xuất
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        localStorage.removeItem('currentUser');
+                        localStorage.removeItem('invoicepilot_current_user');
+                        window.location.reload();
+                    });
+                }
+
+                // Xử lý sự kiện Đổi giao diện
+                initThemeSwitcher();
             }
+
+            // --- 2. XỬ LÝ GIAO DIỆN SÁNG / TỐI ---
+            function initThemeSwitcher() {
+                const themeToggleBtn = document.getElementById('themeToggleBtn');
+                const savedTheme = localStorage.getItem('invoicepilot_theme') || 'dark';
+                
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                if (themeToggleBtn) {
+                    themeToggleBtn.innerHTML = savedTheme === 'light' ? "<i class='bx bx-sun' style='color:#f59e0b;'></i>" : "<i class='bx bx-moon'></i>";
+                }
+
+                if (themeToggleBtn) {
+                    themeToggleBtn.addEventListener('click', () => {
+                        const currentTheme = document.documentElement.getAttribute('data-theme');
+                        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                        
+                        document.documentElement.setAttribute('data-theme', newTheme);
+                        localStorage.setItem('invoicepilot_theme', newTheme);
+                        
+                        themeToggleBtn.innerHTML = newTheme === 'light' ? "<i class='bx bx-sun' style='color:#f59e0b;'></i>" : "<i class='bx bx-moon'></i>";
+                    });
+                }
+            }
+
+            // --- 3. ĐIỀU CHỈNH HERO BANNER KHI ĐÃ ĐĂNG NHẬP ---
+            if (currentUser && heroBtns) {
+                heroBtns.innerHTML = `
+                    <a href="${currentUser.targetPage || 'KT-accountant-invoice-list.html'}" class="btn btn-primary-cyber" style="padding: 12px 28px; text-decoration:none;">
+                        <i class='bx bx-right-arrow-circle'></i> Vào phân hệ (${currentUser.roleName || currentUser.role})
+                    </a>
+                `;
+            }
+
+            renderNavActions();
         });
     </script>
-<script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const userStr = localStorage.getItem('invoicepilot_current_user');
-            const navUserArea = document.getElementById('navUserArea');
 
-            if (userStr) {
-                const user = JSON.parse(userStr);
-                navUserArea.innerHTML = `
-                    <a href="notifications.html" title="Thông báo" style="color: #94a3b8; font-size: 1.4rem; padding: 6px; border-radius: 50%; background: #111827; text-decoration: none;">
-                        <i class='bx bx-bell'></i>
-                    </a>
-                    <a href="profile.html" title="Hồ sơ cá nhân" style="color: #a855f7; text-decoration: none; display: flex; align-items: center; gap: 8px; background: #111827; padding: 6px 12px; border-radius: 20px; border: 1px solid #1e293b;">
-                        <i class='bx bx-user-circle' style="font-size: 1.2rem;"></i>
-                        <span style="font-size: 0.85rem; font-weight: 500; color: #fff;">${user.name}</span>
-                    </a>
-                `;
-            } else {
-                navUserArea.innerHTML = `
-                    <a href="Dangnhap.html" style="color: #fff; text-decoration: none; font-size: 0.9rem; font-weight: 600; padding: 8px 16px; border-radius: 8px; background: #111827; border: 1px solid #334155;">
-                        <i class='bx bx-log-in'></i> Đăng Nhập
-                    </a>
-                `;
-            }
-        });
-    </script>    
     <!-- Script kiểm tra và phân quyền truy cập Phân hệ Liên Thông -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -500,21 +533,19 @@
                 if (!link) return;
                 const href = link.getAttribute('href');
 
-                // Xác định loại phân hệ của card
-                let cardType = ''; // 'KT', 'KD', 'QL', 'QTV'
+                let cardType = ''; 
                 if (href.includes('KT-')) cardType = 'KT';
                 else if (href.includes('KD-')) cardType = 'KD';
                 else if (href.includes('QL-')) cardType = 'QL';
                 else if (href.includes('QTV-') || href.includes('admin')) cardType = 'QTV';
 
-                // Kiểm tra quyền truy cập dựa trên role của currentUser
                 let hasAccess = true;
                 if (!currentUser) {
-                    hasAccess = false; // Chưa đăng nhập -> Chuyển về trang đăng nhập
+                    hasAccess = false; 
                 } else {
-                    const role = currentUser.role; // 'admin', 'accountant', 'sales', 'manager'
+                    const role = currentUser.role; 
                     if (role === 'admin') {
-                        hasAccess = true; // QTV được vào mọi phân hệ
+                        hasAccess = true; 
                     } else if (role === 'accountant') {
                         hasAccess = (cardType === 'KT' || cardType === 'QTV');
                     } else if (role === 'sales') {
@@ -525,12 +556,10 @@
                 }
 
                 if (!hasAccess) {
-                    // Hiệu ứng trực quan: Làm mờ và khóa phân hệ không có quyền
                     card.style.opacity = '0.45';
                     card.style.filter = 'grayscale(0.6)';
                     card.style.cursor = 'not-allowed';
 
-                    // Thêm nhãn khóa
                     const desc = card.querySelector('.module-desc');
                     if (desc && !card.querySelector('.lock-badge')) {
                         const lockBadge = document.createElement('div');
@@ -540,7 +569,6 @@
                         card.querySelector('div').appendChild(lockBadge);
                     }
 
-                    // Chặn sự kiện click và thông báo
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
                         if (!currentUser) {
@@ -553,10 +581,9 @@
             });
         });
     </script>
-    <!-- Script dùng chung cho mọi file trong thư mục pages/ -->
+
+    <!-- Script chung của dự án -->
     <script src="../js/api.js"></script>
     <script src="../js/main.js"></script>
-    <a href="pages/Dangnhap.html">Đăng nhập</a>
-
 </body>
 </html>

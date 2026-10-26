@@ -1,31 +1,64 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- TOAST NOTIFICATION HELPER ---
     function showToast(message, type = 'success') {
-        const existingToast = document.getElementById('cyberToast');
-        if (existingToast) existingToast.remove();
+        let container = document.getElementById('toastContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;';
+            document.body.appendChild(container);
+        }
 
         const toast = document.createElement('div');
-        toast.id = 'cyberToast';
-        toast.style.position = 'fixed';
-        toast.style.bottom = '24px';
-        toast.style.right = '24px';
-        toast.style.background = type === 'success' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.9)';
-        toast.style.color = '#fff';
-        toast.style.padding = '12px 20px';
-        toast.style.borderRadius = '8px';
-        toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
-        toast.style.zIndex = '9999';
-        toast.style.fontSize = '0.85rem';
-        toast.style.fontWeight = '600';
-        toast.style.backdropFilter = 'blur(10px)';
-        toast.style.transition = 'all 0.3s ease';
-        toast.innerHTML = `<i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error-circle'}' style="margin-right: 8px;"></i> ${message}`;
+        const bgColor = type === 'success' ? 'rgba(16, 185, 129, 0.95)' :
+                        type === 'warning' ? 'rgba(245, 158, 11, 0.95)' :
+                        type === 'error' ? 'rgba(239, 68, 68, 0.95)' : 'rgba(59, 130, 246, 0.95)';
 
-        document.body.appendChild(toast);
+        toast.style.cssText = `background: ${bgColor}; color: #ffffff; padding: 12px 20px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-size: 0.85rem; font-weight: 600;`;
+        toast.innerHTML = `<i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error-circle'}' style="margin-right: 8px;"></i> ${message}`;
+        container.appendChild(toast);
+
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
         }, 3000);
+    }
+
+    // --- DARK / LIGHT MODE SWITCHER ---
+    const savedTheme = localStorage.getItem('invoicepilot_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    if (themeToggleBtn) {
+        themeToggleBtn.innerHTML = savedTheme === 'light' ? "<i class='bx bx-sun'></i> Chế độ Tối" : "<i class='bx bx-moon'></i> Đổi giao diện";
+        themeToggleBtn.onclick = () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('invoicepilot_theme', newTheme);
+            themeToggleBtn.innerHTML = newTheme === 'light' ? "<i class='bx bx-sun'></i> Chế độ Tối" : "<i class='bx bx-moon'></i> Đổi giao diện";
+            showToast(`Đã chuyển sang chế độ ${newTheme === 'light' ? 'Sáng (Light)' : 'Tối (Dark)'}!`, 'success');
+        };
+    }
+
+    // --- XUẤT BÁO CÁO CSV ---
+    const btnExportCSV = document.getElementById('btnExportCSV');
+    if (btnExportCSV) {
+        btnExportCSV.onclick = () => {
+            const invoices = getSharedInvoices();
+            let csvContent = "data:text/csv;charset=utf-8,MaHD,KhachHang,NgayPhatHanh,HanThanhToan,SoTien,TrangThai\r\n";
+            invoices.forEach(inv => {
+                csvContent += `${inv.id || inv.code},"${inv.customerName || inv.customer}",${inv.issueDate || ''},${inv.dueDate || ''},${inv.amount || 0},${inv.status || 'pending'}\r\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "invoicepilot_sales_report.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Xuất tệp báo cáo CSV phân hệ Kinh doanh thành công!");
+        };
     }
 
     // --- HỆ THỐNG ĐỒNG BỘ REALTIME & TẢI DỮ LIỆU TẬP TRUNG ---
@@ -44,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return window.InvoiceAPI ? window.InvoiceAPI.getCollection('invoices') : [];
     }
 
-    // Hàm kiểm tra trạng thái chuẩn xác
     function isOverdue(inv) {
         const st = (inv.status || '').toLowerCase();
         return st.includes('overdue') || st.includes('quá hạn') || st.includes('hủy');
@@ -79,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Cập nhật động số liệu thống kê & Biểu đồ công nợ đầy đủ 3 trạng thái
     function updateDashboardStats(invoices) {
         let totalCollected = 0;
         let totalPending = 0;
@@ -109,17 +140,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (pendingPercent < 0) pendingPercent = 0;
         }
 
-        // 1. Cập nhật 3 ô thống kê AI
         const statCards = document.querySelectorAll('div[style*="background: rgba(14, 21, 38, 0.7)"]');
         if (statCards.length >= 3) {
-            // Ô 1: Số email đã gửi
             const sentValEl = statCards[0].querySelector('div:nth-child(2)');
             if (sentValEl) {
                 const sentCount = Number(localStorage.getItem('invoicepilot_sent_emails') || 42);
                 sentValEl.innerText = `${sentCount} email`;
             }
 
-            // Ô 2: Thu hồi thành công & Tự động tính % so với tháng trước (Tháng trước = 30.000.000 ₫)
             const collectedValEl = statCards[1].querySelector('div:nth-child(2)');
             const percentSubEl = statCards[1].querySelector('div:nth-child(3)');
 
@@ -143,15 +171,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 2. Cập nhật Biểu đồ công nợ 3 màu chuẩn xác (Chưa trả - Quá hạn - Đã thu)
         const progressBarBars = document.querySelectorAll('div[style*="height: 10px"] > div');
         if (progressBarBars.length >= 3) {
-            progressBarBars[0].style.width = `${pendingPercent}%`;  // Chưa trả (Cam)
-            progressBarBars[1].style.width = `${overduePercent}%`;  // Quá hạn (Đỏ)
-            progressBarBars[2].style.width = `${paidPercent}%`;     // Đã thu (Xanh)
+            progressBarBars[0].style.width = `${pendingPercent}%`;
+            progressBarBars[1].style.width = `${overduePercent}%`;
+            progressBarBars[2].style.width = `${paidPercent}%`;
         }
 
-        // Cập nhật chú thích đầy đủ 3 màu cho biểu đồ
         const legendContainer = document.getElementById('chartLegend') || document.querySelector('div[style*="gap: 20px; font-size: 0.75rem"]');
         if (legendContainer) {
             legendContainer.innerHTML = `
@@ -172,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadData();
     });
 
-    // --- 1. XỬ LÝ AI NHẮC NỢ ---
     const btnGenerate = document.getElementById('btnGenerateAI');
     const aiContentArea = document.getElementById('aiContentArea');
     const aiStatusBadge = document.getElementById('aiStatusBadge');
@@ -240,16 +265,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (aiActionFooter) aiActionFooter.style.display = 'block';
-                // Đã bỏ dòng cộng số lượng ở đây để chỉ cộng khi bấm Chấp nhận gửi bên dưới!
-
             }, 1200);
         });
     }
 
-    // Xử lý Sửa thủ công & Chấp nhận/Từ chối
     document.addEventListener('click', (e) => {
         if (e.target.id === 'btnAccept' || e.target.closest('#btnAccept')) {
-            // CHỈ KHI BẤM NÚT CHẤP NHẬN GỬI THÌ MỚI CỘNG SỐ LƯỢNG EMAIL LÊN ĐÚNG 1 ĐƠN VỊ
             let currentSent = Number(localStorage.getItem('invoicepilot_sent_emails') || 42);
             currentSent += 1;
             localStorage.setItem('invoicepilot_sent_emails', currentSent);
@@ -299,7 +320,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadData();
 
-    // --- 2. XỬ LÝ ĐỘNG CHO TRANG QUẢN LÝ CÔNG NỢ KINH DOANH ---
     const customerBalanceTbody = document.querySelector('.data-table tbody');
     const isCustomerBalancePage = document.querySelector('h1')?.textContent.includes('Theo Dõi Công Nợ Khách Hàng');
 
@@ -352,7 +372,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('invoicepilot_data_changed', renderCustomerBalance);
     }
 
-    // --- 3. XỬ LÝ ĐỘNG CHO TRANG CHI TIẾT HÓA ĐƠN ---
     const urlParams = new URLSearchParams(window.location.search);
     const invoiceId = urlParams.get('id');
     const isInvoiceDetailPage = document.querySelector('.main-wrapper h1')?.textContent.includes('Chi Tiết Hóa Đơn');

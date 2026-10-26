@@ -20,7 +20,7 @@
                 <a href="KD-sales-invoice-detail.html" class="nav-link"><i class='bx bx-file-blank'></i> Chi tiết Hóa đơn</a>
                 <a href="KD-sales-payment-reminders.html" class="nav-link"><i class='bx bx-mail-send'></i> Nhắc nợ thông minh AI</a>
             </nav>
-            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <div style="width: 32px; height: 32px; background: var(--primary-color); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;" aria-hidden="true">KD</div>
                     <div>
@@ -32,17 +32,26 @@
                     <i class='bx bx-home-alt' style="font-size: 1.2rem;"></i>
                 </a>
             </div>
+            <!-- Nút Đổi Giao Diện -->
+            <button id="themeToggleBtn" class="btn btn-outline" style="width: 100%; justify-content: center; padding: 8px 12px; font-size: 0.8rem;">
+                <i class='bx bx-moon'></i> Đổi giao diện
+            </button>
         </aside>
 
         <!-- Main Wrapper -->
         <div class="main-wrapper">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
                 <div>
                     <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px;">Phân hệ Kinh doanh / Sales Dashboard</div>
                     <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Theo Dõi Công Nợ Khách Hàng</h1>
                 </div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); text-align: right;">
-                    Quản lý số dư công nợ, hạn mức tín dụng và lịch sử thanh toán.
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" id="btnExportCSV" class="btn btn-outline" style="padding: 8px 14px; font-size: 0.85rem;">
+                        <i class='bx bx-export'></i> Xuất CSV
+                    </button>
+                    <button type="button" onclick="window.print();" class="btn btn-outline" style="padding: 8px 14px; font-size: 0.85rem;">
+                        <i class='bx bx-printer'></i> In báo cáo
+                    </button>
                 </div>
             </div>
 
@@ -54,16 +63,16 @@
             </div>
 
             <div class="card">
-                <!-- Khu vực Biểu đồ Tổng quan Cơ cấu Công nợ (Dashboard Widget) -->
+                <!-- Khu vực Biểu đồ Tổng quan Cơ cấu Công nợ -->
                 <div style="background: rgba(6, 9, 19, 0.5); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 24px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Biểu đồ phân bổ cơ cấu công nợ theo danh mục</span>
                         <span id="headerTotalDebt" style="font-size: 0.75rem; color: var(--primary-color);">Tổng dư nợ: 0 VNĐ</span>
                     </div>
                     <div style="display: flex; height: 10px; width: 100%; background: #1e293b; border-radius: 99px; overflow: hidden; gap: 2px; margin-bottom: 12px;">
-                        <div style="width: 35%; background: var(--warning-color);" title="Công ty CP A: 15tr"></div>
-                        <div style="width: 50%; background: var(--danger-color);" title="Tập đoàn X: 30tr"></div>
-                        <div style="width: 15%; background: var(--success-color);" title="Khác: 0tr"></div>
+                        <div style="width: 35%; background: var(--warning-color);" title="Chưa trả"></div>
+                        <div style="width: 50%; background: var(--danger-color);" title="Quá hạn"></div>
+                        <div style="width: 15%; background: var(--success-color);" title="Đã thu"></div>
                     </div>
                     <div style="display: flex; gap: 20px; font-size: 0.75rem; color: var(--text-secondary);" id="chartLegend">
                         <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: var(--warning-color); border-radius: 50%;"></span> Chưa trả</span>
@@ -98,42 +107,16 @@
                                 <th>Thao Tác</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>KH-101</strong></td>
-                                <td>Công ty Cổ phần A</td>
-                                <td>150.000.000</td>
-                                <td>135.000.000</td>
-                                <td style="color: var(--warning-color); font-weight: 600;">15.000.000 VNĐ</td>
-                                <td><span class="badge badge-warning">Đang nợ đến hạn</span></td>
-                                <td><a href="KD-sales-invoice-detail.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Xem chi tiết</a></td>
-                            </tr>
-                            <tr>
-                                <td><strong>KH-102</strong></td>
-                                <td>Công ty TNHH B</td>
-                                <td>200.000.000</td>
-                                <td>200.000.000</td>
-                                <td style="color: var(--success-color); font-weight: 600;">0 VNĐ</td>
-                                <td><span class="badge badge-success">Hoàn thành</span></td>
-                                <td><a href="KD-sales-invoice-detail.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Xem chi tiết</a></td>
-                            </tr>
-                            <tr>
-                                <td><strong>KH-105</strong></td>
-                                <td>Tập đoàn X</td>
-                                <td>80.000.000</td>
-                                <td>50.000.000</td>
-                                <td style="color: var(--danger-color); font-weight: 600;">30.000.000 VNĐ</td>
-                                <td><span class="badge" style="background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3);">Quá hạn 15 ngày</span></td>
-                                <td><a href="KD-sales-payment-reminders.html" style="color: var(--accent-cyan); text-decoration: none; font-weight: 500;">Nhắc nợ AI</a></td>
-                            </tr>
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
-<script src="../js/api.js"></script>
-<script src="../js/modules/ai-reminder.js"></script>
+    
+    <div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;"></div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/modules/ai-reminder.js"></script>
 </body>
 </html>

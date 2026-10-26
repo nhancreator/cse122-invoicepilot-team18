@@ -20,8 +20,7 @@
                 <a href="QTV-admin-invoice-settings.html" class="nav-link"><i class='bx bx-slider-alt'></i> Cấu hình Hóa đơn</a>
                 <a href="QTV-admin-user-management.html" class="nav-link"><i class='bx bx-user-pin'></i> Quản lý Người dùng</a>
             </nav>
-            <!-- User Badge & Nút Về Trang Chủ (Đồng bộ chuẩn KT/KD/QL) -->
-            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="margin-top: auto; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <div style="width: 32px; height: 32px; background: var(--primary-color); color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;" aria-hidden="true">AD</div>
                     <div>
@@ -33,16 +32,28 @@
                     <i class='bx bx-home-alt' style="font-size: 1.2rem;"></i>
                 </a>
             </div>
+            <!-- Nút Đổi Giao Diện -->
+            <button id="themeToggleBtn" class="btn btn-outline" style="width: 100%; justify-content: center; padding: 8px 12px; font-size: 0.8rem;">
+                <i class='bx bx-moon'></i> Đổi giao diện
+            </button>
         </aside>
 
         <!-- Main Wrapper -->
         <div class="main-wrapper">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
                 <div>
                     <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 4px;">Phân hệ Quản trị / Khách hàng</div>
                     <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;">Quản Lý Danh Sách Khách Hàng</h1>
                 </div>
-                <button class="btn btn-primary" id="btnOpenAddModal"><i class='bx bx-plus'></i> Thêm Khách Hàng Mới</button>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" id="btnOpenAddModal"><i class='bx bx-plus'></i> Thêm Khách Hàng Mới</button>
+                    <button type="button" id="btnExportCSV" class="btn btn-outline" style="padding: 8px 14px; font-size: 0.85rem;">
+                        <i class='bx bx-export'></i> Xuất CSV
+                    </button>
+                    <button type="button" onclick="window.print();" class="btn btn-outline" style="padding: 8px 14px; font-size: 0.85rem;">
+                        <i class='bx bx-printer'></i> In báo cáo
+                    </button>
+                </div>
             </div>
 
             <div class="browser-header-bar">
@@ -65,9 +76,7 @@
                                 <th>Thao Tác</th>
                             </tr>
                         </thead>
-                        <tbody id="customerTableBody">
-                            <!-- Dữ liệu được nạp tự động qua JS từ LocalStorage -->
-                        </tbody>
+                        <tbody id="customerTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -103,7 +112,9 @@
             </form>
         </div>
     </div>
-    <!-- Nhúng api.js đầu tiên để khởi tạo store chung -->
+    
+    <div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;"></div>
+
     <script src="../js/api.js"></script>
     <script src="../js/modules/ai-anomaly.js"></script>
 </body>
