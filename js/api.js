@@ -9,6 +9,8 @@ const STORAGE_KEY = 'invoicepilot_data';
 const DEFAULT_STATE = {
     invoices: [
         { id: 'INV-001', code: 'INV-001', customerName: 'Công ty Cổ phần A', amount: 15000000, taxCode: '0309876543', issueDate: '2026-09-01', dueDate: '2026-10-30', status: 'pending' },
+        { id: 'INV-002', code: 'INV-002', customerName: 'Cửa hàng Tiện lợi Beta', amount: 8500000, taxCode: '0101234567', issueDate: '2026-09-05', dueDate: '2026-09-20', status: 'paid' },
+        { id: 'INV-003', code: 'INV-003', customerName: 'Tập đoàn Công nghệ X', amount: 30000000, taxCode: '0100123456', issueDate: '2026-09-15', dueDate: '2026-09-30', status: 'overdue' },
         { id: 'INV-008', code: 'INV-008', customerName: 'Tập đoàn X', amount: 30000000, taxCode: '0100123456', issueDate: '2026-09-15', dueDate: '2026-09-30', status: 'overdue' }
     ],
     customers: [
@@ -16,8 +18,10 @@ const DEFAULT_STATE = {
         { code: 'KH-002', name: 'Công ty Cổ phần A', tax: '0309876543', email: 'info@cpa.vn', status: 'Hoạt động' }
     ],
     users: [
-        { name: 'Dàm Minh Quân', username: 'minhquan', role: 'Quản lý (Manager)', status: 'Hoạt động' },
-        { name: 'Đỗ Duy Nhân', username: 'duynhan', role: 'Kế toán (Accountant)', status: 'Hoạt động' }
+        { name: 'Đàm Minh Quân', username: 'minhquan', role: 'Quản lý (Manager)', status: 'Hoạt động' },
+        { name: 'Đỗ Duy Nhân', username: 'duynhan', role: 'Kế toán (Accountant)', status: 'Hoạt động' },
+        { name: 'Nguyên Nhân Quân', username: 'admin', role: 'Quản trị viên (Admin)', status: 'Hoạt động' },
+        { name: 'Trần Khôi Nguyên', username: 'khoinguyen', role: 'Quản lý (Manager)', status: 'Hoạt động' }
     ],
     settings: {
         prefix: '1C26TPT',
@@ -28,7 +32,7 @@ const DEFAULT_STATE = {
 };
 
 const InvoiceAPI = {
-    // 1. Lấy toàn bộ trạng thái hệ thống
+    // 1. Lấy toàn bộ trạng thái hệ thống (tự động khởi tạo nếu chưa có)
     getData() {
         const rawData = localStorage.getItem(STORAGE_KEY);
         if (!rawData) {
@@ -46,32 +50,38 @@ const InvoiceAPI = {
     // 2. Lưu toàn bộ trạng thái và kích hoạt tín hiệu đồng bộ Realtime
     saveData(newState) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
-        
-        // Kích hoạt Custom Event cho các view/script trong CÙNG MỘT tab trình duyệt
+        // Kích hoạt Custom Event cho các view/script trong cùng một tab trình duyệt
         window.dispatchEvent(new CustomEvent('invoicepilot_data_changed', { detail: newState }));
     },
 
-    // 3. Lấy dữ liệu theo phân khúc (collection)
+    // 3. Lấy dữ liệu theo phân khúc (collection) như 'invoices', 'customers', v.v.
     getCollection(collectionName) {
         const state = this.getData();
         return state[collectionName] || [];
     },
 
-    // 4. Thêm bản ghi mới (CRUD - Create)
+    // 4. Lưu trực tiếp một collection (Hỗ trợ tương thích ngược với các file script cũ)
+    saveCollection(collectionName, items) {
+        const state = this.getData();
+        state[collectionName] = items;
+        this.saveData(state);
+    },
+
+    // 5. Thêm bản ghi mới (CRUD - Create)
     addRecord(collectionName, record) {
         const state = this.getData();
         if (!state[collectionName]) state[collectionName] = [];
-        state[collectionName].push(record);
+        state[collectionName].unshift(record);
         this.saveData(state);
         return state[collectionName];
     },
 
-    // 5. Cập nhật bản ghi (CRUD - Update)
+    // 6. Cập nhật bản ghi (CRUD - Update)
     updateRecord(collectionName, idField, idValue, updatedFields) {
         const state = this.getData();
         if (!state[collectionName]) return;
         state[collectionName] = state[collectionName].map(item => {
-            if (item[idField] === idValue) {
+            if (item[idField] === idValue || item.id === idValue || item.code === idValue) {
                 return { ...item, ...updatedFields };
             }
             return item;
@@ -80,16 +90,16 @@ const InvoiceAPI = {
         return state[collectionName];
     },
 
-    // 6. Xóa bản ghi (CRUD - Delete)
+    // 7. Xóa bản ghi (CRUD - Delete)
     deleteRecord(collectionName, idField, idValue) {
         const state = this.getData();
         if (!state[collectionName]) return;
-        state[collectionName] = state[collectionName].filter(item => item[idField] !== idValue);
+        state[collectionName] = state[collectionName].filter(item => item[idField] !== idValue && item.id !== idValue && item.code !== idValue);
         this.saveData(state);
         return state[collectionName];
     },
 
-    // 7. Cập nhật cấu hình hệ thống riêng biệt
+    // 8. Cập nhật cấu hình hệ thống riêng biệt
     updateSettings(newSettings) {
         const state = this.getData();
         state.settings = { ...state.settings, ...newSettings };
@@ -97,40 +107,11 @@ const InvoiceAPI = {
         return state.settings;
     }
 };
-// js/api.js
-window.InvoiceAPI = {
-    // Lấy danh sách hóa đơn từ kho lưu trữ chung
-    getInvoices() {
-        const stored = localStorage.getItem('invoicepilot_invoices');
-        if (!stored) {
-            const defaultInvoices = [
-                { id: 'INV-001', customerName: 'Công ty Cổ phần Alpha', issueDate: '2026-09-01', dueDate: '2026-09-30', amount: 15000000, status: 'pending' },
-                { id: 'INV-002', customerName: 'Cửa hàng Tiện lợi Beta', issueDate: '2026-09-05', dueDate: '2026-09-20', amount: 8500000, status: 'paid' },
-                { id: 'INV-003', customerName: 'Tập đoàn Công nghệ X', issueDate: '2026-09-15', dueDate: '2026-09-30', amount: 30000000, status: 'overdue' }
-            ];
-            localStorage.setItem('invoicepilot_invoices', JSON.stringify(defaultInvoices));
-            return defaultInvoices;
-        }
-        try {
-            return JSON.parse(stored);
-        } catch (e) {
-            return [];
-        }
-    },
 
-    // Thêm hoặc lưu danh sách hóa đơn mới
-    saveInvoices(invoices) {
-        localStorage.setItem('invoicepilot_invoices', JSON.stringify(invoices));
-        // Phát sự kiện thông báo dữ liệu đã thay đổi để các trang tự cập nhật
-        window.dispatchEvent(new Event('invoicepilot_data_changed'));
-    },
-
-    // Thêm 1 hóa đơn mới từ phân hệ Kế toán
-    addInvoice(newInvoice) {
-        const invoices = this.getInvoices();
-        invoices.unshift(newInvoice); // Đưa lên đầu danh sách
-        this.saveInvoices(invoices);
-    }
-};
 // Đăng ký toàn cục để các module dễ dàng sử dụng
 window.InvoiceAPI = InvoiceAPI;
+
+// Đảm bảo khởi tạo dữ liệu ngay khi tải tệp nếu localStorage đang trống
+if (!localStorage.getItem(STORAGE_KEY)) {
+    InvoiceAPI.saveData(DEFAULT_STATE);
+}
