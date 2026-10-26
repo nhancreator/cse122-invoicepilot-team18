@@ -6,8 +6,6 @@
 
 | Role    | User Goal           | User Task         | Screen Name           | File Path     | CRUD / State  | AI UX | Assignee    | Task ID     | Branch                | OBS Link |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| **Public** | Khám phá giải pháp | Xem giới thiệu & Bảng giá | Trang chủ | `Trangchu.html` | Read / Normal | Không || `TASK-01` | `feature/landing-page` |  |
-| **All** | Xác thực hệ thống | Đăng nhập tài khoản | Đăng nhập | `pages/Dangnhap.html` | Read / Normal, Validation | Không || `TASK-02` | `feature/auth-login` |  | 
 | **Kế toán** | Quản lý hóa đơn | Lọc & Xem danh sách hóa đơn | Danh sách hóa đơn | `pages/KT-accountant-invoice-list.html` | Read, Delete / Normal, Empty | Không | Đỗ Duy Nhân | `TASK-01` | `feature/accountant-list` | `[(https://youtu.be/ZPY27WmUlY4)]` |
 | **Kế toán** | Lập chứng từ | Tạo mới & Kiểm tra hóa đơn | Form lập hóa đơn | `pages/KT-accountant-invoice-form.html` | Create, Update / Normal, Validation | AI-1 (Anomaly Check) | Đỗ Duy Nhân | `TASK-02` | `feature/accountant-form` | `[(https://youtu.be/9ZF1PAIZAiU)]` |
 | **Kế toán** | Đối soát tài khoản | Khớp lệnh sao kê ngân hàng | Đối soát công nợ | `pages/KT-accountant-reconciliation.html` | Create, Update / Normal, Loading | AI-1 (Auto Match) | Đỗ Duy Nhân | `TASK-03` | `feature/accountant-reconcile` | `[https://youtu.be/ppG2pna2ogs]` |
