@@ -522,7 +522,7 @@
         });
     </script>
 
-    <!-- Script kiểm tra và phân quyền truy cập Phân hệ Liên Thông -->
+<!-- Script kiểm tra và phân quyền truy cập Phân hệ Liên Thông -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const currentUser = JSON.parse(localStorage.getItem('currentUser') || localStorage.getItem('invoicepilot_current_user') || 'null');
@@ -558,7 +558,6 @@
                 if (!hasAccess) {
                     card.style.opacity = '0.45';
                     card.style.filter = 'grayscale(0.6)';
-                    card.style.cursor = 'not-allowed';
 
                     const desc = card.querySelector('.module-desc');
                     if (desc && !card.querySelector('.lock-badge')) {
@@ -574,14 +573,13 @@
                         if (!currentUser) {
                             window.location.href = 'Dangnhap.html';
                         } else {
-                            alert('Truy cập bị từ chối! Tài khoản của bạn chỉ được phép truy cập phân hệ của mình và Quản trị hệ thống (QTV).');
+                            window.location.href = '403.html'; // Chuyển hướng chuẩn sang trang 403 Forbidden
                         }
                     });
                 }
             });
         });
     </script>
-
     <!-- Script chung của dự án -->
     <script src="../js/api.js"></script>
     <script src="../js/main.js"></script>

@@ -318,14 +318,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    loadData();
-
+    // --- XỬ LÝ LỌC & TÌM KIẾM TRANG CÔNG NỢ KHÁCH HÀNG ---
     const customerBalanceTbody = document.querySelector('.data-table tbody');
     const isCustomerBalancePage = document.querySelector('h1')?.textContent.includes('Theo Dõi Công Nợ Khách Hàng');
 
     if (customerBalanceTbody && isCustomerBalancePage) {
+        let currentFilter = 'all';
+
         function renderCustomerBalance() {
             const invoices = getSharedInvoices();
+            const searchInputEl = document.getElementById('salesSearchInput');
+            const searchKeyword = searchInputEl ? searchInputEl.value.trim().toLowerCase() : '';
+            
             customerBalanceTbody.innerHTML = '';
             let totalDebtAll = 0;
 
@@ -337,6 +341,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const remaining = isPaid ? 0 : amount;
 
                 if (!isPaid) totalDebtAll += remaining;
+
+                let matchFilter = true;
+                if (currentFilter === 'overdue') {
+                    matchFilter = overdue || !isPaid;
+                } else if (currentFilter === 'paid') {
+                    matchFilter = isPaid;
+                }
+
+                const customerName = (inv.customerName || inv.customer || 'Khách hàng').toLowerCase();
+                const customerCode = `kh-10${index + 1}`.toLowerCase();
+                const matchSearch = !searchKeyword || customerName.includes(searchKeyword) || customerCode.includes(searchKeyword);
+
+                if (!matchFilter || !matchSearch) return;
 
                 let statusText = 'Đang nợ đến hạn';
                 let badgeClass = 'badge-warning';
@@ -368,10 +385,62 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        const inputFields = document.querySelectorAll('input[type="text"], input[type="search"]');
+        inputFields.forEach(input => {
+            if (input.placeholder && input.placeholder.includes('Tìm tên khách hàng')) {
+                input.id = 'salesSearchInput';
+                input.oninput = () => renderCustomerBalance();
+            }
+        });
+
+        const actionButtonsGroup = document.querySelectorAll('button');
+        actionButtonsGroup.forEach(btn => {
+            const btnText = btn.textContent.trim();
+            if (btnText.includes('Tất cả')) {
+                btn.onclick = (e) => {
+                    setActiveFilterBtn(e.currentTarget, actionButtonsGroup);
+                    currentFilter = 'all';
+                    renderCustomerBalance();
+                };
+            } else if (btnText.includes('Còn nợ quá hạn')) {
+                btn.onclick = (e) => {
+                    setActiveFilterBtn(e.currentTarget, actionButtonsGroup);
+                    currentFilter = 'overdue';
+                    renderCustomerBalance();
+                };
+            } else if (btnText.includes('Đã thanh toán đủ')) {
+                btn.onclick = (e) => {
+                    setActiveFilterBtn(e.currentTarget, actionButtonsGroup);
+                    currentFilter = 'paid';
+                    renderCustomerBalance();
+                };
+            } else if (btnText.includes('Lọc dữ liệu')) {
+                btn.onclick = () => {
+                    renderCustomerBalance();
+                    showToast('Đã lọc lại dữ liệu thành công!');
+                };
+            }
+        });
+
+        function setActiveFilterBtn(activeBtn, allButtons) {
+            allButtons.forEach(b => {
+                if (b.textContent.includes('Tất cả') || b.textContent.includes('Còn nợ quá hạn') || b.textContent.includes('Đã thanh toán đủ')) {
+                    b.classList.remove('btn-primary');
+                    b.classList.add('btn-outline');
+                    b.style.background = 'transparent';
+                    b.style.color = '#fff';
+                }
+            });
+            activeBtn.classList.remove('btn-outline');
+            activeBtn.classList.add('btn-primary');
+            activeBtn.style.background = 'var(--primary-color)';
+        }
+
         renderCustomerBalance();
         window.addEventListener('invoicepilot_data_changed', renderCustomerBalance);
     }
 
+    // --- PHẦN 2: LOGIC XỬ LÝ TRANG CHI TIẾT HÓA ĐƠN ---
     const urlParams = new URLSearchParams(window.location.search);
     const invoiceId = urlParams.get('id');
     const isInvoiceDetailPage = document.querySelector('.main-wrapper h1')?.textContent.includes('Chi Tiết Hóa Đơn');
@@ -464,4 +533,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    loadData();
 });
