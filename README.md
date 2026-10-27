@@ -9,6 +9,7 @@ InvoicePilot là giải pháp Web App Frontend hỗ trợ doanh nghiệp vừa v
 
 ## 🔗 2. Đường Dẫn Triển Khai & Tài Nguyên
 * **Link Live Deployment (GitHub Pages):** [https://nhancreator.github.io/cse122-invoicepilot-team18/](https://nhancreator.github.io/cse122-invoicepilot-team18/)
+[https://nhancreator.github.io/cse122-invoicepilot-team18/pages/trangchu.html](https://nhancreator.github.io/cse122-invoicepilot-team18/pages/Trangchu.html)
 * **Link Dự Án Figma / Canva**: `[https://www.figma.com/make/By0BlLFJIfE25l45L33pD7/G%E1%BB%99p-n%E1%BB%99i-dung-th%C3%A0nh-m%E1%BB%99t-file?t=v8LnnoLMD5bfNR3X-20&fullscreen=1]`
 * **Link Bảng Quản Lý Công Việc (Trello / Jira / Notion)**: `[https://trello.com/invite/b/6add0f39f076be2795d27aec/ATTIdeb54990b157a3aa54aee895b74c4bc1575C2B12/📌-bảng-trello-theo-trạng-thai-cong-việc]`
 

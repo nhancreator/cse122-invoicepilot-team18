@@ -1,7 +1,10 @@
+/* KHO MÃ NGUỒN NGHIỆP VỤ KẾ TOÁN (ACCOUNTANT MODULE) - CÓ CHÚ THÍCH CHI TIẾT  */
+
 document.addEventListener('DOMContentLoaded', () => {
 
-    // BƯỚC 1: TIỆN ÍCH DÙNG CHUNG (TOAST, FORMAT, THEME SWITCHER)
+    /* 1. KHỐI TIỆN ÍCH DÙNG CHUNG (TOAST NOTIFICATION, FORMAT VND, THEME)     */
 
+    // Hiển thị khung thông báo nhanh (Toast) ở góc màn hình khi thao tác
     function showToast(message, type = 'success') {
         let container = document.getElementById('toastContainer');
         if (!container) {
@@ -26,16 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3500);
     }
 
+    // Định dạng số tiền thành chuỗi tiền tệ VNĐ (có dấu chấm phân cách hàng nghìn)
     function formatVND(amount) {
         return String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
+    // Chuyển đổi chuỗi tiền tệ VNĐ về dạng số nguyên (integer) để tính toán
     function parseVND(str) {
         if (typeof str === 'number') return str;
         return parseInt(String(str).replace(/[^\d]/g, ''), 10) || 0;
     }
 
-    // Khởi tạo Dark/Light Mode (Mở rộng 3)
+    // Khởi tạo tính năng chuyển đổi giao diện Sáng / Tối (Dark / Light Mode)
     const savedTheme = localStorage.getItem('invoicepilot_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
 
@@ -52,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Xuất báo cáo CSV (Mở rộng 4)
+    // Chức năng Xuất báo cáo dữ liệu hóa đơn thành tệp CSV
     const btnExportCSV = document.getElementById('btnExportCSV');
     if (btnExportCSV) {
         btnExportCSV.onclick = () => {
@@ -72,8 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    /* 2. KHO LƯU TRỮ TRUNG TÂM & TỰ ĐỘNG QUÉT HÓA ĐƠN QUÁ HẠN                  */
 
-    // BƯỚC 2: KHO LƯU TRỮ TRUNG TÂM & QUÉT QUÁ HẠN
+    // Lấy danh sách hóa đơn từ LocalStorage / API trung tâm và tự động kiểm tra quá hạn
     function getInvoicesFromStore() {
         let invoices = [];
         if (window.InvoiceAPI && typeof window.InvoiceAPI.getCollection === 'function') {
@@ -90,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const today = new Date().toISOString().split('T')[0];
         let hasChanges = false;
 
+        // Tự động chuyển trạng thái sang 'overdue' (quá hạn) nếu đến hạn mà chưa thanh toán
         invoices = invoices.map(inv => {
             if ((!inv.status || inv.status === 'pending' || inv.status === 'waiting') && inv.dueDate && inv.dueDate < today) {
                 inv.status = 'overdue';
@@ -111,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return invoices;
     }
 
+    // Lưu trữ hoặc cập nhật thông tin hóa đơn vào kho lưu trữ dữ liệu chung
     function saveInvoiceToStore(invoiceData, isUpdate = false) {
         if (window.InvoiceAPI && typeof window.InvoiceAPI.getData === 'function') {
             const state = window.InvoiceAPI.getData();
@@ -136,8 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
-    // BƯỚC 3: TRANG 1 - QUẢN LÝ DANH SÁCH HÓA ĐƠN
+    /* 3. TRANG 1: QUẢN LÝ DANH SÁCH HÓA ĐƠN (KT-accountant-invoice-list.html)  */
     function initInvoiceListPage() {
         const invoiceTable = document.getElementById('invoiceTable');
         if (!invoiceTable) return;
@@ -148,12 +155,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const tableEmptyState = document.getElementById('tableEmptyState');
         let currentStatusFilter = 'all';
 
+        // Hàm dựng và hiển thị bảng danh sách hóa đơn dựa trên bộ lọc và từ khóa tìm kiếm
         function renderTable() {
             const invoices = getInvoicesFromStore();
             if (!tbody) return;
 
             const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
+            // Lọc dữ liệu theo trạng thái tab và từ khóa
             const filteredInvoices = invoices.filter(inv => {
                 const status = inv.status || 'pending';
                 if (currentStatusFilter === 'paid' && !(status === 'paid' || status === 'completed')) return false;
@@ -165,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return !keyword || matchCode || matchCustomer;
             });
 
+            // Cập nhật số lượng hiển thị trên các thẻ đếm badge
             const countAll = document.getElementById('count-all');
             const countPaid = document.getElementById('count-paid');
             const countPending = document.getElementById('count-pending');
@@ -180,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (showingCount) showingCount.innerText = filteredInvoices.length;
             if (totalCount) totalCount.innerText = invoices.length;
 
+            // Hiển thị Empty State nếu không tìm thấy kết quả phù hợp
             if (tableEmptyState) tableEmptyState.style.display = filteredInvoices.length === 0 ? 'block' : 'none';
 
             tbody.innerHTML = '';
@@ -208,6 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tbody.appendChild(tr);
             });
 
+            // Gắn sự kiện bấm nút Sửa hóa đơn
             tbody.querySelectorAll('.btn-edit-inv').forEach(btn => {
                 btn.onclick = (e) => {
                     const id = e.currentTarget.getAttribute('data-id');
@@ -215,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             });
 
+            // Gắn sự kiện bấm nút Xóa hóa đơn
             tbody.querySelectorAll('.btn-delete-inv').forEach(btn => {
                 btn.onclick = (e) => {
                     const id = e.currentTarget.getAttribute('data-id');
@@ -234,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Gắn sự kiện bộ lọc tab trạng thái và tìm kiếm qua nút bấm / phím Enter
         if (!invoiceTable.dataset.bound) {
             invoiceTable.dataset.bound = 'true';
             filterButtons.forEach(btn => {
@@ -250,7 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // BƯỚC 4: TRANG 2 - FORM LẬP HÓA ĐƠN & AI-1
+    /* 4. TRANG 2: LẬP HÓA ĐƠN & PHÂN TÍCH RỦI RO AI-1 (KT-invoice-form.html) */
+
+    // Hàm mô phỏng AI-1 đánh giá rủi ro tài chính, lịch sử giao dịch và hạn mức
     function evaluateAIResult(customer, amount) {
         const aiStateProcessing = document.getElementById('aiStateProcessing');
         const aiStateResult = document.getElementById('aiStateResult');
@@ -312,6 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (aiConfidenceFill) aiConfidenceFill.style.width = `${confidence}%`;
     }
 
+    // Khởi tạo trang Lập/Sửa hóa đơn và xử lý sự kiện form submit
     function initInvoiceFormPage() {
         const invoiceForm = document.getElementById('invoiceForm');
         if (!invoiceForm) return;
@@ -319,6 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const editId = urlParams.get('id');
 
+        // Nạp dữ liệu cũ vào form nếu đang ở chế độ chỉnh sửa (Edit mode)
         if (editId && !invoiceForm.dataset.loadedEdit) {
             invoiceForm.dataset.loadedEdit = 'true';
             const existingInv = getInvoicesFromStore().find(inv => inv.id === editId || inv.code === editId);
@@ -330,6 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Xử lý sự kiện lưu hóa đơn (Thêm mới hoặc Cập nhật)
         invoiceForm.onsubmit = (e) => {
             e.preventDefault();
             const customerVal = document.getElementById('formCustomer').value.trim();
@@ -356,6 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => { window.location.href = 'KT-accountant-invoice-list.html'; }, 1000);
         };
 
+        // Gắn sự kiện cho nút "Kiểm tra bất thường AI"
         const btnCheckAI = document.getElementById('btnCheckAI');
         if (btnCheckAI) {
             btnCheckAI.onclick = () => {
@@ -373,12 +393,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
-    // BƯỚC 5: TRANG 3 - ĐỐI CHIẾU CÔNG NỢ AI-2
+    /* 5. TRANG 3: ĐỐI CHIẾU CÔNG NỢ & GỢI Ý KHỚP NỐI AI-2 (reconciliation.html)*/
     function initReconciliationPage() {
         const reconciliationTbody = document.getElementById('reconciliationTbody');
         if (!reconciliationTbody) return;
 
+        // Dựng bảng đối soát giao dịch ngân hàng với hóa đơn chờ thanh toán
         function renderReconciliationTable() {
             const invoices = getInvoicesFromStore();
             reconciliationTbody.innerHTML = '';
@@ -403,6 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const emptyState = document.getElementById('emptyReconciliationState');
             if (emptyState) emptyState.style.display = activeCount === 0 ? 'block' : 'none';
 
+            // Gắn sự kiện bấm nút Xác nhận khớp từng giao dịch lẻ
             reconciliationTbody.querySelectorAll('.btn-confirm-single').forEach(btn => {
                 btn.onclick = (e) => {
                     const id = e.currentTarget.dataset.id;
@@ -412,13 +433,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             });
         }
-        // --- BỔ SUNG XỬ LÝ SỰ KIỆN TẢI TỆP SAO KÊ (UPLOAD STATEMENT) ---
+
+        // --- CHỨC NĂNG TẢI TỆP SAO KÊ & XỬ LÝ QUÉT TIẾN TRÌNH AI-2 ---
         const btnUploadStatement = document.getElementById('btnUploadStatement');
         const statementFileInput = document.getElementById('statementFileInput');
 
         if (btnUploadStatement && statementFileInput) {
             btnUploadStatement.onclick = () => {
-                statementFileInput.click(); // Mở cửa sổ chọn file của hệ điều hành
+                statementFileInput.click(); // Mở hộp thoại chọn tệp sao kê ngân hàng của hệ điều hành
             };
 
             statementFileInput.onchange = (e) => {
@@ -426,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (file) {
                     showToast(`Đã tải lên tệp sao kê: ${file.name}. AI-2 đang phân tích dữ liệu...`, 'info');
                     
-                    // Giả lập hiệu ứng quét thanh tiến trình AI sau khi chọn file
+                    // Hiển thị thanh loading tiến trình quét của AI-2
                     const progressBox = document.getElementById('aiReconciliationProgress');
                     if (progressBox) {
                         progressBox.style.display = 'block';
@@ -440,6 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         }
 
+        // Gắn sự kiện cho nút "Chạy AI Đối Soát" tự động toàn bộ
         const btnAutoMatchAI = document.getElementById('btnAutoMatchAI');
         if (btnAutoMatchAI) {
             btnAutoMatchAI.onclick = () => {
@@ -451,12 +474,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderReconciliationTable();
     }
 
-
-    // BƯỚC 6: KHỞI CHẠY HỆ THỐNG
+    /* 6. KHỞI CHẠY TOÀN BỘ VÒNG ĐỜI HỆ THỐNG                                 */
     initInvoiceListPage();
     initInvoiceFormPage();
     initReconciliationPage();
 
+    // Lắng nghe sự kiện đồng bộ dữ liệu Realtime giữa các phân hệ
     window.addEventListener('invoicepilot_data_changed', () => {
         initInvoiceListPage();
         initReconciliationPage();
