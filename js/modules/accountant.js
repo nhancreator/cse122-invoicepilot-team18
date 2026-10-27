@@ -250,6 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Gắn sự kiện bộ lọc tab trạng thái và tìm kiếm qua nút bấm / phím Enter
         if (!invoiceTable.dataset.bound) {
             invoiceTable.dataset.bound = 'true';
+            
+            // 1. Xử lý nút Lọc trạng thái
             filterButtons.forEach(btn => {
                 btn.onclick = () => {
                     filterButtons.forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-outline'); });
@@ -258,9 +260,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderTable();
                 };
             });
-            if (searchInput) searchInput.oninput = renderTable;
+
+            // 2. Chỉ lọc khi BẤM NÚT "Tìm kiếm" hoặc nhấn Enter
+            const btnSearch = document.getElementById('btnSearch');
+            if (btnSearch && searchInput) {
+                searchInput.oninput = null; // Gỡ bỏ tự động tìm khi gõ
+                btnSearch.onclick = () => renderTable();
+                searchInput.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); renderTable(); } };
+            }
+
+            // 3. Xử lý nút Xóa bộ lọc (Reset)
+            const btnResetFilter = document.getElementById('tableEmptyState')?.querySelector('#btnResetFilter') || document.getElementById('btnResetFilter');
+            if (btnResetFilter) {
+                btnResetFilter.onclick = () => {
+                    if (searchInput) searchInput.value = '';
+                    currentStatusFilter = 'all';
+                    filterButtons.forEach(b => {
+                        if (b.getAttribute('data-status') === 'all') {
+                            b.classList.remove('btn-outline'); b.classList.add('btn-primary');
+                        } else {
+                            b.classList.remove('btn-primary'); b.classList.add('btn-outline');
+                        }
+                    });
+                    renderTable();
+                    showToast('Đã xóa bộ lọc, hiển thị lại toàn bộ dữ liệu!');
+                };
+            }
         }
-        renderTable();
     }
 
 
