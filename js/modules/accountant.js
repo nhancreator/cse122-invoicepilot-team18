@@ -287,6 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             }
         }
+        renderTable();
     }
 
 
