@@ -1,5 +1,3 @@
-/* KHO MÃ NGUỒN NGHIỆP VỤ KẾ TOÁN (ACCOUNTANT MODULE) - CÓ CHÚ THÍCH CHI TIẾT  */
-
 document.addEventListener('DOMContentLoaded', () => {
 
     /* 1. KHỐI TIỆN ÍCH DÙNG CHUNG (TOAST NOTIFICATION, FORMAT VND, THEME)     */
@@ -79,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* 2. KHO LƯU TRỮ TRUNG TÂM & TỰ ĐỘNG QUÉT HÓA ĐƠN QUÁ HẠN                  */
 
+
     // Lấy danh sách hóa đơn từ LocalStorage / API trung tâm và tự động kiểm tra quá hạn
     function getInvoicesFromStore() {
         let invoices = [];
@@ -143,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.dispatchEvent(new CustomEvent('invoicepilot_data_changed', { detail: state }));
         }
     }
+
 
     /* 3. TRANG 1: QUẢN LÝ DANH SÁCH HÓA ĐƠN (KT-accountant-invoice-list.html)  */
     function initInvoiceListPage() {
@@ -394,6 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* 5. TRANG 3: ĐỐI CHIẾU CÔNG NỢ & GỢI Ý KHỚP NỐI AI-2 (reconciliation.html)*/
+
     function initReconciliationPage() {
         const reconciliationTbody = document.getElementById('reconciliationTbody');
         if (!reconciliationTbody) return;
@@ -475,6 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* 6. KHỞI CHẠY TOÀN BỘ VÒNG ĐỜI HỆ THỐNG                                 */
+
     initInvoiceListPage();
     initInvoiceFormPage();
     initReconciliationPage();
