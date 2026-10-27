@@ -389,9 +389,21 @@ document.addEventListener('DOMContentLoaded', () => {
         inputFields.forEach(input => {
             if (input.placeholder && input.placeholder.includes('Tìm tên khách hàng')) {
                 input.id = 'salesSearchInput';
-                input.oninput = () => renderCustomerBalance();
+                // Gỡ bỏ tìm kiếm real-time khi gõ phím
+                input.oninput = null; 
             }
         });
+
+        const searchInputEl = document.getElementById('salesSearchInput');
+        if (searchInputEl) {
+            searchInputEl.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    renderCustomerBalance();
+                    showToast('Đã lọc kết quả theo từ khóa!');
+                }
+            };
+        }
 
         const actionButtonsGroup = document.querySelectorAll('button');
         actionButtonsGroup.forEach(btn => {

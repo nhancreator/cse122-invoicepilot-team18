@@ -334,14 +334,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const searchOverdue = document.getElementById('searchOverdue');
     if (searchOverdue) {
-        searchOverdue.addEventListener('input', () => {
-            renderOverdueTable(getSharedInvoices());
-        });
+        // Gỡ bỏ sự kiện input thời gian thực
+        searchOverdue.oninput = null;
+
+        // Thay vào đó chỉ tìm khi nhấn phím Enter trên ô input
+        searchOverdue.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                renderOverdueTable(getSharedInvoices());
+                showToast('Đã lọc danh sách hóa đơn quá hạn!');
+            }
+        };
     }
 
     const btnFilterOverdue = document.getElementById('btnFilterOverdue');
     if (btnFilterOverdue) {
-        btnFilterOverdue.addEventListener('click', () => renderOverdueTable(getSharedInvoices()));
+        // Khi bấm nút "Lọc" thì mới thực hiện tìm kiếm/lọc
+        btnFilterOverdue.addEventListener('click', () => {
+            renderOverdueTable(getSharedInvoices());
+            showToast('Đã lọc danh sách hóa đơn quá hạn!');
+        });
     }
 
     document.addEventListener('click', (e) => {
