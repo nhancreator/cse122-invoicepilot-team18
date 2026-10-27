@@ -2,14 +2,56 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0;url=pages/index.html">
-    <title>Đang chuyển hướng đến InvoicePilot...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvoicePilot - Cổng Điều Hành Dự Án</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
 </head>
-<body>
-    <p>Đang chuyển hướng đến hệ thống InvoicePilot, vui lòng đợi trong giây lát...</p>
-    <script>
-        // Dự phòng chuyển hướng bằng JavaScript nếu meta refresh bị chậm
-        window.location.href = "pages/trangchu.html";
-    </script>
+<body style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: #060913; color: #f8fafc; font-family: 'Inter', sans-serif;">
+
+    <div style="text-align: center; max-width: 800px; margin-bottom: 40px;">
+        <div style="display: inline-flex; align-items: center; gap: 10px; font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; color: #a855f7;">
+            <i class='bx bxs-paper-plane'></i> InvoicePilot - Cyber Fintech Platform
+        </div>
+        <p style="color: #94a3b8; font-size: 1rem;">Hệ thống quản lý hóa đơn, đối chiếu công nợ tự động bằng AI. Chọn phân hệ bên dưới để bắt đầu trải nghiệm:</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; width: 100%; max-width: 900px;">
+        
+        <!-- Trang Chủ Gốc -->
+        <a href="./pages/trangchu.html" style="background: rgba(14, 21, 38, 0.8); border: 1px solid rgba(255,255,255,0.08); padding: 24px; border-radius: 12px; text-decoration: none; color: #fff; transition: all 0.3s;" onmouseover="this.style.borderColor='#a855f7'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+            <i class='bx bx-home-alt' style="font-size: 2rem; color: #06b6d4; margin-bottom: 12px;"></i>
+            <h3 style="margin: 0 0 8px 0; font-size: 1.1rem;">Trang Chủ Hệ Thống</h3>
+            <p style="margin: 0; font-size: 0.85rem; color: #94a3b8;">Xem giới thiệu tổng quan và các module liên thông.</p>
+        </a>
+
+        <!-- Kế Toán -->
+        <a href="./pages/KT-accountant-invoice-list.html" style="background: rgba(14, 21, 38, 0.8); border: 1px solid rgba(255,255,255,0.08); padding: 24px; border-radius: 12px; text-decoration: none; color: #fff; transition: all 0.3s;" onmouseover="this.style.borderColor='#a855f7'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+            <i class='bx bx-calculator' style="font-size: 2rem; color: #10b981; margin-bottom: 12px;"></i>
+            <h3 style="margin: 0 0 8px 0; font-size: 1.1rem;">Phân Hệ Kế Toán</h3>
+            <p style="margin: 0; font-size: 0.85rem; color: #94a3b8;">Quản lý hóa đơn, lập chứng từ & đối chiếu công nợ AI-2.</p>
+        </a>
+
+        <!-- Kinh Doanh -->
+        <a href="./pages/KD-sales-customer-balance.html" style="background: rgba(14, 21, 38, 0.8); border: 1px solid rgba(255,255,255,0.08); padding: 24px; border-radius: 12px; text-decoration: none; color: #fff; transition: all 0.3s;" onmouseover="this.style.borderColor='#a855f7'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+            <i class='bx bx-line-chart' style="font-size: 2rem; color: #f59e0b; margin-bottom: 12px;"></i>
+            <h3 style="margin: 0 0 8px 0; font-size: 1.1rem;">Phân Hệ Kinh Doanh</h3>
+            <p style="margin: 0; font-size: 0.85rem; color: #94a3b8;">Theo dõi hạn mức tín dụng khách hàng và nhắc nợ.</p>
+        </a>
+
+        <!-- Quản Trị Admin -->
+        <a href="./pages/QTV-admin-customer-management.html" style="background: rgba(14, 21, 38, 0.8); border: 1px solid rgba(255,255,255,0.08); padding: 24px; border-radius: 12px; text-decoration: none; color: #fff; transition: all 0.3s;" onmouseover="this.style.borderColor='#a855f7'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+            <i class='bx bx-shield-quarter' style="font-size: 2rem; color: #ef4444; margin-bottom: 12px;"></i>
+            <h3 style="margin: 0 0 8px 0; font-size: 1.1rem;">Quản Trị Hệ Thống</h3>
+            <p style="margin: 0; font-size: 0.85rem; color: #94a3b8;">Quản lý khách hàng, tài khoản và cấu hình ngưỡng AI.</p>
+        </a>
+
+    </div>
+
+    <footer style="margin-top: 40px; font-size: 0.8rem; color: #64748b;">
+        &copy; 2026 InvoicePilot - Team 18 CSE122. All rights reserved.
+    </footer>
+
 </body>
 </html>
