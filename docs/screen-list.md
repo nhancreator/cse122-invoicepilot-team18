@@ -2,7 +2,7 @@
 
 ---
 
-## Bảng Kiểm Kê Chi Tiết 14 Màn Hình Hệ Thống (Chuẩn 12 Cột)
+## Bảng Kiểm Kê Chi Tiết 12 Màn Hình Hệ Thống (Chuẩn 12 Cột)
 
 | Role    | User Goal           | User Task         | Screen Name           | File Path     | CRUD / State  | AI UX | Assignee    | Task ID     | Branch                | OBS Link |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
