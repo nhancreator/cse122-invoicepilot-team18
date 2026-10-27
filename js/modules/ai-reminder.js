@@ -440,21 +440,11 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('invoicepilot_data_changed', renderCustomerBalance);
     }
 
-    // Đọc thuế suất do QTV lưu, mặc định 10%.
-    function getConfiguredTaxRate() {
-        try {
-            const settings = JSON.parse(localStorage.getItem('invoicepilot_settings') || '{}');
-            const rate = Number(settings.taxRate ?? 10);
-            return Number.isFinite(rate) && rate >= 0 && rate <= 100 ? rate : 10;
-        } catch (e) { return 10; }
-    }
-
     // --- PHẦN 2: LOGIC XỬ LÝ TRANG CHI TIẾT HÓA ĐƠN ---
     const urlParams = new URLSearchParams(window.location.search);
     const invoiceId = urlParams.get('id');
     const isInvoiceDetailPage = document.querySelector('.main-wrapper h1')?.textContent.includes('Chi Tiết Hóa Đơn');
     
-    function renderInvoiceDetail() {
     if ((invoiceId || isInvoiceDetailPage) && !isCustomerBalancePage && !document.getElementById('reminderTarget')) {
         const invoices = getSharedInvoices();
         const targetId = invoiceId || (invoices.length > 0 ? (invoices[0].id || invoices[0].code) : 'INV-001');
@@ -486,8 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const amount = Number(currentInv.amount) || 0;
-            const taxRate = getConfiguredTaxRate();
-            const vat = amount * taxRate / 100;
+            const vat = amount * 0.1;
             const total = amount + vat;
             const paidText = isPaid ? `Đã thanh toán đủ (${amount.toLocaleString()} VNĐ)` : `Chưa thanh toán (0% / ${amount.toLocaleString()} VNĐ)`;
             const progressBarPercent = isPaid ? '100%' : '0%';
@@ -529,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span>${amount.toLocaleString()} VNĐ</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
-                            <span style="color: var(--text-secondary);">Thuế VAT (${taxRate}%):</span>
+                            <span style="color: var(--text-secondary);">Thuế VAT (10%):</span>
                             <span>${vat.toLocaleString()} VNĐ</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 1rem; font-weight: bold;">
@@ -545,11 +534,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    }
-    renderInvoiceDetail();
-    window.addEventListener('storage', e => {
-        if (e.key === 'invoicepilot_settings' || e.key === 'invoicepilot_data' || e.key === 'invoicepilot_invoices') renderInvoiceDetail();
-    });
-    window.addEventListener('invoicepilot_data_changed', renderInvoiceDetail);
     loadData();
 });
